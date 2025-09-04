@@ -1,5 +1,9 @@
 package br.furb.tccon.professor;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import br.furb.tccon.aluno.AlunoModelo;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -21,6 +25,14 @@ public class ProfessorModelo {
     @NotBlank
     private String nome;
 
+    private String telefone;
+
+    List<AlunoModelo> alunos;
+
     private String senha;
+
+    private String codigoDeVerificacao;
+    
+    private LocalDateTime criadoEm;
 
 }

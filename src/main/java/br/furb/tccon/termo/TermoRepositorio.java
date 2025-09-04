@@ -1,4 +1,4 @@
-package br.furb.tccon.relatorio;
+package br.furb.tccon.termo;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -8,11 +8,11 @@ import org.springframework.stereotype.Repository;
 import jakarta.transaction.Transactional;
 
 @Repository
-public interface RelatorioRepositorio extends JpaRepository<RelatorioModelo, Long> {
+public interface TermoRepositorio extends JpaRepository<TermoModelo, Long> {
 
     @Modifying
     @Transactional
-    @Query(value = "DELETE FROM relatorios", nativeQuery = true)
+    @Query(value = "DELETE FROM termos", nativeQuery = true)
     void truncateTable();
     
 }

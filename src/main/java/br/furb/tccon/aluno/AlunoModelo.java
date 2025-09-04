@@ -2,6 +2,7 @@ package br.furb.tccon.aluno;
 
 import java.time.LocalDateTime;
 
+import br.furb.tccon.professor.ProfessorModelo;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -24,10 +25,16 @@ public class AlunoModelo {
     @NotBlank
     private String nome;
 
+    private String telefone;
+
     private String senha;
     
     @NotNull
     private String curso;
+
+    private ProfessorModelo orientador;
+
+    private ProfessorModelo coorientador;
 
     private String codigoDeVerificacao;
     

@@ -47,8 +47,24 @@ public class ProfessorServico {
                 professorModelo2.setEmail(professorModelo.getEmail());
             }
 
+            if (professorModelo.getTelefone() != null) {
+                professorModelo2.setTelefone(professorModelo.getTelefone());
+            }
+
+            if (professorModelo.getAlunos() != null) {
+                professorModelo2.setAlunos(professorModelo.getAlunos());
+            }
+
             if (professorModelo.getSenha() != null) {
                 professorModelo2.setSenha(professorModelo.getSenha());
+            }
+
+            if (professorModelo.getCodigoDeVerificacao() != null) {
+                professorModelo2.setCodigoDeVerificacao(professorModelo.getCodigoDeVerificacao());
+            }
+
+            if (professorModelo.getCriadoEm() != null) {
+                professorModelo2.setCriadoEm(professorModelo.getCriadoEm());
             }
 
             return new ResponseEntity<>(this.professorRepositorio.save(professorModelo2), HttpStatus.OK);
