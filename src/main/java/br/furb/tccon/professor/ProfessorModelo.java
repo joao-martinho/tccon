@@ -3,11 +3,10 @@ package br.furb.tccon.professor;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import br.furb.tccon.aluno.AlunoModelo;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,7 +18,7 @@ import lombok.Setter;
 public class ProfessorModelo {
     
     @Id
-    @Email
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @NotBlank
@@ -27,7 +26,9 @@ public class ProfessorModelo {
 
     private String telefone;
 
-    List<AlunoModelo> alunos;
+    List<String> orientandos;
+
+    List<String> coorientandos;
 
     private String senha;
 

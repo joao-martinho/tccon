@@ -51,8 +51,12 @@ public class ProfessorServico {
                 professorModelo2.setTelefone(professorModelo.getTelefone());
             }
 
-            if (professorModelo.getAlunos() != null) {
-                professorModelo2.setAlunos(professorModelo.getAlunos());
+            if (professorModelo.getOrientandos() != null) {
+                professorModelo2.setOrientandos(professorModelo.getOrientandos());
+            }
+
+            if (professorModelo.getCoorientandos() != null) {
+                professorModelo2.setCoorientandos(professorModelo.getCoorientandos());
             }
 
             if (professorModelo.getSenha() != null) {

@@ -1,4 +1,5 @@
 const emailInput = document.getElementById('email');
+const telefoneInput = document.getElementById('telefone')
 const senhaInput = document.getElementById('senha');
 const confirmaInput = document.getElementById('confirmaSenha');
 const codigoDeVerificacaoInput = document.getElementById('codigoDeVerificacao');
@@ -65,7 +66,7 @@ document.getElementById('formPrimeiroAcesso').addEventListener('submit', functio
             return;
         }
 
-        const alunoAtualizado = { senha: senhaInput.value };
+        const alunoAtualizado = { telefone: telefoneInput.value, senha: senhaInput.value };
         return fetch(`/alunos/${email}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
@@ -77,6 +78,7 @@ document.getElementById('formPrimeiroAcesso').addEventListener('submit', functio
         if (!res.ok) throw new Error('Erro ao criar a senha. Verifique se o email está correto.');
         mostrarMensagem('Senha alterada com sucesso!', 'success');
         emailInput.value = '';
+        telefoneInput.value = '';
         senhaInput.value = '';
         confirmaInput.value = '';
         codigoDeVerificacaoInput.value = '';

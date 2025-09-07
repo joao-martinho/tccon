@@ -13,27 +13,16 @@
   <h1 class="mb-4 text-center">Termo de compromisso</h1>
 
   <form id="formularioDoTermo" class="card p-4 shadow-sm mb-5">
-    <!-- Seção I -->
     <div class="mb-3">
-      <label for="nomeDoAluno" class="form-label">Identificação do aluno</label>
-      <input type="text" class="form-control" id="nomeDoAluno" placeholder="Digite seu nomeDo" required>
-    </div>
-    <div class="mb-3">
-      <label for="telefoneDoAluno" class="form-label">Telefone do aluno</label>
-      <input type="tel" class="form-control" id="telefoneDoAluno" placeholder="Digite seu telefone" required>
+      <label for="emailDoAluno" class="form-label">Identificação do aluno</label>
+      <input type="text" class="form-control" id="emailDoAluno" placeholder="Digite seu email @furb.br" required>
     </div>
 
-    <!-- Seção II -->
     <div class="mb-3">
-      <label for="nomeDoOrientador" class="form-label">Identificação do orientador</label>
-      <input type="text" class="form-control" id="nomeDoOrientador" value="(preenchido automaticamente)" readonly>
-    </div>
-    <div class="mb-3">
-      <label for="telefoneDoOrientador" class="form-label">Telefone do orientador</label>
-      <input type="text" class="form-control" id="telefoneDoOrientador" value="(preenchido automaticamente)" readonly>
+      <label for="emailDoOrientador" class="form-label">Identificação do orientador</label>
+      <input type="text" class="form-control" id="emailDoOrientador" placeholder="Digite o email @furb.br do orientador" required>
     </div>
 
-    <!-- Seção III -->
     <div class="form-check mb-3">
       <input class="form-check-input" type="checkbox" id="coorientadorCheckbox">
       <label class="form-check-label" for="coorientadorCheckbox">
@@ -42,12 +31,8 @@
     </div>
     <div id="coorientadorMenu" class="collapse">
       <div class="mb-3">
-        <label for="nomeDoCoorientador" class="form-label">Identificação do coorientador</label>
-        <input type="text" class="form-control" id="nomeDoCoorientador" placeholder="Digite o nome do coorientador">
-      </div>
-      <div class="mb-3">
-        <label for="telefoneDoCoorientador" class="form-label">Telefone do coorientador</label>
-        <input type="tel" class="form-control" id="telefoneDoCoorientador" placeholder="Digite o telefone do coorientador">
+        <label for="emailDoCoorientador" class="form-label">Identificação do coorientador</label>
+        <input type="text" class="form-control" id="emailDoCoorientador" placeholder="Digite o email @furb.br do coorientador">
       </div>
       <div class="mb-3">
         <label for="perfilDoCoorientador" class="form-label">Perfil do coorientador (menos de 500 caracteres)</label>

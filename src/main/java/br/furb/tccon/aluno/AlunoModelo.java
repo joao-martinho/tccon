@@ -2,7 +2,7 @@ package br.furb.tccon.aluno;
 
 import java.time.LocalDateTime;
 
-import br.furb.tccon.professor.ProfessorModelo;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -19,7 +19,7 @@ import lombok.Setter;
 public class AlunoModelo {
 
     @Id
-    @Email
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
     
     @NotBlank
@@ -32,9 +32,11 @@ public class AlunoModelo {
     @NotNull
     private String curso;
 
-    private ProfessorModelo orientador;
-
-    private ProfessorModelo coorientador;
+    @Email
+    private String emailDoOrientador;
+    
+    @Email
+    private String emailDoCoorientador;
 
     private String codigoDeVerificacao;
     

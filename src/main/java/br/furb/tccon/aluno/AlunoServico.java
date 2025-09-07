@@ -48,6 +48,10 @@ public class AlunoServico {
                 alunoModelo2.setEmail(alunoModelo.getEmail());
             }
 
+            if (alunoModelo.getTelefone() != null) {
+                alunoModelo2.setTelefone(alunoModelo.getTelefone());
+            }
+
             if (alunoModelo.getSenha() != null) {
                 alunoModelo2.setSenha(alunoModelo.getSenha());
             }

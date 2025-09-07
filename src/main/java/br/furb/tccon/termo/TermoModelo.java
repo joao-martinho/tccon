@@ -1,15 +1,13 @@
 package br.furb.tccon.termo;
 
-import br.furb.tccon.aluno.AlunoModelo;
-import br.furb.tccon.professor.ProfessorModelo;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,21 +25,18 @@ public class TermoModelo {
     private String titulo;
 
     @NotBlank
-    private AlunoModelo aluno;
+    @Email
+    private String emailDoAluno;
 
-    @NotNull
-    private ProfessorModelo orientador;
+    @NotBlank
+    @Email
+    private String emailDoOrientador;
 
-    @NotNull
-    private boolean temCoorientador;
-
-    private ProfessorModelo coorientador;
+    @Email
+    private String emailDoCoorientador;
 
     @Lob
     private String perfilDoCoorientador;
-
-    @NotBlank
-    private String tituloDoTrabalho;
 
     @NotBlank
     private String ano;
@@ -51,6 +46,6 @@ public class TermoModelo {
 
     @NotBlank
     @Lob
-    private String resumoDoProblema;
+    private String resumo;
     
 }
