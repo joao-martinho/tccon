@@ -26,4 +26,9 @@ public class EmailControle {
     public ResponseEntity<String> verificarCodigo(@RequestBody Map<String, String> payload) {
         return emailServico.verificarCodigo(payload);
     }
+
+    @PostMapping("/confirmar-termo")
+    public ResponseEntity<String> verificarTermo(@RequestBody Map<String, String> payload) {
+        return emailServico.verificarTermo(payload);
+    } 
 }
