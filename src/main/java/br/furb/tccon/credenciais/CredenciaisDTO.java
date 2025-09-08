@@ -1,4 +1,4 @@
-package br.furb.tccon.dto;
+package br.furb.tccon.credenciais;
 
 public class CredenciaisDTO {
     private String email;

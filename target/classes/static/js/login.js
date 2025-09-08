@@ -35,3 +35,12 @@ function mostrarMensagem(texto, tipo = 'danger') {
         </div>
     `;
 }
+
+document.getElementById('btnSalvarEmail').addEventListener('click', function() {
+    const email = document.getElementById('emailUsuario').value.trim();
+    if (email) {
+        localStorage.setItem('emailAluno', email);
+        alert('E-mail salvo!');
+    }
+});
+

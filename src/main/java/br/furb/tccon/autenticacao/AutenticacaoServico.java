@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import br.furb.tccon.aluno.AlunoModelo;
 import br.furb.tccon.aluno.AlunoRepositorio;
-import br.furb.tccon.dto.CredenciaisDTO;
+import br.furb.tccon.credenciais.CredenciaisDTO;
 import br.furb.tccon.professor.ProfessorModelo;
 import br.furb.tccon.professor.ProfessorRepositorio;
 import lombok.RequiredArgsConstructor;
