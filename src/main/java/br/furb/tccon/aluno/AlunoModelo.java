@@ -33,10 +33,10 @@ public class AlunoModelo {
     private String curso;
 
     @Email
-    private String emailDoOrientador;
+    private String orientador;
     
     @Email
-    private String emailDoCoorientador;
+    private String coorientador;
 
     private String codigoDeVerificacao;
     

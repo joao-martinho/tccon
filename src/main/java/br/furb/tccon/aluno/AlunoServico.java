@@ -56,6 +56,14 @@ public class AlunoServico {
                 alunoModelo2.setSenha(alunoModelo.getSenha());
             }
 
+            if (alunoModelo.getOrientador() != null) {
+                alunoModelo2.setOrientador(alunoModelo.getOrientador());
+            }
+
+            if (alunoModelo.getCoorientador() != null) {
+                alunoModelo2.setCoorientador(alunoModelo.getCoorientador());
+            }
+
             if (alunoModelo.getCurso() != null) {
                 alunoModelo2.setCurso(alunoModelo.getCurso());
             }

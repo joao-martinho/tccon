@@ -16,9 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	form.addEventListener("submit", async (event) => {
 		event.preventDefault();
 
-		const aluno = {
-			email: document.getElementById("emailDoAluno").value.trim()
-		};
+		const emailDoAluno = localStorage.getItem('email')
 
 		const orientador = {
 			email: document.getElementById("emailDoOrientador").value.trim()
@@ -33,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 
 		const termo = {
-			emailDoAluno: aluno.email,
+			emailDoAluno: emailDoAluno,
 			emailDoOrientador: orientador.email,
 			emailDoCoorientador: coorientador ? coorientador.email : null,
 			perfilDoCoorientador: coorientador ? coorientador.perfil : null,
@@ -43,15 +41,24 @@ document.addEventListener("DOMContentLoaded", () => {
 			resumo: document.getElementById("resumoDoProblema").value.trim()
 		};
 
+
 		try {
-			await fetch(`/alunos/${encodeURIComponent(aluno.email)}`, {
+			console.log("Enviando PATCH para aluno:", {
+				orientador: orientador.email,
+				coorientador: coorientador ? coorientador.email : null
+			});
+
+			await fetch(`/alunos/${encodeURIComponent(emailDoAluno)}`, {
 				method: "PATCH",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
-					orientador: orientador,
-					coorientador: coorientador
+					orientador: orientador.email,
+					coorientador: coorientador ? coorientador.email : null
 				})
 			});
+
+			atualizarProfessor(orientador.email, 'orientador', emailDoAluno)
+			atualizarProfessor(coorientador.email, 'coorientador', emailDoAluno)
 
 			await fetch("/termos", {
 				method: "POST",
@@ -65,4 +72,40 @@ document.addEventListener("DOMContentLoaded", () => {
 			alert("Ocorreu um erro ao cadastrar o termo. Tente novamente.");
 		}
 	});
+
 });
+
+async function atualizarProfessor(emailDoProfessor, tipo, emailDoAluno) {
+	const res = await fetch(`/professores/${encodeURIComponent(emailDoProfessor)}`);
+	if (!res.ok) throw new Error("Não foi possível recuperar o professor");
+
+	const professor = await res.json();
+	
+	if (tipo === 'orientador') {
+		let orientandos = professor.orientandos || [];
+
+		if (!orientandos.includes(emailDoAluno)) {
+			orientandos.push(emailDoAluno);
+		}
+
+		await fetch(`/professores/${encodeURIComponent(emailDoProfessor)}`, {
+			method: "PATCH",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ orientandos })
+		});
+	} 
+	else if (tipo === 'coorientador') {
+		let coorientandos = professor.coorientandos || [];
+
+		if (!coorientandos.includes(emailDoAluno)) {
+			coorientandos.push(emailDoAluno);
+		}
+
+		await fetch(`/professores/${encodeURIComponent(emailDoProfessor)}`, {
+			method: "PATCH",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ coorientandos })
+		});
+	}
+}
+
