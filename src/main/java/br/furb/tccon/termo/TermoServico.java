@@ -1,5 +1,6 @@
 package br.furb.tccon.termo;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
@@ -77,6 +78,13 @@ public class TermoServico {
     public ResponseEntity<Void> removerTodos() {
         this.termoRepositorio.truncateTable();
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    public ResponseEntity<List<TermoModelo>> buscarTermosPorEmailDoProfessor(String email) {
+        List<TermoModelo> termoModelos = this.termoRepositorio.findByEmailDoOrientador(email);
+        termoModelos.addAll(this.termoRepositorio.findByEmailDoCoorientador(email));
+
+        return new ResponseEntity<>(termoModelos, HttpStatus.OK);
     }
 
 }

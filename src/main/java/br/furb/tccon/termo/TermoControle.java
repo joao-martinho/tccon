@@ -1,5 +1,7 @@
 package br.furb.tccon.termo;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -38,6 +40,11 @@ public class TermoControle {
     @GetMapping("/{id}")
     public ResponseEntity<TermoModelo> buscarTermo(@PathVariable Long id) {
         return this.termoServico.buscarTermo(id);
+    }
+
+    @GetMapping("/{email}")
+    public ResponseEntity<List<TermoModelo>> buscarPorEmailDoProfessor(@PathVariable String email) {
+        return this.termoServico.buscarTermosPorEmailDoProfessor(email);
     }
 
     @PutMapping("/{id}")

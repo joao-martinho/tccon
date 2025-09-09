@@ -30,7 +30,7 @@ public class EmailServico {
 
         AlunoModelo alunoModelo = alunoRepositorio.findByEmail(destinatario);
         if (alunoModelo == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("E-mail não encontrado.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Email não encontrado.");
         }
 
         Integer codigoDeVerificacao = ThreadLocalRandom.current().nextInt(1000, 10000);

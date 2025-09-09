@@ -11,79 +11,82 @@ document.addEventListener('DOMContentLoaded', async () => {
   const modalCoorientador = document.getElementById('modalCoorientador')
   const modalData = document.getElementById('modalData')
 
-	let termos = []
+  let termos = []
 
-	async function carregarTermos() {
-		try {
-			const res = await fetch('/termos')
-			if (!res.ok) throw new Error('Falha ao buscar termos')
-			termos = await res.json()
-			preencherTabela()
-		} catch (error) {
-			console.error('Erro ao carregar termos:', error)
-			listaDeTermos.innerHTML = '<tr><td colspan="6" class="text-center text-danger">Não foi possível carregar os termos.</td></tr>'
-		}
-	}
+  async function carregarTermos() {
+    try {
+      const email = encodeURIComponent(localStorage.getItem('email'))
 
-	function preencherTabela() {
-		listaDeTermos.innerHTML = ''
-		if (!termos.length) {
-			listaDeTermos.innerHTML = '<tr><td colspan="6" class="text-center">Nenhum termo pendente</td></tr>'
-			return
-		}
+      const res = await fetch(`/termos/${email}`)
+      if (!res.ok) throw new Error('Falha ao buscar termos')
 
-		termos.forEach((termo, index) => {
-			const tr = document.createElement('tr')
-			tr.innerHTML = `
-				<td>${termo.emailDoAluno}</td>
-				<td>${'TODO'}</td>
-				<td>${termo.titulo}</td>
-				<td>${'TODO'}</td>
-				<td>${termo.status || 'Pendente'}</td>
-				<td><button class="btn btn-primary btn-sm btn-ver" data-index="${index}">Ver</button></td>
-			`
-			listaDeTermos.appendChild(tr)
-		})
+      termos = await res.json()
+      preencherTabela()
+    } catch (error) {
+      console.error('Erro ao carregar termos:', error)
+      listaDeTermos.innerHTML = '<tr><td colspan="6" class="text-center text-danger">Não foi possível carregar os termos.</td></tr>'
+    }
+  }
 
-		document.querySelectorAll('.btn-ver').forEach(btn => {
-			btn.addEventListener('click', () => {
-				const termo = termos[btn.dataset.index]
-				abrirModal(termo)
-			})
-		})
-	}
+  function preencherTabela() {
+    listaDeTermos.innerHTML = ''
+    if (!termos.length) {
+      listaDeTermos.innerHTML = '<tr><td colspan="6" class="text-center">Nenhum termo pendente</td></tr>'
+      return
+    }
 
-	function abrirModal(termo) {
-		modalAluno.textContent = termo.emailDoAluno
-		modalCurso.textContent = 'TODO'
-		modalTitulo.textContent = termo.titulo
-		modalResumo.textContent = termo.resumo
-		modalOrientador.textContent = termo.emailDoOrientador
-		modalCoorientador.textContent = termo.emailDoCoorientador || '—'
-		modalData.textContent = 'TODO'
+    termos.forEach((termo, index) => {
+      const tr = document.createElement('tr')
+      tr.innerHTML = `
+        <td>${termo.emailDoAluno}</td>
+        <td>${termo.curso || 'TODO'}</td>
+        <td>${termo.titulo}</td>
+        <td>${termo.dataEnvio ? new Date(termo.dataEnvio).toLocaleDateString() : 'TODO'}</td>
+        <td>${termo.status || 'Pendente'}</td>
+        <td><button class="btn btn-primary btn-sm btn-ver" data-index="${index}">Ver</button></td>
+      `
+      listaDeTermos.appendChild(tr)
+    })
 
-		document.getElementById('btnAprovar').onclick = () => atualizarStatus(termo.id, 'Aprovado')
-		document.getElementById('btnRejeitar').onclick = () => atualizarStatus(termo.id, 'Rejeitado')
+    document.querySelectorAll('.btn-ver').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const termo = termos[btn.dataset.index]
+        abrirModal(termo)
+      })
+    })
+  }
 
-		modalTermo.show()
-	}
+  function abrirModal(termo) {
+    modalAluno.textContent = termo.emailDoAluno
+    modalCurso.textContent = termo.curso || 'TODO'
+    modalTitulo.textContent = termo.titulo
+    modalResumo.textContent = termo.resumo
+    modalOrientador.textContent = termo.emailDoOrientador
+    modalCoorientador.textContent = termo.emailDoCoorientador || '—'
+    modalData.textContent = termo.dataEnvio ? new Date(termo.dataEnvio).toLocaleDateString() : 'TODO'
 
-	async function atualizarStatus(id, status) {
-		try {
-			const res = await fetch(`/termos/${encodeURIComponent(id)}`, {
-				method: 'PATCH',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ status })
-			})
-			if (!res.ok) throw new Error('Falha ao atualizar status')
-			await carregarTermos()
-			modalTermo.hide()
-			alert(`Termo ${status.toLowerCase()} com sucesso!`)
-		} catch (error) {
-			console.error('Erro ao atualizar status:', error)
-			alert('Ocorreu um erro ao atualizar o termo. Tente novamente.')
-		}
-	}
+    document.getElementById('btnAprovar').onclick = () => atualizarStatus(termo.id, 'Aprovado')
+    document.getElementById('btnRejeitar').onclick = () => atualizarStatus(termo.id, 'Rejeitado')
 
-	await carregarTermos()
+    modalTermo.show()
+  }
+
+  async function atualizarStatus(id, status) {
+    try {
+      const res = await fetch(`/termos/${encodeURIComponent(id)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      })
+      if (!res.ok) throw new Error('Falha ao atualizar status')
+      await carregarTermos()
+      modalTermo.hide()
+      alert(`Termo ${status.toLowerCase()} com sucesso!`)
+    } catch (error) {
+      console.error('Erro ao atualizar status:', error)
+      alert('Ocorreu um erro ao atualizar o termo. Tente novamente.')
+    }
+  }
+
+  await carregarTermos()
 })
