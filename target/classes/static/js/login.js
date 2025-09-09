@@ -17,9 +17,11 @@ document.getElementById('formLogin').addEventListener('submit', function(e) {
         localStorage.setItem('email', email);
 
         if (data.startsWith("Aluno")) {
+            localStorage.setItem("tipo", "aluno");
             window.location.href = 'painel-do-aluno.html';
         } 
         else if (data.startsWith("Professor")) {
+            localStorage.setItem("tipo", "professor");
             window.location.href = 'painel-do-professor.html';
         }
     })

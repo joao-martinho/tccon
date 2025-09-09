@@ -1,5 +1,5 @@
 const emailInput = document.getElementById('email');
-const telefoneInput = document.getElementById('telefone')
+const telefoneInput = document.getElementById('telefone');
 const senhaInput = document.getElementById('senha');
 const confirmaInput = document.getElementById('confirmaSenha');
 const codigoDeVerificacaoInput = document.getElementById('codigoDeVerificacao');
@@ -13,7 +13,10 @@ function validarCampos() {
 }
 
 btnEnviarCodigoDeVerificacao.addEventListener('click', () => {
+    const selecionado = document.querySelector('input[name="tipoUsuario"]:checked')
+    const tipo = document.querySelector(`label[for="${selecionado.id}"]`).textContent
     const email = emailInput.value.trim();
+
     if (email === '') {
         mostrarMensagem('Digite o seu endereço de email antes de enviar o código.');
         return;
@@ -26,6 +29,7 @@ btnEnviarCodigoDeVerificacao.addEventListener('click', () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
             destinatario: email,
+            tipo: tipo,
             criadoEm: criadoEm
         })
     })
@@ -46,6 +50,8 @@ btnEnviarCodigoDeVerificacao.addEventListener('click', () => {
 
 document.getElementById('formPrimeiroAcesso').addEventListener('submit', function(e) {
     e.preventDefault();
+    const selecionado = document.querySelector('input[name="tipoUsuario"]:checked')
+    const tipo = document.querySelector(`label[for="${selecionado.id}"]`).textContent
     const email = emailInput.value.trim();
     const codigoDigitado = codigoDeVerificacaoInput.value.trim();
 
@@ -57,7 +63,7 @@ document.getElementById('formPrimeiroAcesso').addEventListener('submit', functio
     fetch('/emails/verificar-codigo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, codigoDigitado })
+        body: JSON.stringify({ email, tipo, codigoDigitado })
     })
     .then(res => res.text().then(text => ({ ok: res.ok, text })))
     .then(({ ok, text }) => {
@@ -66,11 +72,13 @@ document.getElementById('formPrimeiroAcesso').addEventListener('submit', functio
             return;
         }
 
-        const alunoAtualizado = { telefone: telefoneInput.value, senha: senhaInput.value };
-        return fetch(`/alunos/${email}`, {
+        const dadosAtualizados = { telefone: telefoneInput.value, senha: senhaInput.value };
+        const endpoint = tipo === 'Professor' ? `/professores/${email}` : `/alunos/${email}`;
+
+        return fetch(endpoint, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(alunoAtualizado)
+            body: JSON.stringify(dadosAtualizados)
         });
     })
     .then(res => {

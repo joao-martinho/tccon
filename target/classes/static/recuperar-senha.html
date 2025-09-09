@@ -21,6 +21,18 @@
         <input type="email" class="form-control" id="email" placeholder="Email" required>
       </div>
 
+      <div class="mb-3">
+        <span class="form-label d-block mb-1">Tipo de usuário</span>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="tipoUsuario" id="tipoAluno" value="aluno" checked>
+          <label class="form-check-label" for="tipoAluno">Aluno</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="tipoUsuario" id="tipoProfessor" value="professor">
+          <label class="form-check-label" for="tipoProfessor">Professor</label>
+        </div>
+      </div>
+
       <div class="mb-3 d-grid">
         <button type="button" class="btn btn-secondary" id="btnEnviarCodigoDeVerificacao">Enviar código</button>
       </div>
