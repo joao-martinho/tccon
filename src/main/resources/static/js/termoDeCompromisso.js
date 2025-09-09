@@ -1,3 +1,22 @@
+document.addEventListener('DOMContentLoaded', () => {
+	const tipo = localStorage.getItem('tipo')
+	if (tipo !== 'aluno') {
+		alert('Você não tem permissão para acessar esta página :(')
+		window.location.href = 'login.html'
+	}
+})
+
+function mostrarMensagem(texto, tipo = 'danger') {
+    const mensagemDiv = document.getElementById('mensagem')
+    if (!mensagemDiv) return
+    mensagemDiv.innerHTML = `
+        <div class="alert alert-${tipo} alert-dismissible fade show" role="alert">
+            ${texto}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+        </div>
+    `
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
 	const coorientadorCheckbox = document.getElementById('coorientadorCheckbox')
 	const coorientadorMenu = document.getElementById('coorientadorMenu')
@@ -12,7 +31,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 	const emailDoAluno = localStorage.getItem('email')
 	if (!emailDoAluno) {
-		alert('Email do aluno não encontrado na sessão local.')
+		mostrarMensagem('Email do aluno não encontrado na sessão local.', 'danger')
 		form.querySelectorAll('input, select, button').forEach(el => el.disabled = true)
 		return
 	}
@@ -28,7 +47,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 		}
 	} catch (error) {
 		console.error('Erro ao verificar aluno:', error)
-		alert('Não foi possível verificar o status do termo. Tente novamente.')
+		mostrarMensagem('Não foi possível verificar o status do termo. Tente novamente.', 'danger')
 		return
 	}
 
@@ -81,10 +100,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 				})
 			})
 
-			alert('Termo de compromisso cadastrado com sucesso e email enviado!')
+			mostrarMensagem('Termo de compromisso cadastrado com sucesso e email enviado!', 'success')
 		} catch (error) {
 			console.error('Erro ao enviar dados:', error)
-			alert('Ocorreu um erro ao cadastrar o termo. Tente novamente.')
+			mostrarMensagem('Ocorreu um erro ao cadastrar o termo. Tente novamente.', 'danger')
 		}
 	})
 })
@@ -94,7 +113,6 @@ async function atualizarProfessor(emailDoProfessor, tipo, emailDoAluno) {
 	if (!res.ok) throw new Error('Não foi possível recuperar o professor')
 
 	const professor = await res.json()
-
 	if (tipo === 'orientador') {
 		const orientandos = professor.orientandos || []
 		if (!orientandos.includes(emailDoAluno)) orientandos.push(emailDoAluno)

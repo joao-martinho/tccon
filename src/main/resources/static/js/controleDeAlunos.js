@@ -1,3 +1,11 @@
+// document.addEventListener('DOMContentLoaded', () => {
+// 	const tipo = localStorage.getItem('tipo')
+// 	if (tipo !== 'coordenador') {
+// 		alert('Você não tem permissão para acessar esta página :(')
+// 		window.location.href = 'login.html'
+// 	}
+// })
+
 document.addEventListener('DOMContentLoaded', function () {
 
   const tabela = document.getElementById('tabelaAlunos').getElementsByTagName('tbody')[0];

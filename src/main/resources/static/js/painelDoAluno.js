@@ -1,3 +1,11 @@
+document.addEventListener('DOMContentLoaded', () => {
+	const tipo = localStorage.getItem('tipo')
+	if (tipo !== 'aluno') {
+		alert('Você não tem permissão para acessar esta página :(')
+		window.location.href = 'login.html'
+	}
+})
+
 async function carregarMensagens(email) {
 	const resposta = await fetch(`/mensagens/${email}`)
 	if (!resposta.ok) return

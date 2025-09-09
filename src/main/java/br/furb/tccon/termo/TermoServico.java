@@ -40,8 +40,8 @@ public class TermoServico {
         if (optional.isPresent()) {
             TermoModelo TermoModelo2 = optional.get();
 
-            if (TermoModelo.getTitulo() != null) {
-                TermoModelo2.setTitulo(TermoModelo.getTitulo());
+            if (TermoModelo.getStatus() != null) {
+                TermoModelo2.setStatus(TermoModelo.getStatus());
             }
 
             return new ResponseEntity<>(this.termoRepositorio.save(TermoModelo2), HttpStatus.OK);

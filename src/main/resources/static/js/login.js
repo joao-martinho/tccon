@@ -14,6 +14,7 @@ document.getElementById('formLogin').addEventListener('submit', function(e) {
         return response.text();
     })
     .then(data => {
+        localStorage.clear()
         localStorage.setItem('email', email);
 
         if (data.startsWith("Aluno")) {
