@@ -47,5 +47,7 @@ public class TermoModelo {
     @NotBlank
     @Lob
     private String resumo;
+
+    private String status;
     
 }
