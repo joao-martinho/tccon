@@ -12,10 +12,10 @@ import jakarta.transaction.Transactional;
 @Repository
 public interface TermoRepositorio extends JpaRepository<TermoModelo, Long> {
 
+    TermoModelo findByEmailDoAluno(String email);
     List<TermoModelo> findByEmailDoOrientador(String email);
     List<TermoModelo> findByEmailDoCoorientador(String email);
 
-    
     @Modifying
     @Transactional
     @Query(value = "DELETE FROM termos", nativeQuery = true)

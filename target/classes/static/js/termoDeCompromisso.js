@@ -7,20 +7,21 @@ document.addEventListener('DOMContentLoaded', () => {
 })
 
 function mostrarMensagem(texto, tipo = 'danger') {
-    const mensagemDiv = document.getElementById('mensagem')
-    if (!mensagemDiv) return
-    mensagemDiv.innerHTML = `
-        <div class="alert alert-${tipo} alert-dismissible fade show" role="alert">
-            ${texto}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
-        </div>
-    `
+	const mensagemDiv = document.getElementById('mensagem')
+	if (!mensagemDiv) return
+	mensagemDiv.innerHTML = `
+		<div class="alert alert-${tipo} alert-dismissible fade show" role="alert">
+			${texto}
+			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+		</div>
+	`
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
 	const coorientadorCheckbox = document.getElementById('coorientadorCheckbox')
 	const coorientadorMenu = document.getElementById('coorientadorMenu')
 	const form = document.getElementById('formularioDoTermo')
+	const visualizacao = document.getElementById('visualizacaoDoTermo')
 
 	const collapse = new bootstrap.Collapse(coorientadorMenu, { toggle: false })
 
@@ -38,13 +39,51 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 	try {
 		const alunoRes = await fetch(`/alunos/${encodeURIComponent(emailDoAluno)}`)
-		if (!alunoRes.ok) throw new Error('Não foi possível recuperar dados do aluno')
+		if (!alunoRes.ok) throw new Error('Não foi possível recuperar dados do aluno.')
 		const aluno = await alunoRes.json()
 
 		if (aluno.orientador || aluno.coorientador) {
-			form.innerHTML = '<p>Você já preencheu o termo de compromisso :)</p>'
+			// Buscar termo existente
+			try {
+				const termoRes = await fetch(`/termos/aluno/${encodeURIComponent(emailDoAluno)}`)
+				if (!termoRes.ok) throw new Error('Não foi possível recuperar o termo.')
+				const termo = await termoRes.json()
+
+				// Preencher campos de visualização
+				document.getElementById('termoTitulo').textContent = termo.titulo
+				document.getElementById('termoOrientador').textContent = termo.emailDoOrientador
+				if (termo.emailDoCoorientador) {
+					document.getElementById('termoCoorientador').textContent = termo.emailDoCoorientador
+					document.getElementById('termoCoorientadorContainer').classList.remove('d-none')
+				} else {
+					document.getElementById('termoCoorientadorContainer').classList.add('d-none')
+				}
+				document.getElementById('termoAnoSemestre').textContent = `${termo.ano}/${termo.semestre}`
+				document.getElementById('termoResumo').textContent = termo.resumo
+
+				const statusDiv = document.getElementById('termoStatus')
+				let statusClass = 'alert-warning' // amarelo
+				let statusTexto = 'Pendente'
+				if (termo.status === 'aprovado') {
+					statusClass = 'alert-success' // verde
+					statusTexto = 'Aprovado'
+				} else if (termo.status === 'rejeitado') {
+					statusClass = 'alert-danger' // vermelho
+					statusTexto = 'Rejeitado'
+				}
+				statusDiv.className = `alert ${statusClass} text-center`
+				statusDiv.textContent = `Status do termo: ${statusTexto}`
+
+				visualizacao.classList.remove('d-none')
+				form.querySelectorAll('input, select, button').forEach(el => el.disabled = true)
+
+			} catch (error) {
+				console.error('Erro ao recuperar termo:', error)
+				mostrarMensagem('Não foi possível carregar os dados do termo.', 'danger')
+			}
 			return
 		}
+
 	} catch (error) {
 		console.error('Erro ao verificar aluno:', error)
 		mostrarMensagem('Não foi possível verificar o status do termo. Tente novamente.', 'danger')

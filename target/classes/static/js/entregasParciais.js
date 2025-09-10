@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	const tabela = document.getElementById('tabelaEntregas').getElementsByTagName('tbody')[0];
 	const formularioEntrega = document.getElementById('formularioEntrega');
-	const email = localStorage.getItem('emailAluno');
+	const email = localStorage.getItem('email');
 
 	function formatarData(isoString) {
 		const data = new Date(isoString);

@@ -73,8 +73,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         modalCoorientador.textContent = termo.emailDoCoorientador || '—'
         modalData.textContent = termo.dataEnvio ? new Date(termo.dataEnvio).toLocaleDateString() : 'TODO'
 
-        document.getElementById('btnAprovar').onclick = () => atualizarStatus(termo.id, 'Aprovado')
-        document.getElementById('btnRejeitar').onclick = () => atualizarStatus(termo.id, 'Rejeitado')
+        document.getElementById('btnAprovar').onclick = () => atualizarStatus(termo.id, 'aprovado')
+        document.getElementById('btnRejeitar').onclick = () => atualizarStatus(termo.id, 'rejeitado')
 
         modalTermo.show()
     }

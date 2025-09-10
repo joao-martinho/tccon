@@ -80,6 +80,12 @@ public class TermoServico {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    public ResponseEntity<TermoModelo> buscarTermosPorEmailDoAluno(String email) {
+        TermoModelo termoModelo = this.termoRepositorio.findByEmailDoAluno(email);
+
+        return new ResponseEntity<>(termoModelo, HttpStatus.OK);
+    }
+
     public ResponseEntity<List<TermoModelo>> buscarTermosPorEmailDoProfessor(String email) {
         List<TermoModelo> termoModelos = this.termoRepositorio.findByEmailDoOrientador(email);
         termoModelos.addAll(this.termoRepositorio.findByEmailDoCoorientador(email));

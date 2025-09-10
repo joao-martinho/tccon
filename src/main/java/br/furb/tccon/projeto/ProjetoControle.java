@@ -51,18 +51,18 @@ public class ProjetoControle {
 
     @PostMapping("/{email}")
     public ResponseEntity<ProjetoModelo> cadastrarProjetoJson(
-            @PathVariable String email,
-            @RequestBody ProjetoDTO projetoDTO
+        @PathVariable String email,
+        @RequestBody ProjetoUploadDTO projetoUpload
     ) throws IOException {
         if (!Files.exists(diretorio)) Files.createDirectories(diretorio);
 
-        byte[] bytesDoArquivo = Base64.getDecoder().decode(projetoDTO.getArquivoBase64());
-        String nomeDoArquivo = projetoDTO.getNomeDoArquivo();
+        byte[] bytesDoArquivo = Base64.getDecoder().decode(projetoUpload.getArquivoBase64());
+        String nomeDoArquivo = projetoUpload.getNomeDoArquivo();
         Path destino = diretorio.resolve(nomeDoArquivo);
         Files.write(destino, bytesDoArquivo);
 
         ProjetoModelo projeto = new ProjetoModelo();
-        projeto.setTitulo(projetoDTO.getTitulo());
+        projeto.setTitulo(projetoUpload.getTitulo());
         projeto.setAutor(email);
         projeto.setNomeDoArquivo(nomeDoArquivo);
         projeto.setCriadoEm(java.time.LocalDateTime.now());

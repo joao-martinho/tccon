@@ -20,3 +20,9 @@ document.addEventListener('DOMContentLoaded', () => {
 	const email = localStorage.getItem('emailAluno')
 	carregarMensagens(email)
 })
+
+const btnSair = document.getElementById('btnSair')
+	btnSair.addEventListener('click', () => {
+    localStorage.clear()
+    window.location.href = 'login.html'
+})

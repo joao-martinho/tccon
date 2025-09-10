@@ -15,7 +15,6 @@
   <div id="mensagem" class="mb-3"></div>
 
   <form id="formularioDoTermo" class="card p-4 shadow-sm mb-5">
-
     <div class="mb-3">
       <label for="emailDoOrientador" class="form-label">Identificação do orientador</label>
       <input type="text" class="form-control" id="emailDoOrientador" placeholder="Digite o email @furb.br do orientador" required>
@@ -70,6 +69,17 @@
       <button type="submit" class="btn btn-primary">Finalizar</button>
     </div>
   </form>
+
+  <!-- Contêiner para visualização do termo caso já exista -->
+  <div id="visualizacaoDoTermo" class="card p-4 shadow-sm mb-5 d-none">
+    <h5 class="mb-3">Informações do termo de compromisso</h5>
+    <p><strong>Título:</strong> <span id="termoTitulo"></span></p>
+    <p><strong>Orientador:</strong> <span id="termoOrientador"></span></p>
+    <p id="termoCoorientadorContainer"><strong>Coorientador:</strong> <span id="termoCoorientador"></span></p>
+    <p><strong>Ano/Semestre da formatura:</strong> <span id="termoAnoSemestre"></span></p>
+    <p><strong>Resumo:</strong> <span id="termoResumo"></span></p>
+    <div id="termoStatus" class="alert text-center" role="alert"></div>
+  </div>
 
   <div class="mb-4 text-center">
       <a href="painel-do-aluno.html">Voltar ao painel do aluno</a>
