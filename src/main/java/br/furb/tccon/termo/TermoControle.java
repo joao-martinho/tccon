@@ -57,9 +57,9 @@ public class TermoControle {
         return this.termoServico.alterarTermoTotal(id, TermoModelo);
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<TermoModelo> alterarTermoParcial(@PathVariable Long id, @RequestBody TermoModelo TermoModelo) {
-        return this.termoServico.alterarTermoParcial(id, TermoModelo);
+    @PatchMapping("/{id}/{email}")
+    public ResponseEntity<TermoModelo> alterarTermoParcial(@PathVariable Long id, @PathVariable String email, @RequestBody TermoModelo TermoModelo) {
+        return this.termoServico.alterarTermoParcial(id, email, TermoModelo);
     }
 
     @DeleteMapping("/{id}")

@@ -39,55 +39,55 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 	try {
 		const alunoRes = await fetch(`/alunos/${encodeURIComponent(emailDoAluno)}`)
-		if (!alunoRes.ok) throw new Error('Não foi possível recuperar dados do aluno.')
+		if (!alunoRes.ok) throw new Error('Não foi possível recuperar os dados do aluno.')
 		const aluno = await alunoRes.json()
 
 		if (aluno.orientador || aluno.coorientador) {
-			// Buscar termo existente
+			// Buscar termo existente, mas continuar mesmo se não existir
 			try {
 				const termoRes = await fetch(`/termos/aluno/${encodeURIComponent(emailDoAluno)}`)
-				if (!termoRes.ok) throw new Error('Não foi possível recuperar o termo.')
-				const termo = await termoRes.json()
-
-				// Preencher campos de visualização
-				document.getElementById('termoTitulo').textContent = termo.titulo
-				document.getElementById('termoOrientador').textContent = termo.emailDoOrientador
-				if (termo.emailDoCoorientador) {
-					document.getElementById('termoCoorientador').textContent = termo.emailDoCoorientador
-					document.getElementById('termoCoorientadorContainer').classList.remove('d-none')
-				} else {
-					document.getElementById('termoCoorientadorContainer').classList.add('d-none')
+				let termo = null
+				if (termoRes.ok) {
+					const termoText = await termoRes.text()
+					if (termoText) termo = JSON.parse(termoText)
 				}
-				document.getElementById('termoAnoSemestre').textContent = `${termo.ano}/${termo.semestre}`
-				document.getElementById('termoResumo').textContent = termo.resumo
 
-				const statusDiv = document.getElementById('termoStatus')
-				let statusClass = 'alert-warning' // amarelo
-				let statusTexto = 'Pendente'
-				if (termo.status === 'aprovado') {
-					statusClass = 'alert-success' // verde
-					statusTexto = 'Aprovado'
-				} else if (termo.status === 'rejeitado') {
-					statusClass = 'alert-danger' // vermelho
-					statusTexto = 'Rejeitado'
+				if (termo) {
+					document.getElementById('termoTitulo').textContent = termo.titulo
+					document.getElementById('termoOrientador').textContent = termo.emailDoOrientador
+					if (termo.emailDoCoorientador) {
+						document.getElementById('termoCoorientador').textContent = termo.emailDoCoorientador
+						document.getElementById('termoCoorientadorContainer').classList.remove('d-none')
+					} else {
+						document.getElementById('termoCoorientadorContainer').classList.add('d-none')
+					}
+					document.getElementById('termoAnoSemestre').textContent = `${termo.ano}/${termo.semestre}`
+					document.getElementById('termoResumo').textContent = termo.resumo
+
+					const statusDiv = document.getElementById('termoStatus')
+					let statusClass = 'alert-warning'
+					let statusTexto = 'Pendente'
+					if (termo.statusDoOrientador === 'aprovado' && termo.statusDoCoorientador === 'aprovado') {
+						statusClass = 'alert-success'
+						statusTexto = 'Aprovado'
+					} else if (termo.status === 'rejeitado' || termo.status === 'rejeitado') {
+						statusClass = 'alert-danger'
+						statusTexto = 'Rejeitado'
+					}
+					statusDiv.className = `alert ${statusClass} text-center`
+					statusDiv.textContent = `Status do termo: ${statusTexto}`
+
+					visualizacao.classList.remove('d-none')
+					form.querySelectorAll('input, select, button').forEach(el => el.disabled = true)
 				}
-				statusDiv.className = `alert ${statusClass} text-center`
-				statusDiv.textContent = `Status do termo: ${statusTexto}`
-
-				visualizacao.classList.remove('d-none')
-				form.querySelectorAll('input, select, button').forEach(el => el.disabled = true)
-
 			} catch (error) {
-				console.error('Erro ao recuperar termo:', error)
-				mostrarMensagem('Não foi possível carregar os dados do termo.', 'danger')
+				console.warn('Não foi possível recuperar o termo, mas o formulário continuará vazio.', error)
 			}
-			return
 		}
 
 	} catch (error) {
 		console.error('Erro ao verificar aluno:', error)
-		mostrarMensagem('Não foi possível verificar o status do termo. Tente novamente.', 'danger')
-		return
+		mostrarMensagem('Não foi possível verificar o status do termo de compromisso. Tente novamente.', 'danger')
 	}
 
 	form.addEventListener('submit', async (event) => {
@@ -139,10 +139,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 				})
 			})
 
-			mostrarMensagem('Termo de compromisso cadastrado com sucesso e email enviado!', 'success')
+			mostrarMensagem('Termo de compromisso cadastrado com sucesso.', 'success')
 		} catch (error) {
 			console.error('Erro ao enviar dados:', error)
-			mostrarMensagem('Ocorreu um erro ao cadastrar o termo. Tente novamente.', 'danger')
+			mostrarMensagem('Ocorreu um erro ao cadastrar o termo de compromisso. Tente novamente.', 'danger')
 		}
 	})
 })

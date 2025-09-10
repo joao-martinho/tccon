@@ -48,6 +48,8 @@ public class TermoModelo {
     @Lob
     private String resumo;
 
-    private String status;
+    private String statusDoOrientador;
+
+    private String statusDoCoorientador;
     
 }

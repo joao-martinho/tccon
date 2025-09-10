@@ -45,20 +45,44 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         termos.forEach((termo, index) => {
             const tr = document.createElement('tr')
+
+            let statusClasse = ''
+            switch ((termo.status || 'Pendente').toLowerCase()) {
+                case 'aprovado':
+                    statusClasse = 'text-success'
+                    break
+                case 'rejeitado':
+                    statusClasse = 'text-danger'
+                    break
+                case 'pendente':
+                default:
+                    statusClasse = 'text-warning'
+            }
+
             tr.innerHTML = `
-            <td>${termo.emailDoAluno}</td>
-            <td>${termo.curso || 'TODO'}</td>
-            <td>${termo.titulo}</td>
-            <td>${termo.dataEnvio ? new Date(termo.dataEnvio).toLocaleDateString() : 'TODO'}</td>
-            <td>${termo.status || 'Pendente'}</td>
-            <td><button class="btn btn-primary btn-sm btn-ver" data-index="${index}">Ver</button></td>
+                <td>${termo.emailDoAluno}</td>
+                <td>${termo.curso || 'TODO'}</td>
+                <td>${termo.titulo}</td>
+                <td>${termo.dataEnvio ? new Date(termo.dataEnvio).toLocaleDateString() : 'TODO'}</td>
+                <td>${criarBadgeStatus(termo.status || 'Pendente')}</td>
+                <td>
+                    <button 
+                        class="btn btn-primary btn-sm btn-ver" 
+                        data-index="${index}" 
+                        data-id="${termo.id}"
+                    >
+                        Ver
+                    </button>
+                </td>
             `
+
             listaDeTermos.appendChild(tr)
         })
-
         document.querySelectorAll('.btn-ver').forEach(btn => {
             btn.addEventListener('click', () => {
                 const termo = termos[btn.dataset.index]
+                const id = btn.dataset.id
+                console.log('ID do termo selecionado:', id)
                 abrirModal(termo)
             })
         })
@@ -81,60 +105,45 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function atualizarStatus(id, status) {
         try {
-            const res = await fetch(`/termos/${encodeURIComponent(id)}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status })
-            })
-            if (!res.ok) throw new Error('Falha ao atualizar status')
-            await carregarTermos()
-            modalTermo.hide()
+            const email = localStorage.getItem('email')
+
+            if (email === modalOrientador.textContent) {
+                const res = await fetch(`/termos/${encodeURIComponent(id)}/${encodeURIComponent(email)}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ statusDoOrientador: status })
+                })
+                if (!res.ok) throw new Error('Falha ao atualizar status')
+                await carregarTermos()
+                modalTermo.hide()
+            } else if (email === modalCoorientador.textContent) {
+                const res = await fetch(`/termos/${encodeURIComponent(id)}/${encodeURIComponent(email)}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ statusDoCoorientador: status })
+                })
+                if (!res.ok) throw new Error('Falha ao atualizar status')
+                await carregarTermos()
+                modalTermo.hide()
+            }
+
         } catch (error) {
             console.error('Erro ao atualizar status:', error)
         }
     }
 
-    await carregarTermos()
-
     function criarBadgeStatus(status) {
         switch (status.toLowerCase()) {
             case 'pendente':
-            return '<span class="badge bg-warning text-dark">Pendente</span>'
+                return '<span class="badge bg-warning text-dark">Pendente</span>'
             case 'rejeitado':
-            return '<span class="badge bg-danger">Rejeitado</span>'
+                return '<span class="badge bg-danger">Rejeitado</span>'
             case 'aprovado':
-            return '<span class="badge bg-success">Aprovado</span>'
+                return '<span class="badge bg-success">Aprovado</span>'
             default:
-            return '<span class="badge bg-secondary">Desconhecido</span>'
+                return `<span class="badge bg-secondary">${status}</span>`
         }
     }
 
-    function preencherTabela() {
-        listaDeTermos.innerHTML = ''
-        if (!termos.length) {
-            listaDeTermos.innerHTML = '<tr><td colspan="6" class="text-center">Nenhum termo pendente :)</td></tr>'
-            return
-        }
-
-        termos.forEach((termo, index) => {
-            const tr = document.createElement('tr')
-            tr.innerHTML = `
-            <td>${termo.emailDoAluno}</td>
-            <td>${termo.curso || 'TODO'}</td>
-            <td>${termo.titulo}</td>
-            <td>${termo.dataEnvio ? new Date(termo.dataEnvio).toLocaleDateString() : 'TODO'}</td>
-            <td>${criarBadgeStatus(termo.status || 'Pendente')}</td>
-            <td><button class="btn btn-primary btn-sm btn-ver" data-index="${index}">Ver</button></td>
-            `
-            listaDeTermos.appendChild(tr)
-        })
-
-        document.querySelectorAll('.btn-ver').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const termo = termos[btn.dataset.index]
-                abrirModal(termo)
-            })
-        })
-    }
-
+    await carregarTermos()
 })
