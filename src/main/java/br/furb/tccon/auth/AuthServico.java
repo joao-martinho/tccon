@@ -1,4 +1,4 @@
-package br.furb.tccon.autenticacao;
+package br.furb.tccon.auth;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class AutenticacaoServico {
+public class AuthServico {
 
     private final AlunoRepositorio alunoRepositorio;
     private final ProfessorRepositorio professorRepositorio;

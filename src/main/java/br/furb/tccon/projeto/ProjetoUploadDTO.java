@@ -7,6 +7,6 @@ import lombok.Setter;
 @Setter
 public class ProjetoUploadDTO {
     private String titulo;
-    private String nomeDoArquivo;
+    private String nomeArquivo;
     private String arquivoBase64;
 }

@@ -30,27 +30,27 @@ document.addEventListener('DOMContentLoaded', async () => {
 		else collapse.hide()
 	})
 
-	const emailDoAluno = localStorage.getItem('email')
-	const alunoRes = await fetch(`/alunos/${encodeURIComponent(emailDoAluno)}`)
+	const emailAluno = localStorage.getItem('email')
+	const alunoRes = await fetch(`/alunos/${encodeURIComponent(emailAluno)}`)
 	if (!alunoRes.ok) throw new Error('Falha ao buscar dados do aluno.')
 	const aluno = await alunoRes.json()
-	const nomeDoAluno = aluno.nome
-	const cursoDoAluno = aluno.curso
+	const nomeAluno = aluno.nome
+	const cursoAluno = aluno.curso
 
-	if (!emailDoAluno) {
+	if (!emailAluno) {
 		mostrarMensagem('Email do aluno não encontrado na sessão local.', 'danger')
 		form.querySelectorAll('input, select, button').forEach(el => el.disabled = true)
 		return
 	}
 
 	try {
-		const alunoRes = await fetch(`/alunos/${encodeURIComponent(emailDoAluno)}`)
+		const alunoRes = await fetch(`/alunos/${encodeURIComponent(emailAluno)}`)
 		if (!alunoRes.ok) throw new Error('Não foi possível recuperar os dados do aluno.')
 		const aluno = await alunoRes.json()
 
 		if (aluno.orientador || aluno.coorientador) {
 			try {
-				const termoRes = await fetch(`/termos/aluno/${encodeURIComponent(emailDoAluno)}`)
+				const termoRes = await fetch(`/termos/aluno/${encodeURIComponent(emailAluno)}`)
 				let termo = null
 				if (termoRes.ok) {
 					const termoText = await termoRes.text()
@@ -59,26 +59,30 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 				if (termo) {
 					document.getElementById('termoTitulo').textContent = termo.titulo
-					document.getElementById('termoOrientador').textContent = termo.emailDoOrientador
-					if (termo.emailDoCoorientador) {
-						document.getElementById('termoCoorientador').textContent = termo.emailDoCoorientador
+					document.getElementById('termoOrientador').textContent = termo.emailOrientador
+
+					if (termo.emailCoorientador) {
+						document.getElementById('termoCoorientador').textContent = termo.emailCoorientador
 						document.getElementById('termoCoorientadorContainer').classList.remove('d-none')
 					} else {
 						document.getElementById('termoCoorientadorContainer').classList.add('d-none')
 					}
+
 					document.getElementById('termoAnoSemestre').textContent = `${termo.ano}/${termo.semestre}`
 					document.getElementById('termoResumo').textContent = termo.resumo
 
 					const statusDiv = document.getElementById('termoStatus')
 					let statusClass = 'alert-warning'
 					let statusTexto = 'Pendente'
-					if (termo.statusDoOrientador === 'aprovado' && (termo.statusDoCoorientador === 'aprovado' || !termo.emailDoCoorientador)) {
+
+					if (termo.statusOrientador === 'aprovado' && (termo.statusCoorientador === 'aprovado' || !termo.emailCoorientador)) {
 						statusClass = 'alert-success'
 						statusTexto = 'Aprovado'
-					} else if (termo.statusDoOrientador === 'rejeitado' || termo.statusDoCoorientador === 'rejeitado') {
+					} else if (termo.statusOrientador === 'rejeitado' || termo.statusCoorientador === 'rejeitado') {
 						statusClass = 'alert-danger'
 						statusTexto = 'Rejeitado'
 					}
+
 					statusDiv.className = `alert ${statusClass} text-center`
 					statusDiv.textContent = `Status do termo: ${statusTexto}`
 
@@ -98,21 +102,21 @@ document.addEventListener('DOMContentLoaded', async () => {
 	form.addEventListener('submit', async (event) => {
 		event.preventDefault()
 
-		const emailDoOrientador = document.getElementById('emailDoOrientador').value.trim()
+		const emailOrientador = document.getElementById('emailOrientador').value.trim()
 		const coorientador = coorientadorCheckbox.checked ? {
-			email: document.getElementById('emailDoCoorientador').value.trim(),
-			perfil: document.getElementById('perfilDoCoorientador').value.trim()
+			email: document.getElementById('emailCoorientador').value.trim(),
+			perfil: document.getElementById('perfilCoorientador').value.trim()
 		} : null
 
 		const criadoEm = getLocalDateTimeString();
 
 		const termo = {
-			emailDoAluno,
-			nomeDoAluno,
-			cursoDoAluno,
-			emailDoOrientador,
-			emailDoCoorientador: coorientador ? coorientador.email : null,
-			perfilDoCoorientador: coorientador ? coorientador.perfil : null,
+			emailAluno,
+			nomeAluno,
+			cursoAluno,
+			emailOrientador,
+			emailCoorientador: coorientador ? coorientador.email : null,
+			perfilCoorientador: coorientador ? coorientador.perfil : null,
 			titulo: document.getElementById('tituloDoTrabalho').value.trim(),
 			ano: document.getElementById('anoDaFormatura').value,
 			semestre: document.getElementById('semestreDaFormatura').value,
@@ -121,17 +125,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 		}
 
 		try {
-			await fetch(`/alunos/${encodeURIComponent(emailDoAluno)}`, {
+			await fetch(`/alunos/${encodeURIComponent(emailAluno)}`, {
 				method: 'PATCH',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
-					orientador: emailDoOrientador,
+					orientador: emailOrientador,
 					coorientador: coorientador ? coorientador.email : null
 				})
 			})
 
-			await atualizarProfessor(emailDoOrientador, 'orientador', emailDoAluno)
-			if (coorientador) await atualizarProfessor(coorientador.email, 'coorientador', emailDoAluno)
+			await atualizarProfessor(emailOrientador, 'orientador', emailAluno)
+			if (coorientador) await atualizarProfessor(coorientador.email, 'coorientador', emailAluno)
 
 			await fetch('/termos', {
 				method: 'POST',
@@ -143,9 +147,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
-					emailAluno: emailDoAluno,
-					emailDoOrientador,
-					emailDoCoorientador: coorientador ? coorientador.email : null
+					emailAluno: emailAluno,
+					emailOrientador,
+					emailCoorientador: coorientador ? coorientador.email : null
 				})
 			})
 
@@ -157,14 +161,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 	})
 })
 
-async function atualizarProfessor(emailDoProfessor, tipo, emailDoAluno) {
+async function atualizarProfessor(emailDoProfessor, tipo, emailAluno) {
 	const res = await fetch(`/professores/${encodeURIComponent(emailDoProfessor)}`)
 	if (!res.ok) throw new Error('Não foi possível recuperar o professor')
 
 	const professor = await res.json()
 	if (tipo === 'orientador') {
 		const orientandos = professor.orientandos || []
-		if (!orientandos.includes(emailDoAluno)) orientandos.push(emailDoAluno)
+		if (!orientandos.includes(emailAluno)) orientandos.push(emailAluno)
 
 		await fetch(`/professores/${encodeURIComponent(emailDoProfessor)}`, {
 			method: 'PATCH',
@@ -173,7 +177,7 @@ async function atualizarProfessor(emailDoProfessor, tipo, emailDoAluno) {
 		})
 	} else if (tipo === 'coorientador') {
 		const coorientandos = professor.coorientandos || []
-		if (!coorientandos.includes(emailDoAluno)) coorientandos.push(emailDoAluno)
+		if (!coorientandos.includes(emailAluno)) coorientandos.push(emailAluno)
 
 		await fetch(`/professores/${encodeURIComponent(emailDoProfessor)}`, {
 			method: 'PATCH',

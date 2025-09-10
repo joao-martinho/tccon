@@ -40,7 +40,7 @@ public class ProjetoControle {
                         projetoDTO.getId(),
                         projetoDTO.getTitulo(),
                         projetoDTO.getAutor(),
-                        projetoDTO.getNomeDoArquivo(),
+                        projetoDTO.getNomeArquivo(),
                         projetoDTO.getCriadoEm().format(formatter),
                         "/projetos/" + projetoDTO.getId() + "/download"
                 ))
@@ -56,29 +56,29 @@ public class ProjetoControle {
     ) throws IOException {
         if (!Files.exists(diretorio)) Files.createDirectories(diretorio);
 
-        byte[] bytesDoArquivo = Base64.getDecoder().decode(projetoUpload.getArquivoBase64());
-        String nomeDoArquivo = projetoUpload.getNomeDoArquivo();
-        Path destino = diretorio.resolve(nomeDoArquivo);
-        Files.write(destino, bytesDoArquivo);
+        byte[] bytesNomeArquivo = Base64.getDecoder().decode(projetoUpload.getArquivoBase64());
+        String nomeArquivo = projetoUpload.getNomeArquivo();
+        Path destino = diretorio.resolve(nomeArquivo);
+        Files.write(destino, bytesNomeArquivo);
 
         ProjetoModelo projeto = new ProjetoModelo();
         projeto.setTitulo(projetoUpload.getTitulo());
         projeto.setAutor(email);
-        projeto.setNomeDoArquivo(nomeDoArquivo);
+        projeto.setNomeArquivo(nomeArquivo);
         projeto.setCriadoEm(java.time.LocalDateTime.now());
 
         return projetoServico.cadastrarProjeto(projeto);
     }
 
     @GetMapping("/{id}/download")
-    public ResponseEntity<byte[]> downloadArquivo(@PathVariable Long id) throws IOException {
+    public ResponseEntity<byte[]> downloadnomeArquivo(@PathVariable Long id) throws IOException {
         ProjetoModelo projeto = projetoServico.buscarProjeto(id).getBody();
         @SuppressWarnings("null")
-        Path arquivo = diretorio.resolve(projeto.getNomeDoArquivo());
-        byte[] conteudo = Files.readAllBytes(arquivo);
+        Path nomeArquivo = diretorio.resolve(projeto.getNomeArquivo());
+        byte[] conteudo = Files.readAllBytes(nomeArquivo);
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + projeto.getNomeDoArquivo() + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + projeto.getNomeArquivo() + "\"")
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(conteudo);
     }

@@ -32,7 +32,7 @@ public class ProfessorModelo {
 
     private String senha;
 
-    private String codigoDeVerificacao;
+    private String codigoVer;
     
     private LocalDateTime criadoEm;
 

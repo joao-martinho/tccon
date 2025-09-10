@@ -68,8 +68,8 @@ public class AlunoServico {
                 alunoModelo2.setCurso(alunoModelo.getCurso());
             }
 
-            if (alunoModelo.getCodigoDeVerificacao() != null) {
-                alunoModelo2.setCodigoDeVerificacao(alunoModelo.getCodigoDeVerificacao());
+            if (alunoModelo.getCodigoVer() != null) {
+                alunoModelo2.setCodigoVer(alunoModelo.getCodigoVer());
             }
 
             if (alunoModelo.getCriadoEm() != null) {
@@ -112,8 +112,8 @@ public class AlunoServico {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    public ResponseEntity<Void> limparCodigoDeVerificacao() {
-        alunoRepositorio.limparCodigoDeVerificacao(LocalDateTime.now().minusMinutes(10));
+    public ResponseEntity<Void> limparCodigoVer() {
+        alunoRepositorio.limparCodigoVer(LocalDateTime.now().minusMinutes(10));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

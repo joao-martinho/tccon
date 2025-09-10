@@ -12,9 +12,9 @@ import jakarta.transaction.Transactional;
 @Repository
 public interface TermoRepositorio extends JpaRepository<TermoModelo, Long> {
 
-    TermoModelo findByEmailDoAluno(String email);
-    List<TermoModelo> findByEmailDoOrientador(String email);
-    List<TermoModelo> findByEmailDoCoorientador(String email);
+    TermoModelo findByEmailAluno(String email);
+    List<TermoModelo> findByEmailOrientador(String email);
+    List<TermoModelo> findByEmailCoorientador(String email);
 
     @Modifying
     @Transactional

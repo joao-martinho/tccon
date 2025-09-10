@@ -48,24 +48,24 @@ public class TermoServico {
                 termoModelo2.setTitulo(termoModelo.getTitulo());
             }
 
-            if (termoModelo.getEmailDoAluno() != null) {
-                termoModelo2.setEmailDoAluno(termoModelo.getEmailDoAluno());
+            if (termoModelo.getEmailAluno() != null) {
+                termoModelo2.setEmailAluno(termoModelo.getEmailAluno());
             }
 
-            if (termoModelo.getNomeDoAluno() != null) {
-                termoModelo2.setNomeDoAluno(termoModelo.getNomeDoAluno());
+            if (termoModelo.getNomeAluno() != null) {
+                termoModelo2.setNomeAluno(termoModelo.getNomeAluno());
             }
 
-            if (termoModelo.getCursoDoAluno() != null) {
-                termoModelo2.setCursoDoAluno(termoModelo.getCursoDoAluno());
+            if (termoModelo.getCursoAluno() != null) {
+                termoModelo2.setCursoAluno(termoModelo.getCursoAluno());
             }
 
-            if (termoModelo.getEmailDoOrientador() != null) {
-                termoModelo2.setEmailDoOrientador(termoModelo.getEmailDoOrientador());
+            if (termoModelo.getEmailOrientador() != null) {
+                termoModelo2.setEmailOrientador(termoModelo.getEmailOrientador());
             }
 
-            if (termoModelo.getPerfilDoCoorientador() != null) {
-                termoModelo2.setPerfilDoCoorientador(termoModelo.getPerfilDoCoorientador());
+            if (termoModelo.getPerfilCoorientador() != null) {
+                termoModelo2.setPerfilCoorientador(termoModelo.getPerfilCoorientador());
             }
 
             if (termoModelo.getAno() != null) {
@@ -84,12 +84,12 @@ public class TermoServico {
                 termoModelo2.setCriadoEm(termoModelo.getCriadoEm());
             }
 
-            if (termoModelo.getStatusDoOrientador() != null && email.equals(termoModelo2.getEmailDoOrientador())) {
-                termoModelo2.setStatusDoOrientador(termoModelo.getStatusDoOrientador());
+            if (termoModelo.getStatusOrientador() != null && email.equals(termoModelo2.getEmailOrientador())) {
+                termoModelo2.setStatusOrientador(termoModelo.getStatusOrientador());
             }
 
-            if (termoModelo.getStatusDoCoorientador() != null && email.equals(termoModelo2.getEmailDoCoorientador())) {
-                termoModelo2.setStatusDoCoorientador(termoModelo.getStatusDoCoorientador());
+            if (termoModelo.getStatusCoorientador() != null && email.equals(termoModelo2.getEmailCoorientador())) {
+                termoModelo2.setStatusCoorientador(termoModelo.getStatusCoorientador());
             }
 
             return new ResponseEntity<>(this.termoRepositorio.save(termoModelo2), HttpStatus.OK);
@@ -128,15 +128,15 @@ public class TermoServico {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    public ResponseEntity<TermoModelo> buscarTermosPorEmailDoAluno(String email) {
-        TermoModelo termoModelo = this.termoRepositorio.findByEmailDoAluno(email);
+    public ResponseEntity<TermoModelo> buscarPorEmailAluno(String email) {
+        TermoModelo termoModelo = this.termoRepositorio.findByEmailAluno(email);
 
         return new ResponseEntity<>(termoModelo, HttpStatus.OK);
     }
 
-    public ResponseEntity<List<TermoModelo>> buscarTermosPorEmailDoProfessor(String email) {
-        List<TermoModelo> termoModelos = this.termoRepositorio.findByEmailDoOrientador(email);
-        termoModelos.addAll(this.termoRepositorio.findByEmailDoCoorientador(email));
+    public ResponseEntity<List<TermoModelo>> buscarPorEmailProfessor(String email) {
+        List<TermoModelo> termoModelos = this.termoRepositorio.findByEmailOrientador(email);
+        termoModelos.addAll(this.termoRepositorio.findByEmailCoorientador(email));
 
         return new ResponseEntity<>(termoModelos, HttpStatus.OK);
     }

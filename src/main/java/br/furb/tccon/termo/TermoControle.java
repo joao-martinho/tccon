@@ -44,12 +44,12 @@ public class TermoControle {
 
     @GetMapping("/aluno/{email}")
     public ResponseEntity<TermoModelo> buscarPorEmailDoAluno(@PathVariable String email) {
-        return this.termoServico.buscarTermosPorEmailDoAluno(email);
+        return this.termoServico.buscarPorEmailAluno(email);
     }
 
     @GetMapping("/professor/{email}")
     public ResponseEntity<List<TermoModelo>> buscarPorEmailDoProfessor(@PathVariable String email) {
-        return this.termoServico.buscarTermosPorEmailDoProfessor(email);
+        return this.termoServico.buscarPorEmailProfessor(email);
     }
 
     @PutMapping("/{id}")

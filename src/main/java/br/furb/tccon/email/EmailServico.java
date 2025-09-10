@@ -26,7 +26,7 @@ public class EmailServico {
     private final AlunoRepositorio alunoRepositorio;
     private final ProfessorRepositorio professorRepositorio;
 
-    public ResponseEntity<?> enviarCodigoDeVerificacao(Map<String, String> payload) {
+    public ResponseEntity<?> enviarCodigoVer(Map<String, String> payload) {
         String destinatario = payload.get("destinatario");
         String tipo = payload.get("tipo");
         Instant instant = Instant.parse(payload.get("criadoEm"));
@@ -38,15 +38,15 @@ public class EmailServico {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Email não encontrado.");
             }
 
-            Integer codigoDeVerificacao = ThreadLocalRandom.current().nextInt(1000, 10000);
+            Integer codigoVer = ThreadLocalRandom.current().nextInt(1000, 10000);
 
             SimpleMailMessage mensagem = new SimpleMailMessage();
             mensagem.setTo(destinatario);
             mensagem.setSubject("Seu código de verificação do TCCOn");
-            mensagem.setText("Use o código " + codigoDeVerificacao + " para autenticar-se no TCCOn.");
+            mensagem.setText("Use o código " + codigoVer + " para autenticar-se no TCCOn.");
             javaMailSender.send(mensagem);
 
-            alunoModelo.setCodigoDeVerificacao(codigoDeVerificacao.toString());
+            alunoModelo.setCodigoVer(codigoVer.toString());
             alunoModelo.setCriadoEm(localDateTime);
             alunoRepositorio.save(alunoModelo);
         }
@@ -56,15 +56,15 @@ public class EmailServico {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Email não encontrado.");
             }
 
-            Integer codigoDeVerificacao = ThreadLocalRandom.current().nextInt(1000, 10000);
+            Integer codigoVer = ThreadLocalRandom.current().nextInt(1000, 10000);
 
             SimpleMailMessage mensagem = new SimpleMailMessage();
             mensagem.setTo(destinatario);
             mensagem.setSubject("Seu código de verificação do TCCOn");
-            mensagem.setText("Use o código " + codigoDeVerificacao + " para autenticar-se no TCCOn.");
+            mensagem.setText("Use o código " + codigoVer + " para autenticar-se no TCCOn.");
             javaMailSender.send(mensagem);
 
-            professorModelo.setCodigoDeVerificacao(codigoDeVerificacao.toString());
+            professorModelo.setCodigoVer(codigoVer.toString());
             professorModelo.setCriadoEm(localDateTime);
             professorRepositorio.save(professorModelo);
         }
@@ -83,8 +83,8 @@ public class EmailServico {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Email não encontrado.");
             }
 
-            String codigoDeVerificacao = alunoModelo.getCodigoDeVerificacao();
-            if (codigoDeVerificacao == null || !codigoDeVerificacao.equals(codigoDigitado)) {
+            String codigoVer = alunoModelo.getCodigoVer();
+            if (codigoVer == null || !codigoVer.equals(codigoDigitado)) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Código inválido!");
             }
 
@@ -99,8 +99,8 @@ public class EmailServico {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Email não encontrado.");
             }
 
-            String codigoDeVerificacao = professorModelo.getCodigoDeVerificacao();
-            if (codigoDeVerificacao == null || !codigoDeVerificacao.equals(codigoDigitado)) {
+            String codigoVer = professorModelo.getCodigoVer();
+            if (codigoVer == null || !codigoVer.equals(codigoDigitado)) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Código inválido!");
             }
 

@@ -63,8 +63,8 @@ public class ProfessorServico {
                 professorModelo2.setSenha(professorModelo.getSenha());
             }
 
-            if (professorModelo.getCodigoDeVerificacao() != null) {
-                professorModelo2.setCodigoDeVerificacao(professorModelo.getCodigoDeVerificacao());
+            if (professorModelo.getCodigoVer() != null) {
+                professorModelo2.setCodigoVer(professorModelo.getCodigoVer());
             }
 
             if (professorModelo.getCriadoEm() != null) {

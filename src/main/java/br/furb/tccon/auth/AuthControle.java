@@ -1,4 +1,4 @@
-package br.furb.tccon.autenticacao;
+package br.furb.tccon.auth;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,10 +11,10 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/autenticacao")
-public class AutenticacaoControle {
+@RequestMapping("/auth")
+public class AuthControle {
 
-    private final AutenticacaoServico autenticacaoServico;
+    private final AuthServico autenticacaoServico;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody CredenciaisDTO credenciais) {

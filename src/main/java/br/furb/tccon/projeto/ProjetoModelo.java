@@ -31,7 +31,7 @@ public class ProjetoModelo {
     private String autor;
 
     @NotBlank
-    private String nomeDoArquivo;
+    private String nomeArquivo;
 
     @NotNull
     private LocalDateTime criadoEm;

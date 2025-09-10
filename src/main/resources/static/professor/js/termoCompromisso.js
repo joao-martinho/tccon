@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
 })
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const listaDeTermos = document.getElementById('listaDeTermos')
+    const listaTermos = document.getElementById('listaTermos')
     const modalTermoEl = document.getElementById('modalTermo')
     const modalTermo = new bootstrap.Modal(modalTermoEl)
 
@@ -34,15 +34,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             preencherTabela()
         } catch (error) {
             console.error('Erro ao carregar os termos:', error)
-            listaDeTermos.innerHTML = '<tr><td colspan="7" class="text-center text-danger">Não foi possível carregar os termos.</td></tr>'
+            listaTermos.innerHTML = '<tr><td colspan="7" class="text-center text-danger">Não foi possível carregar os termos.</td></tr>'
         }
     }
 
     function calcularStatus(termo) {
-        const statusOrientador = termo.statusDoOrientador
-        const statusCoorientador = termo.emailDoCoorientador ? termo.statusDoCoorientador : null
+        const statusOrientador = termo.statusOrientador
+        const statusCoorientador = termo.emailCoorientador ? termo.statusCoorientador : null
 
-        if (!termo.emailDoCoorientador) {
+        if (!termo.emailCoorientador) {
             return statusOrientador || 'Pendente'
         }
         if (!statusOrientador || !statusCoorientador) {
@@ -58,9 +58,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function preencherTabela() {
-        listaDeTermos.innerHTML = ''
+        listaTermos.innerHTML = ''
         if (!termos.length) {
-            listaDeTermos.innerHTML = '<tr><td colspan="7" class="text-center">Nenhum termo pendente :)</td></tr>'
+            listaTermos.innerHTML = '<tr><td colspan="7" class="text-center">Nenhum termo pendente :)</td></tr>'
             return
         }
 
@@ -69,9 +69,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             const status = calcularStatus(termo)
 
             tr.innerHTML = `
-                <td>${termo.nomeDoAluno}</td>
-                <td>${termo.emailDoAluno}</td>
-                <td>${termo.cursoDoAluno}</td>
+                <td>${termo.nomeAluno}</td>
+                <td>${termo.emailAluno}</td>
+                <td>${termo.cursoAluno}</td>
                 <td>${termo.titulo}</td>
                 <td>${termo.criadoEm ? formatarData(termo.criadoEm) : '—'}</td>
                 <td>${criarBadgeStatus(status)}</td>
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </td>
             `
 
-            listaDeTermos.appendChild(tr)
+            listaTermos.appendChild(tr)
         })
 
         document.querySelectorAll('.btn-ver').forEach(btn => {
@@ -98,14 +98,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function abrirModal(termo) {
-        modalEmailAluno.textContent = termo.emailDoAluno
-        modalNomeAluno.textContent = termo.nomeDoAluno
-        modalCurso.textContent = termo.cursoDoAluno
+        modalEmailAluno.textContent = termo.emailAluno
+        modalNomeAluno.textContent = termo.nomeAluno
+        modalCurso.textContent = termo.cursoAluno
         modalTitulo.textContent = termo.titulo
         modalResumo.textContent = termo.resumo
-        modalOrientador.textContent = termo.emailDoOrientador
-        modalCoorientador.textContent = termo.emailDoCoorientador || '—'
-        modalPerfilCoorientador.textContent = termo.perfilDoCoorientador || '—'
+        modalOrientador.textContent = termo.emailOrientador
+        modalCoorientador.textContent = termo.emailCoorientador || '—'
+        modalPerfilCoorientador.textContent = termo.perfilCoorientador || '—'
         modalData.textContent = termo.criadoEm ? formatarData(termo.criadoEm) : '—'
         modalStatusValor.textContent = calcularStatus(termo)
 
@@ -123,14 +123,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const res = await fetch(`/termos/${encodeURIComponent(id)}/${encodeURIComponent(email)}`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ statusDoOrientador: status })
+                    body: JSON.stringify({ statusOrientador: status })
                 })
                 if (!res.ok) throw new Error('Falha ao atualizar status')
             } else if (email === modalCoorientador.textContent.trim()) {
                 const res = await fetch(`/termos/${encodeURIComponent(id)}/${encodeURIComponent(email)}`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ statusDoCoorientador: status })
+                    body: JSON.stringify({ statusCoorientador: status })
                 })
                 if (!res.ok) throw new Error('Falha ao atualizar status')
             }

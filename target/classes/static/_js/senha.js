@@ -2,23 +2,23 @@ const emailInput = document.getElementById('email');
 const telefoneInput = document.getElementById('telefone');
 const senhaInput = document.getElementById('senha');
 const confirmaInput = document.getElementById('confirmaSenha');
-const codigoDeVerificacaoInput = document.getElementById('codigoDeVerificacao');
+const codigoVerInput = document.getElementById('codigoVer');
 const btnFinalizar = document.getElementById('btnFinalizar');
-const btnEnviarCodigoDeVerificacao = document.getElementById('btnEnviarCodigoDeVerificacao');
+const btnEnviarcodigoVer = document.getElementById('btnEnviarCodigoVer');
 
 function validarCampos() {
-    const camposPreenchidos = emailInput.value.trim() !== '' && codigoDeVerificacaoInput.value.trim() !== '';
+    const camposPreenchidos = emailInput.value.trim() !== '' && codigoVerInput.value.trim() !== '';
     const senhasCoincidem = senhaInput.value === confirmaInput.value && senhaInput.value !== '';
     btnFinalizar.disabled = !(camposPreenchidos && senhasCoincidem);
 }
 
-btnEnviarCodigoDeVerificacao.addEventListener('click', () => {
+btnEnviarcodigoVer.addEventListener('click', () => {
     const selecionado = document.querySelector('input[name="tipoUsuario"]:checked')
     const tipo = document.querySelector(`label[for="${selecionado.id}"]`).textContent
     const email = emailInput.value.trim();
 
     if (email === '') {
-        mostrarMensagem('Digite o seu endereço de email antes de enviar o código.');
+        mostrarMensagem('Digite o seu email antes de solicitar o código.');
         return;
     }
 
@@ -36,15 +36,15 @@ btnEnviarCodigoDeVerificacao.addEventListener('click', () => {
     .then(res => res.text().then(text => ({ ok: res.ok, text })))
     .then(({ ok, text }) => {
         if (!ok) {
-            mostrarMensagem(text || 'Erro ao enviar código de verificação.');
+            mostrarMensagem(text || 'Erro ao enviar o código de verificação.');
             return;
         }
         mostrarMensagem(text || `O código de verificação foi enviado para ${email}.`, 'success');
-        codigoDeVerificacaoInput.focus();
+        codigoVerInput.focus();
     })
     .catch(err => {
         console.error(err);
-        mostrarMensagem('Erro ao enviar código de verificação.');
+        mostrarMensagem('Erro ao enviar o código de verificação.');
     });
 });
 
@@ -53,10 +53,10 @@ document.getElementById('formPrimeiroAcesso').addEventListener('submit', functio
     const selecionado = document.querySelector('input[name="tipoUsuario"]:checked')
     const tipo = document.querySelector(`label[for="${selecionado.id}"]`).textContent
     const email = emailInput.value.trim();
-    const codigoDigitado = codigoDeVerificacaoInput.value.trim();
+    const codigoDigitado = codigoVerInput.value.trim();
 
     if (senhaInput.value !== confirmaInput.value) {
-        mostrarMensagem('As senhas não coincidem!');
+        mostrarMensagem('As senhas não coincidem.');
         return;
     }
 
@@ -68,7 +68,7 @@ document.getElementById('formPrimeiroAcesso').addEventListener('submit', functio
     .then(res => res.text().then(text => ({ ok: res.ok, text })))
     .then(({ ok, text }) => {
         if (!ok) {
-            mostrarMensagem(text || 'Código inválido.');
+            mostrarMensagem(text || 'Código inválido!');
             return;
         }
 
@@ -89,7 +89,7 @@ document.getElementById('formPrimeiroAcesso').addEventListener('submit', functio
         telefoneInput.value = '';
         senhaInput.value = '';
         confirmaInput.value = '';
-        codigoDeVerificacaoInput.value = '';
+        codigoVerInput.value = '';
         btnFinalizar.disabled = true;
     })
     .catch(err => {
@@ -100,7 +100,7 @@ document.getElementById('formPrimeiroAcesso').addEventListener('submit', functio
 
 btnFinalizar.addEventListener('click', () => {
     const email = emailInput.value.trim();
-    const codigoDigitado = codigoDeVerificacaoInput.value.trim();
+    const codigoDigitado = codigoVerInput.value.trim();
 
     if (email === '' || codigoDigitado === '') {
         mostrarMensagem('Preencha o email e o código de verificação.');

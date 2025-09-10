@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			const arquivoBase64 = reader.result.split(',')[1];
 			const dados = {
 				titulo: titulo,
-				nomeDoArquivo: arquivo.name,
+				nomeArquivo: arquivo.name,
 				arquivoBase64: arquivoBase64
 			};
 

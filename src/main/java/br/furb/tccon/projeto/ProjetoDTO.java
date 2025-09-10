@@ -11,7 +11,7 @@ public class ProjetoDTO {
     private Long id;
     private String titulo;
     private String autor;
-    private String nomeDoArquivo;
+    private String nomeArquivo;
     private String criadoEm;
     private String arquivoBase64;  
 }

@@ -38,7 +38,7 @@ public class AlunoModelo {
     @Email
     private String coorientador;
 
-    private String codigoDeVerificacao;
+    private String codigoVer;
     
     private LocalDateTime criadoEm;
 

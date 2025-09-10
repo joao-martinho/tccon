@@ -17,8 +17,8 @@ public interface AlunoRepositorio extends JpaRepository<AlunoModelo, String> {
 
     @Modifying
     @Transactional
-    @Query("UPDATE AlunoModelo a SET a.codigoDeVerificacao = NULL " + "WHERE a.criadoEm <= :limite")
-    int limparCodigoDeVerificacao(@Param("limite") LocalDateTime limite);
+    @Query("UPDATE AlunoModelo a SET a.codigoVer = NULL " + "WHERE a.criadoEm <= :limite")
+    int limparCodigoVer(@Param("limite") LocalDateTime limite);
     
     @Modifying
     @Transactional

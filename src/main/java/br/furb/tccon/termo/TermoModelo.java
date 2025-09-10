@@ -28,21 +28,21 @@ public class TermoModelo {
 
     @NotBlank
     @Email
-    private String emailDoAluno;
+    private String emailAluno;
 
-    private String nomeDoAluno;
+    private String nomeAluno;
 
-    private String cursoDoAluno;
+    private String cursoAluno;
 
     @NotBlank
     @Email
-    private String emailDoOrientador;
+    private String emailOrientador;
 
     @Email
-    private String emailDoCoorientador;
+    private String emailCoorientador;
 
     @Lob
-    private String perfilDoCoorientador;
+    private String perfilCoorientador;
 
     @NotBlank
     private String ano;
@@ -56,8 +56,8 @@ public class TermoModelo {
 
     private LocalDateTime criadoEm;
 
-    private String statusDoOrientador;
+    private String statusOrientador;
 
-    private String statusDoCoorientador;
+    private String statusCoorientador;
     
 }

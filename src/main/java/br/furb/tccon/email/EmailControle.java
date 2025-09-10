@@ -17,9 +17,9 @@ public class EmailControle {
     
     private final EmailServico emailServico;
 
-    @PostMapping("/codigo-de-verificacao")
-    public ResponseEntity<?> enviarCodigoDeVerificacao(@RequestBody Map<String, String> payload) {
-        return emailServico.enviarCodigoDeVerificacao(payload);
+    @PostMapping("/codigo-ver")
+    public ResponseEntity<?> enviarCodigoVer(@RequestBody Map<String, String> payload) {
+        return emailServico.enviarCodigoVer(payload);
     }
 
     @PostMapping("/verificar-codigo")

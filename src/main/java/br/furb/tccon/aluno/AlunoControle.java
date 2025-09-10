@@ -60,8 +60,8 @@ public class AlunoControle {
     }
 
     @Scheduled(fixedRate = 60000)
-    public ResponseEntity<Void> limparCodigoDeVerificacao() {
-        return alunoServico.limparCodigoDeVerificacao();
+    public ResponseEntity<Void> limparCodigoVer() {
+        return alunoServico.limparCodigoVer();
     }
 
 }
