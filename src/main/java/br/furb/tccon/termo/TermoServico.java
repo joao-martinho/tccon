@@ -72,12 +72,12 @@ public class TermoServico {
                 termoModelo2.setResumo(termoModelo.getResumo());
             }
 
-            if (termoModelo.getStatusDoOrientador() != null && email.equals(termoModelo.getEmailDoOrientador())) {
+            if (termoModelo.getStatusDoOrientador() != null && email.equals(termoModelo2.getEmailDoOrientador())) {
                 termoModelo2.setStatusDoOrientador(termoModelo.getStatusDoOrientador());
             }
 
-            if (termoModelo.getStatusDoCoorientador() != null && email.equals(termoModelo.getEmailDoCoorientador())) {
-                termoModelo2.setEmailDoCoorientador(termoModelo.getStatusDoCoorientador());
+            if (termoModelo.getStatusDoCoorientador() != null && email.equals(termoModelo2.getEmailDoCoorientador())) {
+                termoModelo2.setStatusDoCoorientador(termoModelo.getStatusDoCoorientador());
             }
 
             return new ResponseEntity<>(this.termoRepositorio.save(termoModelo2), HttpStatus.OK);

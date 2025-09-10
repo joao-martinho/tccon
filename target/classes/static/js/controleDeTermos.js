@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
-	const tipo = localStorage.getItem('tipo')
-	if (tipo !== 'professor') {
-		alert('Você não tem permissão para acessar esta página :(')
-		window.location.href = 'login.html'
-	}
+    const tipo = localStorage.getItem('tipo')
+    if (tipo !== 'professor') {
+        alert('Você não tem permissão para acessar esta página :(')
+        window.location.href = 'login.html'
+    }
 })
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -24,16 +24,33 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function carregarTermos() {
         try {
             const email = encodeURIComponent(localStorage.getItem('email'))
-
             const res = await fetch(`/termos/professor/${email}`)
             if (!res.ok) throw new Error('Falha ao buscar os termos.')
-
             termos = await res.json()
             preencherTabela()
         } catch (error) {
             console.error('Erro ao carregar os termos:', error)
             listaDeTermos.innerHTML = '<tr><td colspan="6" class="text-center text-danger">Não foi possível carregar os termos.</td></tr>'
         }
+    }
+
+    function calcularStatus(termo) {
+        const statusOrientador = termo.statusDoOrientador
+        const statusCoorientador = termo.emailDoCoorientador ? termo.statusDoCoorientador : null
+
+        if (!termo.emailDoCoorientador) {
+            return statusOrientador || 'Pendente'
+        }
+        if (!statusOrientador || !statusCoorientador) {
+            return 'Pendente'
+        }
+        if (statusOrientador.toLowerCase() === 'rejeitado' || statusCoorientador.toLowerCase() === 'rejeitado') {
+            return 'Rejeitado'
+        }
+        if (statusOrientador.toLowerCase() === 'aprovado' && statusCoorientador.toLowerCase() === 'aprovado') {
+            return 'Aprovado'
+        }
+        return 'Pendente'
     }
 
     function preencherTabela() {
@@ -45,26 +62,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         termos.forEach((termo, index) => {
             const tr = document.createElement('tr')
-
-            let statusClasse = ''
-            switch ((termo.status || 'Pendente').toLowerCase()) {
-                case 'aprovado':
-                    statusClasse = 'text-success'
-                    break
-                case 'rejeitado':
-                    statusClasse = 'text-danger'
-                    break
-                case 'pendente':
-                default:
-                    statusClasse = 'text-warning'
-            }
+            const status = calcularStatus(termo)
 
             tr.innerHTML = `
                 <td>${termo.emailDoAluno}</td>
                 <td>${termo.curso || 'TODO'}</td>
                 <td>${termo.titulo}</td>
                 <td>${termo.dataEnvio ? new Date(termo.dataEnvio).toLocaleDateString() : 'TODO'}</td>
-                <td>${criarBadgeStatus(termo.status || 'Pendente')}</td>
+                <td>${criarBadgeStatus(status)}</td>
                 <td>
                     <button 
                         class="btn btn-primary btn-sm btn-ver" 
@@ -78,11 +83,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             listaDeTermos.appendChild(tr)
         })
+
         document.querySelectorAll('.btn-ver').forEach(btn => {
             btn.addEventListener('click', () => {
                 const termo = termos[btn.dataset.index]
                 const id = btn.dataset.id
-                console.log('ID do termo selecionado:', id)
                 abrirModal(termo)
             })
         })
@@ -107,26 +112,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             const email = localStorage.getItem('email')
 
-            if (email === modalOrientador.textContent) {
+            if (email === modalOrientador.textContent.trim()) {
                 const res = await fetch(`/termos/${encodeURIComponent(id)}/${encodeURIComponent(email)}`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ statusDoOrientador: status })
                 })
                 if (!res.ok) throw new Error('Falha ao atualizar status')
-                await carregarTermos()
-                modalTermo.hide()
-            } else if (email === modalCoorientador.textContent) {
+            } else if (email === modalCoorientador.textContent.trim()) {
                 const res = await fetch(`/termos/${encodeURIComponent(id)}/${encodeURIComponent(email)}`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ statusDoCoorientador: status })
                 })
                 if (!res.ok) throw new Error('Falha ao atualizar status')
-                await carregarTermos()
-                modalTermo.hide()
             }
 
+            await carregarTermos()
+            modalTermo.hide()
         } catch (error) {
             console.error('Erro ao atualizar status:', error)
         }
