@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="icon" href="../_favicon.ico">
+  <title>Termos pendentes - TCCOn</title>
+</head>
+<body class="bg-light">
+
+<div class="container py-5">
+  <h1 class="mb-4 text-center">Termos de compromisso pendentes</h1>
+
+  <div class="table-responsive shadow-sm card p-3 mb-4">
+    <table class="table table-hover table-bordered table-striped align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th scope="col">Nome do aluno</th>
+          <th scope="col">Email do aluno</th>
+          <th scope="col">Curso</th>
+          <th scope="col">Título do trabalho</th>
+          <th scope="col">Data do envio</th>
+          <th scope="col">Status</th>
+          <th scope="col">Ações</th>
+        </tr>
+      </thead>
+      <tbody id="listaDeTermos">
+        <!-- Os termos serão inseridos aqui via JS -->
+      </tbody>
+    </table>
+  </div>
+
+  <div class="text-center">
+    <a href="painel.html">Voltar ao painel do professor</a>
+  </div>
+</div>
+
+<div class="modal fade" id="modalTermo" tabindex="-1" aria-labelledby="modalTermoLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalTermoLabel">Detalhes do termo</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Nome do aluno:</strong> <span id="modalNomeAluno"></span></p>
+        <p><strong>Email do aluno:</strong> <span id="modalEmailAluno"></span></p>
+        <p><strong>Curso:</strong> <span id="modalCurso"></span></p>
+        <p><strong>Título do trabalho:</strong> <span id="modalTitulo"></span></p>
+        <p><strong>Resumo do problema:</strong></p>
+        <p id="modalResumo"></p>
+        <p><strong>Orientador:</strong> <span id="modalOrientador"></span></p>
+        <p><strong>Coorientador:</strong> <span id="modalCoorientador"></span></p>
+        <p><strong>Perfil do coorientador:</strong></p>
+        <p id="modalPerfilCoorientador"></p>
+        <p><strong>Data do envio:</strong> <span id="modalData"></span></p>
+        <p><strong>Status:</strong> <span id="modalStatusValor"></span></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" id="btnAprovar">Aprovar</button>
+        <button type="button" class="btn btn-danger" id="btnRejeitar">Rejeitar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="mb-4 text-center">
+      <a href="painel.html">Voltar ao painel do professor</a>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/termoDeCompromisso.js"></script>
+</body>
+</html>

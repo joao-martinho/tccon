@@ -1,5 +1,7 @@
 package br.furb.tccon.termo;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,6 +30,10 @@ public class TermoModelo {
     @Email
     private String emailDoAluno;
 
+    private String nomeDoAluno;
+
+    private String cursoDoAluno;
+
     @NotBlank
     @Email
     private String emailDoOrientador;
@@ -47,6 +53,8 @@ public class TermoModelo {
     @NotBlank
     @Lob
     private String resumo;
+
+    private LocalDateTime criadoEm;
 
     private String statusDoOrientador;
 

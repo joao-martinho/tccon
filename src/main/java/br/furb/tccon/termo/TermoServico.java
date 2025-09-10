@@ -52,6 +52,14 @@ public class TermoServico {
                 termoModelo2.setEmailDoAluno(termoModelo.getEmailDoAluno());
             }
 
+            if (termoModelo.getNomeDoAluno() != null) {
+                termoModelo2.setNomeDoAluno(termoModelo.getNomeDoAluno());
+            }
+
+            if (termoModelo.getCursoDoAluno() != null) {
+                termoModelo2.setCursoDoAluno(termoModelo.getCursoDoAluno());
+            }
+
             if (termoModelo.getEmailDoOrientador() != null) {
                 termoModelo2.setEmailDoOrientador(termoModelo.getEmailDoOrientador());
             }
@@ -70,6 +78,10 @@ public class TermoServico {
 
             if (termoModelo.getResumo() != null) {
                 termoModelo2.setResumo(termoModelo.getResumo());
+            }
+
+            if (termoModelo.getCriadoEm() != null) {
+                termoModelo2.setCriadoEm(termoModelo.getCriadoEm());
             }
 
             if (termoModelo.getStatusDoOrientador() != null && email.equals(termoModelo2.getEmailDoOrientador())) {
