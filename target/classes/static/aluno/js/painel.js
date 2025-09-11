@@ -1,9 +1,16 @@
 document.addEventListener('DOMContentLoaded', () => {
-	const tipo = localStorage.getItem('tipo')
-	if (tipo !== 'aluno') {
-		alert('Você não tem permissão para acessar esta página :(')
-		window.location.href = '../login.html'
-	}
+	const tipo = localStorage.getItem('tipo');
+    if (tipo !== 'aluno') {
+        alert('Você não tem permissão para acessar esta página :(');
+        window.location.href = '../login.html';
+        return;
+    }
+
+    const btnSair = document.getElementById('btnSair');
+    btnSair?.addEventListener('click', () => {
+        localStorage.clear();
+        window.location.href = '../login.html';
+    });
 })
 
 async function carregarMensagens(email) {
@@ -19,10 +26,4 @@ async function carregarMensagens(email) {
 document.addEventListener('DOMContentLoaded', () => {
 	const email = localStorage.getItem('emailAluno')
 	carregarMensagens(email)
-})
-
-const btnSair = document.getElementById('btnSair')
-	btnSair.addEventListener('click', () => {
-    localStorage.clear()
-    window.location.href = '../login.html'
 })

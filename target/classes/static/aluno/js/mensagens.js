@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', async () => { 
     const tipo = localStorage.getItem('tipo');
     if (tipo !== 'aluno') {
         alert('Você não tem permissão para acessar esta página :(');
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const email = localStorage.getItem('email');
     if (!email) {
-        console.error('Email do professor não encontrado no localStorage!');
+        console.error('Email do aluno não encontrado no localStorage!');
         container.innerHTML = `<div class="col"><div class="alert alert-danger">Erro ao carregar mensagens.</div></div>`;
         return;
     }
@@ -33,13 +33,27 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             const dados = await res.json();
 
+            // Se não houver mensagens, renderiza array vazio
+            if (!dados || (Array.isArray(dados) && dados.length === 0)) {
+                console.log('Nenhuma mensagem encontrada.');
+                renderizarMensagens([]);
+                return;
+            }
+
+            // Garante sempre um array, mesmo que venha um único objeto
             const mensagens = Array.isArray(dados) ? dados : [dados];
 
             console.log('Mensagens recebidas:', mensagens);
             renderizarMensagens(mensagens);
         } catch (err) {
             console.error('Erro ao buscar mensagens:', err);
-            container.innerHTML = `<div class="col"><div class="alert alert-danger">Erro ao carregar mensagens.</div></div>`;
+            container.innerHTML = `<div class="col"><div class="alert">
+                <div class="card shadow-sm border-info text-center p-4">
+                    <div class="card-body">
+                        <p class="mb-0 text-info">Nenhuma mensagem encontrada.</p>
+                    </div>
+                </div></div>
+            </div>`;
         }
     }
 
@@ -47,7 +61,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         container.innerHTML = '';
 
         if (!mensagens || mensagens.length === 0) {
-            container.innerHTML = `<div class="col"><div class="alert alert-info">Nenhuma mensagem encontrada.</div></div>`;
+            const col = document.createElement('div');
+            col.className = 'col';
+
+            const card = document.createElement('div');
+            card.className = 'card shadow-sm border-info text-center p-4';
+
+            const cardBody = document.createElement('div');
+            cardBody.className = 'card-body';
+
+            const mensagem = document.createElement('p');
+            mensagem.className = 'mb-0 text-info';
+            mensagem.textContent = 'Nenhuma mensagem encontrada.';
+
+            cardBody.appendChild(mensagem);
+            card.appendChild(cardBody);
+            col.appendChild(card);
+            container.appendChild(col);
             return;
         }
 
@@ -74,17 +104,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                 badge.className = 'badge bg-warning text-dark ms-2';
                 badge.textContent = 'Não lida';
                 titulo.appendChild(badge);
-            }
 
-            tituloWrapper.appendChild(titulo);
-
-            if (!msg.lida) {
                 const btnLida = document.createElement('button');
                 btnLida.className = 'btn btn-sm btn-outline-success marcar-lida ms-2';
                 btnLida.textContent = 'Marcar como lida';
                 btnLida.addEventListener('click', () => marcarComoLida(msg.id, card));
                 tituloWrapper.appendChild(btnLida);
             }
+
+            tituloWrapper.appendChild(titulo);
 
             const subtitulo = document.createElement('h6');
             subtitulo.className = 'card-subtitle mb-2 text-muted';
