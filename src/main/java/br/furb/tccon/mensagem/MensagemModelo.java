@@ -1,23 +1,21 @@
-package br.furb.tccon.projeto;
-
-import java.time.LocalDateTime;
+package br.furb.tccon.mensagem;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "projetos")
-public class ProjetoModelo {
+@Table(name = "mensagens")
+public class MensagemModelo {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,12 +26,14 @@ public class ProjetoModelo {
 
     @NotBlank
     @Email
-    private String emailAutor;
+    private String emailRemetente;
 
     @NotBlank
-    private String nomeArquivo;
+    @Email
+    private String emailDestinatario;
 
-    @NotNull
-    private LocalDateTime criadoEm;
+    @NotBlank
+    @Lob
+    private String conteudo;
 
 }
