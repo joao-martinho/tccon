@@ -1,37 +1,56 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // const tipo = localStorage.getItem('tipo');
-    // if (tipo !== 'coordenador') {
+document.addEventListener('DOMContentLoaded', async () => {
+    const tipo = localStorage.getItem('tipo');
+    // if (tipo !== 'professor') {
     //     alert('Você não tem permissão para acessar esta página :(');
     //     window.location.href = '../login.html';
     //     return;
     // }
 
     const btnSair = document.getElementById('btnSair');
-    btnSair.addEventListener('click', () => {
+    btnSair?.addEventListener('click', () => {
         localStorage.clear();
         window.location.href = '../login.html';
     });
 
     const container = document.querySelector('.row.row-cols-1');
+    if (!container) {
+        console.error('Container de mensagens não encontrado!');
+        return;
+    }
+
     const email = localStorage.getItem('email');
+    if (!email) {
+        console.error('Email do professor não encontrado no localStorage!');
+        container.innerHTML = `<div class="col"><div class="alert alert-danger">Erro ao carregar mensagens.</div></div>`;
+        return;
+    }
 
     async function buscarMensagens() {
-        console.log('buscando mensagens para', email);
+        console.log('Buscando mensagens para:', email);
         try {
-            const endpoint = `/mensagens/${encodeURIComponent(email)}`;
-            const res = await fetch(endpoint);
-            if (!res.ok) throw new Error('Falha ao carregar mensagens.');
-            const mensagens = await res.json();
-            console.log('mensagens recebidas:', mensagens);
+            const res = await fetch(`/mensagens/${encodeURIComponent(email)}`);
+            if (!res.ok) throw new Error(`Falha ao carregar mensagens. Status: ${res.status}`);
+
+            const dados = await res.json();
+
+            const mensagens = Array.isArray(dados) ? dados : [dados];
+
+            console.log('Mensagens recebidas:', mensagens);
             renderizarMensagens(mensagens);
         } catch (err) {
-            console.error(err);
+            console.error('Erro ao buscar mensagens:', err);
             container.innerHTML = `<div class="col"><div class="alert alert-danger">Erro ao carregar mensagens.</div></div>`;
         }
     }
 
     function renderizarMensagens(mensagens) {
         container.innerHTML = '';
+
+        if (!mensagens || mensagens.length === 0) {
+            container.innerHTML = `<div class="col"><div class="alert alert-info">Nenhuma mensagem encontrada.</div></div>`;
+            return;
+        }
+
         mensagens.forEach(msg => {
             const col = document.createElement('div');
             col.className = 'col';
@@ -44,10 +63,10 @@ document.addEventListener('DOMContentLoaded', () => {
             cardBody.className = 'card-body';
 
             const tituloWrapper = document.createElement('div');
-            tituloWrapper.className = 'd-flex justify-content-between align-items-center';
+            tituloWrapper.className = 'd-flex justify-content-between align-items-center mb-2';
 
             const titulo = document.createElement('h5');
-            titulo.className = 'card-title mb-1';
+            titulo.className = 'card-title mb-0';
             titulo.textContent = msg.titulo;
 
             if (!msg.lida) {
@@ -55,22 +74,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 badge.className = 'badge bg-warning text-dark ms-2';
                 badge.textContent = 'Não lida';
                 titulo.appendChild(badge);
+            }
 
+            tituloWrapper.appendChild(titulo);
+
+            if (!msg.lida) {
                 const btnLida = document.createElement('button');
-                btnLida.className = 'btn btn-sm btn-outline-success marcar-lida';
+                btnLida.className = 'btn btn-sm btn-outline-success marcar-lida ms-2';
                 btnLida.textContent = 'Marcar como lida';
                 btnLida.addEventListener('click', () => marcarComoLida(msg.id, card));
                 tituloWrapper.appendChild(btnLida);
             }
-
-            tituloWrapper.appendChild(titulo);
 
             const subtitulo = document.createElement('h6');
             subtitulo.className = 'card-subtitle mb-2 text-muted';
             subtitulo.textContent = `De: ${msg.emailRemetente} | Para: ${msg.emailDestinatario}`;
 
             const conteudo = document.createElement('p');
-            conteudo.className = 'card-text mt-3';
+            conteudo.className = 'card-text mt-2';
             conteudo.textContent = msg.conteudo;
 
             cardBody.appendChild(tituloWrapper);
@@ -84,13 +105,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function marcarComoLida(id, card) {
         try {
-            const res = await fetch(`/mensagens/${id}/marcar-lida`, { method: 'PATCH' });
-            if (!res.ok) throw new Error('Falha ao marcar mensagem como lida.');
+            const res = await fetch(`/mensagens/${encodeURIComponent(id)}/marcar-lida`, { method: 'PATCH' });
+            if (!res.ok) throw new Error(`Falha ao marcar mensagem como lida. Status: ${res.status}`);
+
             card.classList.remove('border-warning');
             card.classList.add('border-secondary');
             card.dataset.lida = 'true';
+
             const badge = card.querySelector('.badge');
             if (badge) badge.remove();
+
             const btn = card.querySelector('.marcar-lida');
             if (btn) btn.remove();
         } catch (err) {
@@ -99,5 +123,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    buscarMensagens();
+    await buscarMensagens();
 });
