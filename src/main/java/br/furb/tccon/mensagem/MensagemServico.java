@@ -91,9 +91,23 @@ public class MensagemServico {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    public ResponseEntity<MensagemModelo> buscarPorEmail(String email) {
-        MensagemModelo mensagemModelo = this.mensagemRepositorio.findByEmail(email);
+    public ResponseEntity<MensagemModelo> buscarPorEmailDestinatario(String email) {
+        MensagemModelo mensagemModelo = this.mensagemRepositorio.findByEmailDestinatario(email);
         return new ResponseEntity<>(mensagemModelo, HttpStatus.OK);
+    }
+
+    public ResponseEntity<Void> marcarComoLida(Long id) {
+        boolean existeId = this.mensagemRepositorio.existsById(id);
+
+        if (existeId) {
+            Optional<MensagemModelo> optional = this.mensagemRepositorio.findById(id);
+            MensagemModelo mensagemModelo = optional.get();
+            mensagemModelo.setLida(true);
+
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 }

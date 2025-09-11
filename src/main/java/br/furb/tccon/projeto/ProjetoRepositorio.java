@@ -12,7 +12,7 @@ import jakarta.transaction.Transactional;
 @Repository
 public interface ProjetoRepositorio extends JpaRepository<ProjetoModelo, Long> {
 
-    List<ProjetoModelo> findByAutor(String email);
+    List<ProjetoModelo> findByEmailAutor(String email);
     
     @Modifying
     @Transactional

@@ -34,12 +34,12 @@ public class ProjetoControle {
     public ResponseEntity<List<ProjetoDTO>> listarProjetosDoAluno(@PathVariable String email) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-        List<ProjetoDTO> projetoDTOs = projetoServico.listarPorAutor(email)
+        List<ProjetoDTO> projetoDTOs = projetoServico.listarPorEmailAutor(email)
                 .stream()
                 .map(projetoDTO -> new ProjetoDTO(
                         projetoDTO.getId(),
                         projetoDTO.getTitulo(),
-                        projetoDTO.getAutor(),
+                        projetoDTO.getEmailAutor(),
                         projetoDTO.getNomeArquivo(),
                         projetoDTO.getCriadoEm().format(formatter),
                         "/projetos/" + projetoDTO.getId() + "/download"
@@ -63,7 +63,7 @@ public class ProjetoControle {
 
         ProjetoModelo projeto = new ProjetoModelo();
         projeto.setTitulo(projetoUpload.getTitulo());
-        projeto.setAutor(email);
+        projeto.setEmailAutor(email);
         projeto.setNomeArquivo(nomeArquivo);
         projeto.setCriadoEm(java.time.LocalDateTime.now());
 

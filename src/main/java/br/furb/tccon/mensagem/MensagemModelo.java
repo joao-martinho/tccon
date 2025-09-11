@@ -36,4 +36,6 @@ public class MensagemModelo {
     @Lob
     private String conteudo;
 
+    private boolean lida;
+
 }

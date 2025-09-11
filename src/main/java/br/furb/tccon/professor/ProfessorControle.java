@@ -28,8 +28,8 @@ public class ProfessorControle {
     }
 
     @PostMapping
-    public ResponseEntity<ProfessorModelo> cadastrarProfessor(@Valid @RequestBody ProfessorModelo ProfessorModelo) {
-        return this.professorServico.cadastrarProfessor(ProfessorModelo);
+    public ResponseEntity<ProfessorModelo> cadastrarProfessor(@Valid @RequestBody ProfessorModelo professorModelo) {
+        return this.professorServico.cadastrarProfessor(professorModelo);
     }
 
     @GetMapping("/{email}")
@@ -38,13 +38,13 @@ public class ProfessorControle {
     }
 
     @PutMapping("/{email}")
-    public ResponseEntity<ProfessorModelo> alterarProfessorTotal(@Valid @PathVariable String email, @RequestBody ProfessorModelo ProfessorModelo) {
-        return this.professorServico.alterarProfessorTotal(email, ProfessorModelo);
+    public ResponseEntity<ProfessorModelo> alterarProfessorTotal(@Valid @PathVariable String email, @RequestBody ProfessorModelo professorModelo) {
+        return this.professorServico.alterarProfessorTotal(email, professorModelo);
     }
 
     @PatchMapping("/{email}")
-    public ResponseEntity<ProfessorModelo> alterarProfessorParcial(@PathVariable String email, @RequestBody ProfessorModelo ProfessorModelo) {
-        return this.professorServico.alterarProfessorParcial(email, ProfessorModelo);
+    public ResponseEntity<ProfessorModelo> alterarProfessorParcial(@PathVariable String email, @RequestBody ProfessorModelo professorModelo) {
+        return this.professorServico.alterarProfessorParcial(email, professorModelo);
     }
 
     @DeleteMapping("/{email}")

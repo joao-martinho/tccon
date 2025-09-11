@@ -72,7 +72,7 @@ public class ProjetoServico {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    public List<ProjetoModelo> listarPorAutor(String email) {
-        return projetoRepositorio.findByAutor(email);
+    public List<ProjetoModelo> listarPorEmailAutor(String email) {
+        return projetoRepositorio.findByEmailAutor(email);
     }
 }

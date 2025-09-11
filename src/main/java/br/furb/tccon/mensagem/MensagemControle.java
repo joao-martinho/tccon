@@ -18,49 +18,49 @@ import lombok.RequiredArgsConstructor;
 @CrossOrigin("*")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/mensagems")
+@RequestMapping("/mensagens")
 public class MensagemControle {
     
-    private final MensagemServico MensagemServico;
+    private final MensagemServico mensagemServico;
 
     @GetMapping
     public ResponseEntity<Iterable<MensagemModelo>> listarMensagems() {
-        return this.MensagemServico.listarMensagems();
+        return this.mensagemServico.listarMensagems();
     }
 
     @PostMapping
     public ResponseEntity<MensagemModelo> cadastrarMensagem(@Valid @RequestBody MensagemModelo MensagemModelo) {
-        return this.MensagemServico.cadastrarMensagem(MensagemModelo);
+        return this.mensagemServico.cadastrarMensagem(MensagemModelo);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<MensagemModelo> buscarMensagem(@PathVariable Long id) {
-        return this.MensagemServico.buscarMensagem(id);
-    }
-
-    @GetMapping("/{id}/{email}")
-    public ResponseEntity<MensagemModelo> buscarPorEmail(@PathVariable String email) {
-        return this.MensagemServico.buscarPorEmail(email);
+    @GetMapping("/{email}")
+    public ResponseEntity<MensagemModelo> buscarPorEmailDestinatario(@PathVariable String email) {
+        return this.mensagemServico.buscarPorEmailDestinatario(email);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<MensagemModelo> alterarMensagemTotal(@Valid @PathVariable Long id, @RequestBody MensagemModelo MensagemModelo) {
-        return this.MensagemServico.alterarMensagemTotal(id, MensagemModelo);
+        return this.mensagemServico.alterarMensagemTotal(id, MensagemModelo);
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<MensagemModelo> alterarMensagemParcial(@PathVariable Long id, @RequestBody MensagemModelo MensagemModelo) {
-        return this.MensagemServico.alterarMensagemParcial(id, MensagemModelo);
+        return this.mensagemServico.alterarMensagemParcial(id, MensagemModelo);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> removerMensagem(@PathVariable Long id) {
-        return this.MensagemServico.removerMensagem(id);
+        return this.mensagemServico.removerMensagem(id);
     }
 
     @DeleteMapping
     public void deletarTodos() {
-        MensagemServico.removerTodos();
+        mensagemServico.removerTodos();
+    }
+
+    @PatchMapping("/{id}/marcar-lida")
+    public ResponseEntity<Void> marcarComoLida(@PathVariable Long id) {
+        return this.mensagemServico.marcarComoLida(id);
     }
 
 }

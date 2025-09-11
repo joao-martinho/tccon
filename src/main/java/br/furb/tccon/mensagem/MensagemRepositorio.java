@@ -10,7 +10,7 @@ import jakarta.transaction.Transactional;
 @Repository
 public interface MensagemRepositorio extends JpaRepository<MensagemModelo, Long> {
     
-    MensagemModelo findByEmail(String email);
+    MensagemModelo findByEmailDestinatario(String email);
 
     @Modifying
     @Transactional
