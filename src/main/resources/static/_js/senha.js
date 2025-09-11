@@ -24,7 +24,7 @@ btnEnviarcodigoVer.addEventListener('click', () => {
 
     const criadoEm = new Date().toISOString();
 
-    fetch('/emails/codigo-de-verificacao', {
+    fetch('/emails/codigo-ver', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 

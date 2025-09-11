@@ -6,6 +6,7 @@ import java.time.ZoneId;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
@@ -22,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class EmailServico {
     
+    @Autowired
     private final JavaMailSender javaMailSender;
     private final AlunoRepositorio alunoRepositorio;
     private final ProfessorRepositorio professorRepositorio;

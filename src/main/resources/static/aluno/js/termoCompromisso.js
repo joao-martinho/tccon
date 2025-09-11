@@ -20,8 +20,8 @@ function mostrarMensagem(texto, tipo = 'danger') {
 document.addEventListener('DOMContentLoaded', async () => {
 	const coorientadorCheckbox = document.getElementById('coorientadorCheckbox')
 	const coorientadorMenu = document.getElementById('coorientadorMenu')
-	const form = document.getElementById('formularioDoTermo')
-	const visualizacao = document.getElementById('visualizacaoDoTermo')
+	const form = document.getElementById('formularioTermo')
+	const visualizacao = document.getElementById('visualizacaoTermo')
 
 	const collapse = new bootstrap.Collapse(coorientadorMenu, { toggle: false })
 
@@ -117,10 +117,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 			emailOrientador,
 			emailCoorientador: coorientador ? coorientador.email : null,
 			perfilCoorientador: coorientador ? coorientador.perfil : null,
-			titulo: document.getElementById('tituloDoTrabalho').value.trim(),
-			ano: document.getElementById('anoDaFormatura').value,
-			semestre: document.getElementById('semestreDaFormatura').value,
-			resumo: document.getElementById('resumoDoProblema').value.trim(),
+			titulo: document.getElementById('titulo').value.trim(),
+			ano: document.getElementById('ano').value,
+			semestre: document.getElementById('semestre').value,
+			resumo: document.getElementById('resumo').value.trim(),
 			criadoEm
 		}
 
@@ -161,8 +161,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 	})
 })
 
-async function atualizarProfessor(emailDoProfessor, tipo, emailAluno) {
-	const res = await fetch(`/professores/${encodeURIComponent(emailDoProfessor)}`)
+async function atualizarProfessor(emailProfessor, tipo, emailAluno) {
+	const res = await fetch(`/professores/${encodeURIComponent(emailProfessor)}`)
 	if (!res.ok) throw new Error('Não foi possível recuperar o professor')
 
 	const professor = await res.json()
@@ -170,7 +170,7 @@ async function atualizarProfessor(emailDoProfessor, tipo, emailAluno) {
 		const orientandos = professor.orientandos || []
 		if (!orientandos.includes(emailAluno)) orientandos.push(emailAluno)
 
-		await fetch(`/professores/${encodeURIComponent(emailDoProfessor)}`, {
+		await fetch(`/professores/${encodeURIComponent(emailProfessor)}`, {
 			method: 'PATCH',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ orientandos })
@@ -179,7 +179,7 @@ async function atualizarProfessor(emailDoProfessor, tipo, emailAluno) {
 		const coorientandos = professor.coorientandos || []
 		if (!coorientandos.includes(emailAluno)) coorientandos.push(emailAluno)
 
-		await fetch(`/professores/${encodeURIComponent(emailDoProfessor)}`, {
+		await fetch(`/professores/${encodeURIComponent(emailProfessor)}`, {
 			method: 'PATCH',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ coorientandos })
