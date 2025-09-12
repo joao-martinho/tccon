@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
 	const tipo = localStorage.getItem('tipo')
-	if (tipo !== 'aluno') {
+	if (tipo !== 'professor') {
 		alert('Você não tem permissão para acessar esta página :(')
 		window.location.href = '../login.html'
 	}
