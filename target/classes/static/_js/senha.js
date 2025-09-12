@@ -90,7 +90,6 @@ document.getElementById('formPrimeiroAcesso').addEventListener('submit', functio
         senhaInput.value = '';
         confirmaInput.value = '';
         codigoVerInput.value = '';
-        btnFinalizar.disabled = true;
     })
     .catch(err => {
         console.error(err);

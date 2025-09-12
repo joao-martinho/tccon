@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 					statusDiv.textContent = `Status do termo: ${statusTexto}`
 
 					visualizacao.classList.remove('d-none')
-					form.querySelectorAll('input, select, button').forEach(el => el.disabled = true)
+					form.querySelectorAll('input, select, button, textarea').forEach(el => el.disabled = true)
 				}
 			} catch (error) {
 				console.warn('Não foi possível recuperar o termo, mas o formulário continuará vazio.', error)
@@ -160,6 +160,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 				})
 			})
 
+			atualizarVisualizacao(termo);
 			mostrarMensagem('Termo de compromisso cadastrado com sucesso.', 'success')
 		} catch (error) {
 			console.error('Erro ao enviar dados:', error)
@@ -193,6 +194,32 @@ async function atualizarProfessor(emailProfessor, tipo, emailAluno) {
 		})
 	}
 }
+
+function atualizarVisualizacao(termo) {
+	const visualizacao = document.getElementById('visualizacaoTermo');
+	visualizacao.classList.remove('d-none');
+
+	document.getElementById('termoTitulo').textContent = termo.titulo;
+	document.getElementById('termoOrientador').textContent = termo.emailOrientador;
+
+	if (termo.emailCoorientador) {
+		document.getElementById('termoCoorientador').textContent = termo.emailCoorientador;
+		document.getElementById('termoCoorientadorContainer').classList.remove('d-none');
+	} else {
+		document.getElementById('termoCoorientadorContainer').classList.add('d-none');
+	}
+
+	document.getElementById('termoAnoSemestre').textContent = `${termo.ano}/${termo.semestre}`;
+	document.getElementById('termoResumo').textContent = termo.resumo;
+
+	const statusDiv = document.getElementById('termoStatus');
+	statusDiv.className = 'alert alert-warning text-center';
+	statusDiv.textContent = 'Status do termo: Pendente';
+
+	document.getElementById('formularioTermo').querySelectorAll('input, select, button, textarea')
+		.forEach(el => el.disabled = true);
+}
+
 
 function getLocalDateTimeString() {
     const now = new Date();
