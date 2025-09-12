@@ -1,11 +1,11 @@
-package br.furb.tccon.projeto;
+package br.furb.tccon.documento;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class ProjetoUploadDTO {
+public class DocumentoUploadDTO {
     private String titulo;
     private String nomeArquivo;
     private String arquivoBase64;

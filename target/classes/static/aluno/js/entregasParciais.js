@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	}
 
 	function carregarEntregas() {
-		fetch(`/projetos/${email}`)
+		fetch(`/documentos/${email}`)
 		.then(response => response.json())
 		.then(data => {
 			tabela.innerHTML = '';
@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				fileira.innerHTML = `
 					<td>${entrega.titulo}</td>
 					<td>${formatarData(entrega.criadoEm)}</td>
-					<td><a href="/projetos/${entrega.id}/download" class="btn btn-sm btn-outline-primary">Baixar</a></td>
+					<td><a href="/documentos/${entrega.id}/download" class="btn btn-sm btn-outline-primary">Baixar</a></td>
 				`;
 			});
 		})
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				arquivoBase64: arquivoBase64
 			};
 
-			fetch(`/projetos/${email}`, {
+			fetch(`/documentos/${email}`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(dados)

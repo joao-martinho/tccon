@@ -1,4 +1,4 @@
-package br.furb.tccon.projeto;
+package br.furb.tccon.documento;
 
 import java.time.LocalDateTime;
 
@@ -17,7 +17,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "projetos")
-public class ProjetoModelo {
+public class DocumentoModelo {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,5 +35,11 @@ public class ProjetoModelo {
 
     @NotNull
     private LocalDateTime criadoEm;
+
+    @NotBlank
+    private String emailOrientador;
+
+    @NotBlank
+    private String emailCoorientador;
 
 }

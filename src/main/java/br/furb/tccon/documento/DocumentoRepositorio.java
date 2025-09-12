@@ -1,4 +1,4 @@
-package br.furb.tccon.projeto;
+package br.furb.tccon.documento;
 
 import java.util.List;
 
@@ -10,9 +10,11 @@ import org.springframework.stereotype.Repository;
 import jakarta.transaction.Transactional;
 
 @Repository
-public interface ProjetoRepositorio extends JpaRepository<ProjetoModelo, Long> {
+public interface DocumentoRepositorio extends JpaRepository<DocumentoModelo, Long> {
 
-    List<ProjetoModelo> findByEmailAutor(String email);
+    List<DocumentoModelo> findByEmailAutor(String email);
+    List<DocumentoModelo> findByEmailOrientador(String emailOrientador);
+    List<DocumentoModelo> findByEmailCoorientador(String emailCoorientador);
     
     @Modifying
     @Transactional
