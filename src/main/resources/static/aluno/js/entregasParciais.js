@@ -1,15 +1,15 @@
 document.addEventListener('DOMContentLoaded', function () {
-	const tipo = localStorage.getItem('tipo')
+	const tipo = localStorage.getItem('tipo');
 	if (tipo !== 'aluno') {
-		alert('Você não tem permissão para acessar esta página :(')
-		window.location.href = '../login.html'
+		alert('Você não tem permissão para acessar esta página :(');
+		window.location.href = '../login.html';
 	}
 
-	const btnSair = document.getElementById('btnSair')
-		btnSair.addEventListener('click', () => {
-		localStorage.clear()
-		window.location.href = '../login.html'
-	})
+	const btnSair = document.getElementById('btnSair');
+	btnSair.addEventListener('click', () => {
+		localStorage.clear();
+		window.location.href = '../login.html';
+	});
 
 	const tabela = document.getElementById('tabelaEntregas').getElementsByTagName('tbody')[0];
 	const formularioEntrega = document.getElementById('formularioEntrega');
@@ -21,21 +21,26 @@ document.addEventListener('DOMContentLoaded', function () {
 	}
 
 	function carregarEntregas() {
-		fetch(`/documentos/${email}`)
-		.then(response => response.json())
-		.then(data => {
-			tabela.innerHTML = '';
+		if (!email) return;
 
-			data.forEach(entrega => {
-				const fileira = tabela.insertRow();
-				fileira.innerHTML = `
-					<td>${entrega.titulo}</td>
-					<td>${formatarData(entrega.criadoEm)}</td>
-					<td><a href="/documentos/${entrega.id}/download" class="btn btn-sm btn-outline-primary">Baixar</a></td>
-				`;
-			});
-		})
-		.catch(erro => console.error('Erro ao carregar entregas: ', erro));
+		fetch(`/documentos/aluno/${email}`)
+			.then(response => {
+				if (!response.ok) throw new Error('Erro ao buscar documentos.');
+				return response.json();
+			})
+			.then(data => {
+				tabela.innerHTML = '';
+
+				data.forEach(entrega => {
+					const fileira = tabela.insertRow();
+					fileira.innerHTML = `
+						<td>${entrega.titulo}</td>
+						<td>${formatarData(entrega.criadoEm)}</td>
+						<td><a href="/documentos/${entrega.id}/download" class="btn btn-sm btn-outline-primary">Baixar</a></td>
+					`;
+				});
+			})
+			.catch(erro => console.error('Erro ao carregar entregas: ', erro));
 	}
 
 	carregarEntregas();
@@ -54,11 +59,12 @@ document.addEventListener('DOMContentLoaded', function () {
 			const arquivoBase64 = reader.result.split(',')[1];
 			const dados = {
 				titulo: titulo,
+				emailAutor: email,
 				nomeArquivo: arquivo.name,
 				arquivoBase64: arquivoBase64
 			};
 
-			fetch(`/documentos/${email}`, {
+			fetch(`/documentos/aluno/${email}`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(dados)
@@ -76,5 +82,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
 		reader.readAsDataURL(arquivo);
 	});
-
 });

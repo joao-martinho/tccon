@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpHeaders;
@@ -14,6 +16,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import br.furb.tccon.aluno.AlunoModelo;
+import br.furb.tccon.aluno.AlunoRepositorio;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -21,31 +25,37 @@ import lombok.RequiredArgsConstructor;
 public class DocumentoServico {
 
     private final DocumentoRepositorio documentoRepositorio;
+    private final AlunoRepositorio alunoRepositorio;
     private final Path diretorio = Paths.get("uploads");
 
     public ResponseEntity<DocumentoModelo> cadastrarDocumento(String email, DocumentoUploadDTO documentoUpload) throws IOException {
-        return salvarDocumento(email, documentoUpload);
+        AlunoModelo aluno = alunoRepositorio.findByEmail(email);
+        return salvarDocumento(email, documentoUpload, aluno);
     }
 
     public ResponseEntity<DocumentoModelo> cadastrarRevisao(String email, DocumentoUploadDTO documentoUpload) throws IOException {
-        return salvarDocumento(email, documentoUpload);
+        AlunoModelo aluno = alunoRepositorio.findByEmail(email);
+        return salvarDocumento(email, documentoUpload, aluno);
     }
 
-    private ResponseEntity<DocumentoModelo> salvarDocumento(String email, DocumentoUploadDTO documentoUpload) throws IOException {
+    private ResponseEntity<DocumentoModelo> salvarDocumento(String email, DocumentoUploadDTO dto, AlunoModelo aluno) throws IOException {
         if (!Files.exists(diretorio)) Files.createDirectories(diretorio);
 
-        byte[] bytesArquivo = Base64.getDecoder().decode(documentoUpload.getArquivoBase64());
-        String nomeArquivo = documentoUpload.getNomeArquivo();
-        Path destino = diretorio.resolve(nomeArquivo);
+        byte[] bytesArquivo = Base64.getDecoder().decode(dto.getArquivoBase64());
+        Path destino = diretorio.resolve(dto.getNomeArquivo());
         Files.write(destino, bytesArquivo);
 
-        DocumentoModelo documento = new DocumentoModelo();
-        documento.setTitulo(documentoUpload.getTitulo());
-        documento.setEmailAutor(email);
-        documento.setNomeArquivo(nomeArquivo);
-        documento.setCriadoEm(java.time.LocalDateTime.now());
+        DocumentoModelo documento = new DocumentoModelo(
+            dto.getTitulo(),
+            email,
+            aluno.getOrientador(),
+            aluno.getCoorientador(),
+            dto.getNomeArquivo(),
+            dto.getArquivoBase64()
+        );
 
-        return ResponseEntity.status(201).body(documentoRepositorio.save(documento));
+        DocumentoModelo salvo = documentoRepositorio.save(documento);
+        return ResponseEntity.status(201).body(salvo);
     }
 
     public ResponseEntity<Iterable<DocumentoModelo>> listarDocumentos() {
@@ -109,19 +119,13 @@ public class DocumentoServico {
     }
 
     public ResponseEntity<List<DocumentoDTO>> listarDocumentosPorPessoa(String email, String tipo) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         List<DocumentoModelo> documentos;
-
         switch (tipo) {
             case "aluno":
                 documentos = listarPorEmailAutor(email);
                 break;
             case "professor":
-            case "orientador":
-                documentos = listarPorEmailOrientador(email);
-                break;
-            case "coorientador":
-                documentos = listarPorEmailCoorientador(email);
+                documentos = listarPorEmailProfessor(email);
                 break;
             default:
                 return ResponseEntity.badRequest().build();
@@ -133,7 +137,7 @@ public class DocumentoServico {
                         p.getTitulo(),
                         p.getEmailAutor(),
                         p.getNomeArquivo(),
-                        p.getCriadoEm().format(formatter),
+                        p.getCriadoEm().toString(),
                         "/documentos/" + p.getId() + "/download",
                         p.getEmailOrientador(),
                         p.getEmailCoorientador()
@@ -142,4 +146,14 @@ public class DocumentoServico {
 
         return ResponseEntity.ok(dtos);
     }
+
+    private List<DocumentoModelo> listarPorEmailProfessor(String email) {
+        List<DocumentoModelo> comoOrientador = listarPorEmailOrientador(email);
+        List<DocumentoModelo> comoCoorientador = listarPorEmailCoorientador(email);
+
+        Set<DocumentoModelo> resultado = new HashSet<>(comoOrientador);
+        resultado.addAll(comoCoorientador);
+        return new ArrayList<>(resultado);
+    }
+
 }

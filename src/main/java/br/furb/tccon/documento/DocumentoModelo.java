@@ -1,11 +1,12 @@
 package br.furb.tccon.documento;
 
 import java.time.LocalDateTime;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -16,9 +17,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "projetos")
+@Table(name = "documentos")
 public class DocumentoModelo {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,16 +31,38 @@ public class DocumentoModelo {
     @Email
     private String emailAutor;
 
+    @Email
+    private String emailOrientador;
+
+    @Email
+    private String emailCoorientador;
+
     @NotBlank
     private String nomeArquivo;
 
     @NotNull
+    @Lob
+    private String arquivoBase64;
+
+    @NotNull
     private LocalDateTime criadoEm;
 
-    @NotBlank
-    private String emailOrientador;
+    @PrePersist
+    public void prePersist() {
+        if (criadoEm == null) {
+            criadoEm = LocalDateTime.now();
+        }
+    }
 
-    @NotBlank
-    private String emailCoorientador;
+    public DocumentoModelo() {}
 
+    public DocumentoModelo(String titulo, String emailAutor, String emailOrientador,
+                           String emailCoorientador, String nomeArquivo, String arquivoBase64) {
+        this.titulo = titulo;
+        this.emailAutor = emailAutor;
+        this.emailOrientador = emailOrientador;
+        this.emailCoorientador = emailCoorientador;
+        this.nomeArquivo = nomeArquivo;
+        this.arquivoBase64 = arquivoBase64;
+    }
 }

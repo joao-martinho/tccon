@@ -1,3 +1,9 @@
+# Descrição dos dados de teste
+> Abaixo estão os objetos em .json que eu usei para testar a aplicação:
+
+## Usuários alunos
+
+```json
 [
   {
     "email": "gama@furb.br",
@@ -33,15 +39,17 @@
     "criadoEm": null
   }
 ]
+```
 
+# Usuários professores
+
+```json
 [
   {
     "email": "cunha@furb.br",
     "nome": "Tristão da Cunha",
     "telefone": "(47) 98888-1111",
-    "orientandos": [
-      "gama@furb.br"
-    ],
+    "orientandos": ["gama@furb.br"],
     "coorientandos": [],
     "senha": "cunha123",
     "codigoVer": null,
@@ -51,12 +59,8 @@
     "email": "castro@furb.br",
     "nome": "João de Castro",
     "telefone": "(11) 97777-2222",
-    "orientandos": [
-      "almeida@furb.br"
-    ],
-    "coorientandos": [
-      "albuquerque@furb.br"
-    ],
+    "orientandos": ["almeida@furb.br"],
+    "coorientandos": ["albuquerque@furb.br"],
     "senha": "castro123",
     "codigoVer": null,
     "criadoEm": null
@@ -65,18 +69,18 @@
     "email": "pacheco@furb.br",
     "nome": "Duarte Pacheco",
     "telefone": "(21) 96666-3333",
-    "orientandos": [
-      "albuquerque@furb.br"
-    ],
-    "coorientandos": [
-      "gama@furb.br"
-    ],
+    "orientandos": ["albuquerque@furb.br"],
+    "coorientandos": ["gama@furb.br"],
     "senha": "pacheco123",
     "codigoVer": null,
     "criadoEm": null
   }
 ]
+```
 
+# Projetos
+
+```json
 [
   {
     "titulo": "Projeto de Otimização de Algoritmos",
@@ -124,7 +128,11 @@
     "statusCoorientador": "aprovado"
   }
 ]
+```
 
+# Mensagens
+
+```json
 [
   {
     "id": 1,
@@ -135,3 +143,4 @@
     "lida": false
   }
 ]
+```
