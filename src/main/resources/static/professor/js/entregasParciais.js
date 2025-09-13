@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded', function () {
 	});
 
 	const tabela = document.getElementById('tabelaEntregas').getElementsByTagName('tbody')[0];
-	const formularioEntrega = document.getElementById('formularioEntrega');
 	const email = localStorage.getItem('email');
 
 	function formatarData(isoString) {
@@ -35,8 +34,9 @@ document.addEventListener('DOMContentLoaded', function () {
 					const fileira = tabela.insertRow();
 					fileira.innerHTML = `
 						<td>${entrega.titulo}</td>
+						<td>${entrega.emailAutor}</td>
 						<td>${formatarData(entrega.criadoEm)}</td>
-						<td><a href="/documentos/${entrega.id}/download" class="btn btn-sm btn-outline-primary">Baixar</a></td>
+						<td><a href="/documentos/${entrega.id}/download" class="btn btn-sm btn-primary">Baixar</a></td>
 					`;
 				});
 			})
@@ -45,43 +45,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	carregarEntregas();
 
-	formularioEntrega.addEventListener('submit', function(e) {
-		e.preventDefault();
-
-		const form = e.target;
-		const titulo = form.querySelector('#titulo').value;
-		const arquivo = form.querySelector('#arquivo').files[0];
-
-		if (!arquivo) return;
-
-		const reader = new FileReader();
-		reader.onload = function() {
-			const arquivoBase64 = reader.result.split(',')[1];
-			const dados = {
-				titulo: titulo,
-				emailAutor: email,       // agora é o email do professor
-				nomeArquivo: arquivo.name,
-				arquivoBase64: arquivoBase64,
-				emailOrientador: '',      // campos opcionais
-				emailCoorientador: ''
-			};
-
-			fetch(`/documentos/professor/${email}`, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(dados)
-			})
-			.then(res => {
-				if (!res.ok) throw new Error('Erro ao enviar entrega');
-				return res.json();
-			})
-			.then(() => {
-				carregarEntregas();
-				form.reset();
-			})
-			.catch(err => console.error(err));
-		};
-
-		reader.readAsDataURL(arquivo);
-	});
 });

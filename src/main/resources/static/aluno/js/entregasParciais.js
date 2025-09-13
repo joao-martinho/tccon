@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
 					fileira.innerHTML = `
 						<td>${entrega.titulo}</td>
 						<td>${formatarData(entrega.criadoEm)}</td>
-						<td><a href="/documentos/${entrega.id}/download" class="btn btn-sm btn-outline-primary">Baixar</a></td>
+						<td><a href="/documentos/${entrega.id}/download" class="btn btn-sm btn-primary">Baixar</a></td>
 					`;
 				});
 			})

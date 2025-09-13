@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 titulo.appendChild(badge);
 
                 const btnLida = document.createElement('button');
-                btnLida.className = 'btn btn-sm btn-outline-success marcar-lida ms-2';
+                btnLida.className = 'btn btn-sm btn-success marcar-lida ms-2';
                 btnLida.textContent = 'Marcar como lida';
                 btnLida.addEventListener('click', () => marcarComoLida(msg.id, card));
                 tituloWrapper.appendChild(btnLida);
