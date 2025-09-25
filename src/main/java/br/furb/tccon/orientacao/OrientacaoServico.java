@@ -9,10 +9,11 @@ import org.springframework.stereotype.Service;
 
 import br.furb.tccon.aluno.AlunoModelo;
 import br.furb.tccon.aluno.AlunoRepositorio;
-import br.furb.tccon.notificacao.NotificacaoModelo;
-import br.furb.tccon.notificacao.NotificacaoServico;
 import br.furb.tccon.professor.ProfessorModelo;
 import br.furb.tccon.professor.ProfessorRepositorio;
+import br.furb.tccon.termo.TermoModelo;
+import br.furb.tccon.termo.TermoRepositorio;
+import br.furb.tccon.termo.TermoServico;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -21,7 +22,8 @@ public class OrientacaoServico {
 
     private final ProfessorRepositorio professorRepositorio;
     private final AlunoRepositorio alunoRepositorio;
-    private final NotificacaoServico notificacaoServico;
+    private final TermoRepositorio termoRepositorio;
+    private final TermoServico termoServico;
 
     /**
      * Remove a relação de orientação provisória entre professor e aluno,
@@ -55,19 +57,11 @@ public class OrientacaoServico {
             alunoRepositorio.save(aluno);
         }
 
-        // Notificação para o professor
-        NotificacaoModelo notificacaoParaProfessor = new NotificacaoModelo();
-        notificacaoParaProfessor.setEmailDestinatario(emailProfessor);
-        notificacaoParaProfessor.setTitulo("Orientando provisório desistiu");
-        notificacaoParaProfessor.setConteudo(aluno.getNome() + " retirou sua atribuição como orientando provisório. Deseje-lhe boa sorte!");
-        notificacaoServico.cadastrarMensagem(notificacaoParaProfessor);
+        TermoModelo termoModelo = termoRepositorio.findByEmailAluno(emailAluno);
 
-        // Notificação para o aluno
-        NotificacaoModelo notificacaoParaAluno = new NotificacaoModelo();
-        notificacaoParaAluno.setEmailDestinatario(emailAluno);
-        notificacaoParaAluno.setTitulo("Orientador provisório removido");
-        notificacaoParaAluno.setConteudo(professor.getNome() + " não é mais seu orientador provisório, mas lhe deseja boa sorte. :)");
-        notificacaoServico.cadastrarMensagem(notificacaoParaAluno);
+        if (termoModelo != null) {
+            termoServico.removerTermo(termoModelo.getId());
+        }
 
         return new ResponseEntity<>(aluno, HttpStatus.OK);
     }
@@ -93,20 +87,6 @@ public class OrientacaoServico {
 
         aluno.setOrientadorProvisorio(emailProfessor);
         alunoRepositorio.save(aluno);
-
-        // Notificação para o aluno
-        NotificacaoModelo notificacaoAluno = new NotificacaoModelo();
-        notificacaoAluno.setEmailDestinatario(emailAluno);
-        notificacaoAluno.setTitulo("Orientador provisório atribuído");
-        notificacaoAluno.setConteudo("Você atribuiu " + professor.getNome() + " como seu orientador provisório. Para dar o próximo passo, preencha o termo de compromisso.");
-        notificacaoServico.cadastrarMensagem(notificacaoAluno);
-
-        // Notificação para o professor
-        NotificacaoModelo notificacaoProfessor = new NotificacaoModelo();
-        notificacaoProfessor.setEmailDestinatario(emailProfessor);
-        notificacaoProfessor.setTitulo("Novo orientando provisório");
-        notificacaoProfessor.setConteudo(aluno.getNome() + " escolheu você como orientador provisório. Aguarde o envio do termo de compromisso.");
-        notificacaoServico.cadastrarMensagem(notificacaoProfessor);
 
         return new ResponseEntity<>(aluno, HttpStatus.OK);
     }

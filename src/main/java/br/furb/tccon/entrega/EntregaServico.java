@@ -10,8 +10,6 @@ import br.furb.tccon.aluno.AlunoModelo;
 import br.furb.tccon.aluno.AlunoRepositorio;
 import br.furb.tccon.notificacao.NotificacaoModelo;
 import br.furb.tccon.notificacao.NotificacaoServico;
-import br.furb.tccon.professor.ProfessorModelo;
-import br.furb.tccon.professor.ProfessorRepositorio;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -19,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 public class EntregaServico {
 
     private final EntregaRepositorio entregaRepositorio;
-    private final ProfessorRepositorio professorRepositorio;
     private final AlunoRepositorio alunoRepositorio;
     private final NotificacaoServico notificacaoServico;
     private final Path diretorio = Paths.get("uploads/entregas");
@@ -42,26 +39,6 @@ public class EntregaServico {
         entrega.setArquivoBase64(dto.getArquivoBase64());
 
         EntregaModelo salvo = entregaRepositorio.save(entrega);
-        ProfessorModelo orientador = professorRepositorio.findByEmail(entrega.getEmailOrientador());
-
-        NotificacaoModelo notificacaoAluno = new NotificacaoModelo();
-        notificacaoAluno.setEmailDestinatario(email);
-        notificacaoAluno.setTitulo("Entrega enviada");
-
-        if (entrega.getEmailCoorientador() != null) {
-            ProfessorModelo coorientador = professorRepositorio.findByEmail(entrega.getEmailCoorientador());
-            notificacaoAluno.setConteudo(
-                "A sua entrega \"" + dto.getTitulo() + "\" foi enviada a " + orientador.getNome() + " e " +
-                coorientador.getNome() + " para avaliação."
-            );
-            notificacaoServico.cadastrarMensagem(notificacaoAluno);
-        }
-        else {
-            notificacaoAluno.setConteudo(
-                "A sua entrega \"" + dto.getTitulo() + "\" foi enviada a " + orientador.getNome() + " para avaliação."
-            );
-            notificacaoServico.cadastrarMensagem(notificacaoAluno);
-        }
 
         NotificacaoModelo notificacaoOrientador = new NotificacaoModelo();
         notificacaoOrientador.setEmailDestinatario(aluno.getOrientador());

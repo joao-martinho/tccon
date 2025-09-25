@@ -1,246 +1,236 @@
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
 	const tipo = localStorage.getItem('tipo');
 	if (tipo !== 'aluno') {
 		alert('Você não tem permissão para acessar esta página :(');
 		window.location.href = '../login.html';
-		return;
 	}
 
 	const btnSair = document.getElementById('btnSair');
-	btnSair?.addEventListener('click', () => {
+	btnSair.addEventListener('click', () => {
 		localStorage.clear();
 		window.location.href = '../login.html';
 	});
 
-	const orientadorSelect = document.getElementById('orientador');
-	const coorientadorSelect = document.getElementById('coorientador');
-	const coorientadorCheckbox = document.getElementById('coorientadorCheckbox');
-	const coorientadorMenu = document.getElementById('coorientadorMenu');
-	const form = document.getElementById('formularioTermo');
-	const collapse = new bootstrap.Collapse(coorientadorMenu, { toggle: false });
+  const btnFinalizar = document.querySelector('button[type="submit"]');
+  const visualizacaoTermo = document.getElementById('visualizacaoTermo');
+  const mensagem = document.getElementById('mensagem');
 
-	coorientadorCheckbox.addEventListener('change', () => {
-		if (coorientadorCheckbox.checked) collapse.show();
-		else collapse.hide();
-	});
+  const campos = {
+    titulo: document.getElementById('titulo'),
+    ano: document.getElementById('ano'),
+    semestre: document.getElementById('semestre'),
+    resumo: document.getElementById('resumo'),
+    coorientadorCheckbox: document.getElementById('coorientadorCheckbox'),
+    coorientadorMenu: document.getElementById('coorientadorMenu'),
+    coorientador: document.getElementById('coorientador'),
+    perfilCoorientador: document.getElementById('perfilCoorientador'),
+  };
 
-	let professores = [];
-	const professorMap = {};
+  const termoInfo = {
+    termoTitulo: document.getElementById('termoTitulo'),
+    termoOrientador: document.getElementById('termoOrientador'),
+    termoCoorientadorContainer: document.getElementById('termoCoorientadorContainer'),
+    termoCoorientador: document.getElementById('termoCoorientador'),
+    termoAnoSemestre: document.getElementById('termoAnoSemestre'),
+    termoResumo: document.getElementById('termoResumo'),
+    termoStatus: document.getElementById('termoStatus'),
+  };
 
-	try {
-		const res = await fetch('/professores');
-		if (!res.ok) throw new Error();
-		professores = await res.json();
-		professores.forEach(prof => {
-			professorMap[prof.email] = prof.nome;
-			const opt1 = document.createElement('option');
-			opt1.value = prof.email;
-			opt1.textContent = prof.nome;
-			orientadorSelect.appendChild(opt1);
-			const opt2 = document.createElement('option');
-			opt2.value = prof.email;
-			opt2.textContent = prof.nome;
-			coorientadorSelect.appendChild(opt2);
-		});
-	} catch {
-		mostrarMensagem('Não foi possível carregar a lista de professores.', 'danger');
-	}
+  // Inicialmente esconder o menu coorientador (com CSS visível: none)
+  // Aqui vamos fazer a animação ao mostrar/esconder
 
-	function validarOrientadores() {
-		if (orientadorSelect.value && coorientadorSelect.value && orientadorSelect.value === coorientadorSelect.value) {
-			mostrarMensagem('Orientador e coorientador não podem ser a mesma pessoa.', 'warning');
-			coorientadorSelect.value = '';
-		}
-	}
-	orientadorSelect.addEventListener('change', validarOrientadores);
-	coorientadorSelect.addEventListener('change', validarOrientadores);
+  campos.coorientadorMenu.style.maxHeight = '0';
+  campos.coorientadorMenu.style.overflow = 'hidden';
+  campos.coorientadorMenu.style.transition = 'max-height 0.5s ease, opacity 0.5s ease';
+  campos.coorientadorMenu.style.opacity = '0';
 
-	const emailAluno = localStorage.getItem('email');
-	if (!emailAluno) {
-		mostrarMensagem('Email do aluno não encontrado na sessão local.', 'danger');
-		form.querySelectorAll('input, select, button, textarea').forEach(el => el.disabled = true);
-		return;
-	}
+  campos.coorientadorCheckbox.addEventListener('change', () => {
+    if (campos.coorientadorCheckbox.checked) {
+      // Mostrar com animação suave
+      campos.coorientadorMenu.style.display = 'block'; // garante visibilidade para animar
+      // Depois de um frame para aplicar a transição
+      requestAnimationFrame(() => {
+        campos.coorientadorMenu.style.maxHeight = campos.coorientadorMenu.scrollHeight + 'px';
+        campos.coorientadorMenu.style.opacity = '1';
+      });
+    } else {
+      // Esconder suavemente
+      campos.coorientadorMenu.style.maxHeight = '0';
+      campos.coorientadorMenu.style.opacity = '0';
 
-	let nomeAluno, cursoAluno, telefoneAluno;
-	try {
-		const alunoRes = await fetch(`/alunos/${encodeURIComponent(emailAluno)}`);
-		if (!alunoRes.ok) throw new Error();
-		const aluno = await alunoRes.json();
-		nomeAluno = aluno.nome;
-		cursoAluno = aluno.curso;
-		telefoneAluno = aluno.telefone;
-		if (aluno.orientador || aluno.coorientador) {
-			try {
-				const termoRes = await fetch(`/termos/aluno/${encodeURIComponent(emailAluno)}`);
-				let termo = null;
-				if (termoRes.ok) {
-					const termoText = await termoRes.text();
-					if (termoText) termo = JSON.parse(termoText);
-				}
-				if (termo) {
-					atualizarVisualizacao(termo, professorMap);
-					if (termo.statusFinal !== 'rejeitado') {
-						form.querySelectorAll('input, select, button, textarea').forEach(el => el.disabled = true);
-					}
-				}
-			} catch {}
-		}
-	} catch {
-		mostrarMensagem('Não foi possível verificar o status do termo de compromisso. Tente novamente.', 'danger');
-	}
+      // Depois do tempo da transição, esconder display para remover do fluxo
+      setTimeout(() => {
+        campos.coorientadorMenu.style.display = 'none';
+      }, 500);
 
-	form.addEventListener('submit', async (event) => {
-		event.preventDefault();
+      campos.coorientador.value = '';
+      campos.perfilCoorientador.value = '';
+    }
+  });
 
-		const emailOrientador = orientadorSelect.value;
-		const coorientador = coorientadorCheckbox.checked && coorientadorSelect.value
-			? {
-				email: coorientadorSelect.value,
-				perfil: document.getElementById('perfilCoorientador').value.trim()
-			}
-			: null;
+  function setCamposReadonly(readonly) {
+    campos.titulo.readOnly = readonly;
+    campos.ano.disabled = readonly;
+    campos.semestre.disabled = readonly;
+    campos.resumo.readOnly = readonly;
+    campos.coorientadorCheckbox.disabled = readonly;
+    campos.coorientador.disabled = readonly || !campos.coorientadorCheckbox.checked;
+    campos.perfilCoorientador.readOnly = readonly || !campos.coorientadorCheckbox.checked;
+  }
 
-		const criadoEm = getLocalDateTimeString();
+  function atualizarVisualizacaoTermo(termo) {
+    termoInfo.termoTitulo.textContent = termo.titulo;
+    termoInfo.termoOrientador.textContent = termo.emailOrientador || 'Não informado';
 
-		const termo = {
-			emailAluno,
-			nomeAluno,
-			telefoneAluno,
-			cursoAluno,
-			emailOrientador,
-			emailCoorientador: coorientador ? coorientador.email : null,
-			perfilCoorientador: coorientador ? coorientador.perfil : null,
-			titulo: document.getElementById('titulo').value.trim(),
-			ano: document.getElementById('ano').value,
-			semestre: document.getElementById('semestre').value,
-			resumo: document.getElementById('resumo').value.trim(),
-			criadoEm,
-			statusOrientador: null,
-			statusCoorientador: null,
-			statusFinal: null
-		};
+    if (termo.emailCoorientador) {
+      termoInfo.termoCoorientadorContainer.style.display = 'block';
+      termoInfo.termoCoorientador.textContent = termo.emailCoorientador;
+      // Mostrar checkbox e campos coorientador marcados, ajustando menu animado
+      campos.coorientadorCheckbox.checked = true;
+      // Forçar mostrar menu com animação (sem piscar)
+      campos.coorientadorMenu.style.display = 'block';
+      campos.coorientadorMenu.style.maxHeight = campos.coorientadorMenu.scrollHeight + 'px';
+      campos.coorientadorMenu.style.opacity = '1';
 
-		try {
-			await fetch(`/alunos/${encodeURIComponent(emailAluno)}`, {
-				method: 'PATCH',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					orientador: emailOrientador,
-					coorientador: coorientador ? coorientador.email : null
-				})
-			});
+      campos.coorientador.value = termo.emailCoorientador;
+      campos.perfilCoorientador.value = termo.perfilCoorientador || '';
+    } else {
+      termoInfo.termoCoorientadorContainer.style.display = 'none';
+      campos.coorientadorCheckbox.checked = false;
+      campos.coorientadorMenu.style.maxHeight = '0';
+      campos.coorientadorMenu.style.opacity = '0';
+      campos.coorientadorMenu.style.display = 'none';
+      campos.coorientador.value = '';
+      campos.perfilCoorientador.value = '';
+    }
 
-			await atualizarProfessor(emailOrientador, 'orientador', emailAluno);
-			if (coorientador) await atualizarProfessor(coorientador.email, 'coorientador', emailAluno);
+    termoInfo.termoAnoSemestre.textContent = `${termo.ano}/${termo.semestre}`;
+    termoInfo.termoResumo.textContent = termo.resumo;
 
-			let termoExistente = null;
-			try {
-				const termoRes = await fetch(`/termos/aluno/${encodeURIComponent(emailAluno)}`);
-				if (termoRes.ok) {
-					const termoText = await termoRes.text();
-					if (termoText) termoExistente = JSON.parse(termoText);
-				}
-			} catch {}
+    let status = termo.status;
+    if (!status) status = 'pendente';
 
-			if (termoExistente && (termoExistente.statusOrientador === 'rejeitado' || termoExistente.statusCoorientador === 'rejeitado' || termoExistente.statusFinal === 'rejeitado')) {
-				await fetch(`/termos/${encodeURIComponent(termoExistente.id)}`, {
-					method: 'PUT',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify(termo)
-				});
-			} else {
-				await fetch('/termos', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify(termo)
-				});
-			}
+    termoInfo.termoStatus.textContent = `Status: ${status.charAt(0).toUpperCase() + status.slice(1)}`;
+    termoInfo.termoStatus.className = 'alert text-center';
 
-			await fetch('/emails/confirmar-termo', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					emailAluno,
-					emailOrientador,
-					emailCoorientador: coorientador ? coorientador.email : null
-				})
-			});
+    if (status === 'aprovado') {
+      termoInfo.termoStatus.classList.add('alert-success');
+      setCamposReadonly(true);
+    } else if (status === 'pendente') {
+      termoInfo.termoStatus.classList.add('alert-warning');
+      setCamposReadonly(true);
+    } else if (status === 'rejeitado') {
+      termoInfo.termoStatus.classList.add('alert-danger');
+      setCamposReadonly(false);
+    } else {
+      termoInfo.termoStatus.classList.add('alert-secondary');
+      setCamposReadonly(false);
+    }
 
-			atualizarVisualizacao(termo, professorMap);
-			if (termo.statusFinal !== 'rejeitado') {
-				form.querySelectorAll('input, select, button, textarea').forEach(el => el.disabled = true);
-			}
-			mostrarMensagem('Termo de compromisso cadastrado com sucesso.', 'success');
-		} catch {
-			mostrarMensagem('Ocorreu um erro ao cadastrar o termo de compromisso. Tente novamente.', 'danger');
-		}
-	});
+    visualizacaoTermo.classList.remove('d-none');
+  }
+
+  async function carregarTermo() {
+    const emailAluno = localStorage.getItem('email');
+    if (!emailAluno) {
+      mensagem.innerHTML = `<div class="alert alert-danger">Usuário não autenticado (email não encontrado).</div>`;
+      return;
+    }
+
+    try {
+      const resTermo = await fetch(`/termos/aluno/${encodeURIComponent(emailAluno)}`);
+      if (resTermo.ok) {
+        const termo = await resTermo.json();
+        if (termo && termo.titulo) {
+          // Popular os campos do formulário com dados do termo, se quiser:
+          campos.titulo.value = termo.titulo;
+          campos.ano.value = termo.ano;
+          campos.semestre.value = termo.semestre;
+          campos.resumo.value = termo.resumo;
+
+          atualizarVisualizacaoTermo(termo);
+        } else {
+          // Nenhum termo salvo ainda
+          visualizacaoTermo.classList.add('d-none');
+        }
+      } else if (resTermo.status === 404) {
+        // Termo não encontrado, não mostra nada
+        visualizacaoTermo.classList.add('d-none');
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  async function enviarTermo() {
+    const emailAluno = localStorage.getItem('email');
+    if (!emailAluno) {
+      mensagem.innerHTML = `<div class="alert alert-danger">Usuário não autenticado (email não encontrado).</div>`;
+      return;
+    }
+
+    try {
+      // Buscar dados do aluno para pegar orientadorProvisorio, nome, telefone, curso
+      const resAluno = await fetch(`/alunos/${encodeURIComponent(emailAluno)}`);
+      if (!resAluno.ok) {
+        mensagem.innerHTML = `<div class="alert alert-danger">Erro ao buscar dados do aluno: ${resAluno.statusText}</div>`;
+        return;
+      }
+      const aluno = await resAluno.json();
+
+      // Validar campos do formulário
+      if (!campos.titulo.value.trim() || !campos.ano.value || !campos.semestre.value || !campos.resumo.value.trim()) {
+        mensagem.innerHTML = `<div class="alert alert-danger">Preencha todos os campos obrigatórios do formulário.</div>`;
+        return;
+      }
+
+      // Montar termo para envio
+      const termo = {
+        titulo: campos.titulo.value.trim(),
+        emailAluno: aluno.email,
+        nomeAluno: aluno.nome,
+        telefoneAluno: aluno.telefone,
+        cursoAluno: aluno.curso,
+        ano: campos.ano.value,
+        semestre: campos.semestre.value,
+        resumo: campos.resumo.value.trim(),
+        emailOrientador: aluno.orientadorProvisorio || null,
+        emailCoorientador: campos.coorientadorCheckbox.checked ? campos.coorientador.value : null,
+        perfilCoorientador: campos.coorientadorCheckbox.checked ? campos.perfilCoorientador.value.trim() : null,
+        status: null,
+      };
+
+      const resPost = await fetch('/termos', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(termo),
+      });
+
+      if (!resPost.ok) {
+        const errData = await resPost.json();
+        mensagem.innerHTML = `<div class="alert alert-danger">Erro ao enviar termo: ${errData.message || resPost.statusText}</div>`;
+        return;
+      }
+
+      const termoSalvo = await resPost.json();
+
+      mensagem.innerHTML = `<div class="alert alert-success">Termo enviado com sucesso!</div>`;
+
+      atualizarVisualizacaoTermo(termoSalvo);
+      atualizarVisualizacaoTermo(termoSalvo);
+
+    } catch (error) {
+      mensagem.innerHTML = `<div class="alert alert-danger">Erro na conexão: ${error.message}</div>`;
+    }
+  }
+
+  btnFinalizar.addEventListener('click', e => {
+    e.preventDefault();
+    enviarTermo();
+  });
+
+  // Carregar termo ao carregar a página, evitando "piscada"
+  carregarTermo();
 });
 
-async function atualizarProfessor(emailProfessor, tipo, emailAluno) {
-	const res = await fetch(`/professores/${encodeURIComponent(emailProfessor)}`);
-	if (!res.ok) throw new Error();
-	const professor = await res.json();
-	if (tipo === 'orientador') {
-		const orientandos = professor.orientandos || [];
-		if (!orientandos.includes(emailAluno)) orientandos.push(emailAluno);
-		await fetch(`/professores/${encodeURIComponent(emailProfessor)}`, {
-			method: 'PATCH',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ orientandos })
-		});
-	} else if (tipo === 'coorientador') {
-		const coorientandos = professor.coorientandos || [];
-		if (!coorientandos.includes(emailAluno)) coorientandos.push(emailAluno);
-		await fetch(`/professores/${encodeURIComponent(emailProfessor)}`, {
-			method: 'PATCH',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ coorientandos })
-		});
-	}
-}
-
-function atualizarVisualizacao(termo, professorMap) {
-	const visualizacao = document.getElementById('visualizacaoTermo');
-	visualizacao.classList.remove('d-none');
-	document.getElementById('termoTitulo').textContent = termo.titulo;
-	document.getElementById('termoOrientador').textContent = professorMap[termo.emailOrientador] || termo.emailOrientador;
-	if (termo.emailCoorientador) {
-		document.getElementById('termoCoorientador').textContent = professorMap[termo.emailCoorientador] || termo.emailCoorientador;
-		document.getElementById('termoCoorientadorContainer').classList.remove('d-none');
-	} else {
-		document.getElementById('termoCoorientadorContainer').classList.add('d-none');
-	}
-	document.getElementById('termoAnoSemestre').textContent = `${termo.ano}/${termo.semestre}`;
-	document.getElementById('termoResumo').textContent = termo.resumo;
-	const statusDiv = document.getElementById('termoStatus');
-	let statusClass = 'alert-warning';
-	let statusTexto = 'Pendente';
-	if (termo.statusOrientador === 'aprovado' && (termo.statusCoorientador === 'aprovado' || !termo.emailCoorientador)) {
-		statusClass = 'alert-success';
-		statusTexto = 'Aprovado';
-	} else if (termo.statusOrientador === 'rejeitado' || termo.statusCoorientador === 'rejeitado' || termo.statusFinal === 'rejeitado') {
-		statusClass = 'alert-danger';
-		statusTexto = 'Rejeitado';
-	}
-	statusDiv.className = `alert ${statusClass} text-center`;
-	statusDiv.textContent = `Status do termo: ${statusTexto}`;
-}
-
-function mostrarMensagem(texto, tipo = 'danger') {
-	const mensagemDiv = document.getElementById('mensagem');
-	if (!mensagemDiv) return;
-	mensagemDiv.innerHTML = `
-		<div class="alert alert-${tipo} alert-dismissible fade show" role="alert">
-			${texto}
-			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
-		</div>
-	`;
-}
-
-function getLocalDateTimeString() {
-	const now = new Date();
-	const pad = (n) => n.toString().padStart(2, '0');
-	return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
-}
+   

@@ -19,9 +19,9 @@ import lombok.RequiredArgsConstructor;
 public class TermoServico {
     
     private final TermoRepositorio termoRepositorio;
-    private final BancaServico bancaServico;
     private final ProfessorRepositorio professorRepositorio;
     private final NotificacaoServico notificacaoServico;
+    private final BancaServico bancaServico;
 
     public ResponseEntity<Iterable<TermoModelo>> listarTermos() {
         return new ResponseEntity<>(this.termoRepositorio.findAll(), HttpStatus.OK);
@@ -29,27 +29,6 @@ public class TermoServico {
 
     public ResponseEntity<TermoModelo> cadastrarTermo(TermoModelo termoModelo) {
         TermoModelo salvo = this.termoRepositorio.save(termoModelo);
-
-        NotificacaoModelo notificacaoAluno = new NotificacaoModelo();
-        notificacaoAluno.setEmailDestinatario(termoModelo.getEmailAluno());
-        notificacaoAluno.setTitulo("Termo de compromisso enviado");
-
-        ProfessorModelo orientador = professorRepositorio.findByEmail(termoModelo.getEmailOrientador());
-
-        if (termoModelo.getEmailCoorientador() != null) {
-            ProfessorModelo coorientador = professorRepositorio.findByEmail(termoModelo.getEmailCoorientador());
-            notificacaoAluno.setConteudo(
-                "O seu termo de compromisso foi enviado a " + orientador.getNome() + " e " + 
-                coorientador.getNome() + ". Aguarde a resposta."
-            );
-            notificacaoServico.cadastrarMensagem(notificacaoAluno);
-        }
-        else {
-             notificacaoAluno.setConteudo(
-                "O seu termo de compromisso foi enviado a " + orientador.getNome() + ". Aguarde a resposta."
-            );
-            notificacaoServico.cadastrarMensagem(notificacaoAluno);
-        }      
 
         NotificacaoModelo notificacaoOrientador = new NotificacaoModelo();
         notificacaoOrientador.setEmailRemetente(termoModelo.getEmailAluno());
@@ -139,35 +118,12 @@ public class TermoServico {
                 termoModelo2.setCriadoEm(termoModelo.getCriadoEm());
             }
 
-            if (termoModelo.getStatusOrientador() != null && email.equals(termoModelo2.getEmailOrientador())) {
-                termoModelo2.setStatusOrientador(termoModelo.getStatusOrientador());
-            }
+            if (termoModelo.getStatus() != null && email.equals(termoModelo2.getEmailOrientador())) {
+                termoModelo2.setStatus(termoModelo.getStatus());
 
-            if (termoModelo.getStatusCoorientador() != null && email.equals(termoModelo2.getEmailCoorientador())) {
-                termoModelo2.setStatusCoorientador(termoModelo.getStatusCoorientador());
-            }
-
-            if (termoModelo2.getEmailCoorientador() != null) {
-                    termoModelo2.setStatusFinal(this.getStatusFinal(
-                    termoModelo2.getStatusOrientador(), 
-                    termoModelo2.getStatusCoorientador()
-                ));
-            }
-            else {
-                termoModelo2.setStatusFinal(termoModelo2.getStatusOrientador());
-            }
-
-            TermoModelo salvo = this.termoRepositorio.save(termoModelo2);
-
-            if (termoModelo2.getStatusFinal().equals("aprovado")) {
-                bancaServico.criarAPartirDoTermo(salvo);
-            }
-
-            if (termoModelo2.getStatusFinal().equals("aprovado") || termoModelo2.getStatusFinal().equals("rejeitado")) {
-
-                String tituloAluno = termoModelo2.getStatusFinal().equals("aprovado") ?
+                String tituloAluno = termoModelo2.getStatus().equals("aprovado") ?
                     "Termo aprovado" : "Termo rejeitado";
-                String conteudoAluno = termoModelo2.getStatusFinal().equals("aprovado") ?
+                String conteudoAluno = termoModelo2.getStatus().equals("aprovado") ?
                     "O seu termo de compromisso foi aprovado." :
                     "O seu termo de compromisso foi rejeitado. Procure o seu orientador.";
 
@@ -176,27 +132,12 @@ public class TermoServico {
                 notificacaoAluno.setTitulo(tituloAluno);
                 notificacaoAluno.setConteudo(conteudoAluno);
                 notificacaoServico.cadastrarMensagem(notificacaoAluno);
+            }
 
-                NotificacaoModelo notificacaoOrientador = new NotificacaoModelo();
-                notificacaoOrientador.setEmailDestinatario(termoModelo2.getEmailOrientador());
-                notificacaoOrientador.setTitulo("Atualização do termo de compromisso");
-                notificacaoOrientador.setConteudo(
-                    "O termo de compromisso de " + termoModelo2.getNomeAluno() +
-                    " foi " + termoModelo2.getStatusFinal() + "."
-                );
-                notificacaoServico.cadastrarMensagem(notificacaoOrientador);
+            TermoModelo salvo = this.termoRepositorio.save(termoModelo2);
 
-                if (termoModelo2.getEmailCoorientador() != null) {
-                    NotificacaoModelo notificacaoCoorientador = new NotificacaoModelo();
-                    notificacaoCoorientador.setEmailDestinatario(termoModelo2.getEmailCoorientador());
-                    notificacaoCoorientador.setTitulo("Atualização do termo de compromisso");
-                    notificacaoCoorientador.setConteudo(
-                        "O termo de compromisso de " + termoModelo2.getNomeAluno() +
-                        " foi " + termoModelo2.getStatusFinal() + "."
-                    );
-                    notificacaoServico.cadastrarMensagem(notificacaoCoorientador);
-                }
-
+            if (termoModelo2.getStatus().equals("aprovado")) {
+                bancaServico.criarAPartirDoTermo(salvo);
             }
 
             return new ResponseEntity<>(salvo, HttpStatus.OK);
@@ -247,16 +188,6 @@ public class TermoServico {
         termoModelos.addAll(this.termoRepositorio.findByEmailCoorientador(email));
 
         return new ResponseEntity<>(termoModelos, HttpStatus.OK);
-    }
-
-    private String getStatusFinal(String statusOrientador, String statusCoorientador) {
-        if ("aprovado".equals(statusOrientador) && "aprovado".equals(statusCoorientador)) {
-            return "aprovado";
-        } else if ("rejeitado".equals(statusOrientador) || "rejeitado".equals(statusCoorientador)) {
-            return "rejeitado";
-        } else {
-            return "pendente";
-        }
     }
 
 }

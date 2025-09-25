@@ -19,33 +19,6 @@
 
   <div id="mensagem" class="mb-3"></div>
 
-  <form id="formularioTermo" class="card p-4 shadow-sm mb-5">
-    <div class="mb-3">
-      <label for="orientador" class="form-label">Orientador</label>
-      <select class="form-select" id="orientador" required>
-        <option value="">Selecione o orientador</option>
-      </select>
-    </div>
-
-    <div class="form-check mb-3">
-      <input class="form-check-input" type="checkbox" id="coorientadorCheckbox">
-      <label class="form-check-label" for="coorientadorCheckbox">
-        Adicionar coorientador
-      </label>
-    </div>
-    <div id="coorientadorMenu" class="collapse">
-      <div class="mb-3">
-        <label for="coorientador" class="form-label">Coorientador</label>
-        <select class="form-select" id="coorientador">
-          <option value="">Selecione o coorientador</option>
-        </select>
-      </div>
-      <div class="mb-3">
-        <label for="perfilCoorientador" class="form-label">Perfil do coorientador (menos de 500 caracteres)</label>
-        <textarea class="form-control" id="perfilCoorientador" rows="3" placeholder="Descreva brevemente o perfil do coorientador"></textarea>
-      </div>
-    </div>
-
     <div class="mb-3">
       <label for="titulo" class="form-label">Identificação do trabalho</label>
       <input type="text" class="form-control" id="titulo" placeholder="Digite o título do trabalho" required>
@@ -69,6 +42,25 @@
       </div>
     </div>
 
+    <div class="form-check mb-3">
+      <input class="form-check-input" type="checkbox" id="coorientadorCheckbox">
+      <label class="form-check-label" for="coorientadorCheckbox">
+        Adicionar coorientador
+      </label>
+    </div>
+    <div id="coorientadorMenu" class="collapse">
+      <div class="mb-3">
+        <label for="coorientador" class="form-label">Coorientador</label>
+        <select class="form-select" id="coorientador">
+          <option value="">Selecione o coorientador</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label for="perfilCoorientador" class="form-label">Perfil do coorientador (menos de 500 caracteres)</label>
+        <textarea class="form-control" id="perfilCoorientador" rows="3" placeholder="Descreva brevemente o perfil do coorientador"></textarea>
+      </div>
+    </div>
+
     <div class="mb-3">
       <label for="resumo" class="form-label">Resumo do problema (menos de 2000 caracteres)</label>
       <textarea class="form-control" id="resumo" rows="4" placeholder="Digite um breve resumo do trabalho" required></textarea>
@@ -84,7 +76,7 @@
     <p><strong>Título:</strong> <span id="termoTitulo"></span></p>
     <p><strong>Orientador:</strong> <span id="termoOrientador"></span></p>
     <p id="termoCoorientadorContainer"><strong>Coorientador:</strong> <span id="termoCoorientador"></span></p>
-    <p><strong>Ano/Semestre da formatura:</strong> <span id="termoAnoSemestre"></span></p>
+    <p><strong>Semestre em que cursará TCC II:</strong> <span id="termoAnoSemestre"></span></p>
     <p><strong>Resumo:</strong> <span id="termoResumo"></span></p>
     <div id="termoStatus" class="alert text-center" role="alert"></div>
   </div>

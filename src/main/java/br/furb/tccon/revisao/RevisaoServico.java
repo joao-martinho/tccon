@@ -8,8 +8,6 @@ import java.util.stream.Collectors;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 
-import br.furb.tccon.aluno.AlunoModelo;
-import br.furb.tccon.aluno.AlunoRepositorio;
 import br.furb.tccon.notificacao.NotificacaoModelo;
 import br.furb.tccon.notificacao.NotificacaoServico;
 import br.furb.tccon.professor.ProfessorModelo;
@@ -22,7 +20,6 @@ public class RevisaoServico {
 
     private final RevisaoRepositorio revisaoRepositorio;
     private final NotificacaoServico notificacaoServico;
-    private final AlunoRepositorio alunoRepositorio;
     private final ProfessorRepositorio professorRepositorio;
     private final Path diretorio = Paths.get("uploads/revisoes");
 
@@ -50,16 +47,6 @@ public class RevisaoServico {
             professorModelo.getNome() + " enviou uma nova revisão: \"" + dto.getTitulo() + "\"."
         );
         notificacaoServico.cadastrarMensagem(notificacaoAluno);
-
-        AlunoModelo alunoModelo = alunoRepositorio.findByEmail(dto.getEmailAluno());
-
-        NotificacaoModelo notificacaoProfessor = new NotificacaoModelo();
-        notificacaoProfessor.setEmailDestinatario(email);
-        notificacaoProfessor.setTitulo("Revisão enviada");
-        notificacaoProfessor.setConteudo(
-            "A sua revisão \"" + dto.getTitulo() + "\" foi enviada a " + alunoModelo.getNome() + "."
-        );
-        notificacaoServico.cadastrarMensagem(notificacaoProfessor);
 
         return ResponseEntity.status(201).body(salvo);
     }
