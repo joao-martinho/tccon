@@ -74,9 +74,7 @@ classDiagram
         -String semestre
         -String resumo
         -LocalDateTime criadoEm
-        -String statusOrientador
-        -String statusCoorientador
-        -String statusFinal
+        -String status
     }
 
     class BancaModelo {
