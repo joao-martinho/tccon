@@ -108,8 +108,7 @@ formPrimeiroAcesso.addEventListener('submit', async (e) => {
             return;
         }
 
-        // Atualiza senha (telefone opcional)
-        const dadosAtualizados = { senha: senhaInput.value };
+        const dadosAtualizados = { telefone: telefoneInput.value, senha: senhaInput.value };
         const endpointPatch = tipo === 'Professor' ? `/professores/${email}` : `/alunos/${email}`;
 
         const resPatch = await fetch(endpointPatch, {

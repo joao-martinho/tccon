@@ -55,6 +55,10 @@ public class AlunoServico {
                 existente.setTelefone(alunoModelo.getTelefone());
             }
 
+            if (alunoModelo.getOrientadorProvisorio() != null) {
+                existente.setOrientadorProvisorio(alunoModelo.getOrientadorProvisorio());
+            }
+
             if (alunoModelo.getOrientador() != null) {
                 existente.setOrientador(alunoModelo.getOrientador());
             }

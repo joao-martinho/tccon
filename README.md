@@ -50,6 +50,14 @@ classDiagram
         +conferirSenha(String): boolean
     }
 
+    class PapelProfessor {
+        <<enumeration>>
+        PROF_TCC1
+        PROF_TCC2
+        COORD_BCC
+        COORD_SIS
+    }
+
     class TermoModelo {
         -Long id
         -String titulo
@@ -117,6 +125,7 @@ classDiagram
     %% Relacionamentos (via e-mails)
     AlunoModelo --> ProfessorModelo : orientador
     AlunoModelo --> ProfessorModelo : coorientador
+    ProfessorModelo "1" --> "*" PapelProfessor : papeis
     TermoModelo --> AlunoModelo : emailAluno
     TermoModelo --> ProfessorModelo : emailOrientador
     TermoModelo --> ProfessorModelo : emailCoorientador
