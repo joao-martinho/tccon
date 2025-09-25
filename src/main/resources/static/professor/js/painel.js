@@ -44,43 +44,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     link.className = 'btn btn-primary mt-3';
     link.textContent = 'Acessar';
 
-    const btnContainer = document.createElement('div');
-    btnContainer.className = 'd-flex gap-2 mt-3';
-
-    link.className = 'btn btn-primary w-50';
-    btnContainer.appendChild(link);
-
+    // Badge "Provisório", se aplicável
     if (isProvisorio) {
-      const btnRemover = document.createElement('button');
-      btnRemover.className = 'btn btn-danger w-50';
-      btnRemover.textContent = 'Remover';
-
-      btnRemover.addEventListener('click', async (event) => {
-        event.stopPropagation();
-
-        try {
-          const emailProfessor = localStorage.getItem('email');
-          const response = await fetch(`/professores/remover-provisorio/${encodeURIComponent(emailProfessor)}/${encodeURIComponent(aluno.email)}`, {
-            method: 'PATCH',
-          });
-
-          if (!response.ok) {
-            throw new Error(`Erro ao remover aluno provisório: ${response.status}`);
-          }
-
-          col.remove();
-          alert('Aluno provisório removido com sucesso.');
-        } catch (error) {
-          console.error(error);
-          alert('Ocorreu um erro ao remover o aluno.');
-        }
-      });
-
-      btnContainer.appendChild(btnRemover);
+      const badge = document.createElement('span');
+      badge.className = 'badge bg-warning text-dark position-absolute top-0 end-0 m-2';
+      badge.textContent = 'Provisório';
+      card.appendChild(badge);
     }
-
-    body.appendChild(btnContainer);
-
 
     body.appendChild(title);
     body.appendChild(text);
@@ -90,7 +60,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     col.appendChild(card);
     row.appendChild(col);
 
-    // Salva o email do aluno ao clicar no card (evite isso se clicar no botão Remover)
+    // Salva o email do aluno no localStorage ao clicar
     card.addEventListener('click', () => {
       localStorage.setItem('orientando', aluno.email);
     });
@@ -98,13 +68,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   try {
     // 🔵 Alunos fixos
-    const responseFixos = await fetch(`/professores/orientandos/${encodeURIComponent(email)}`);
+    const responseFixos = await fetch(`/professores/orientandos/${email}`);
     if (!responseFixos.ok) throw new Error(`Erro ao buscar orientandos: ${responseFixos.status}`);
     const alunosFixos = await responseFixos.json();
     alunosFixos.forEach(aluno => criarCard(aluno, false));
 
     // 🟡 Alunos provisórios
-    const responseProvisorios = await fetch(`/professores/orientandos-provisorios/${encodeURIComponent(email)}`);
+    const responseProvisorios = await fetch(`/professores/orientandos-provisorios/${email}`);
     if (!responseProvisorios.ok) throw new Error(`Erro ao buscar orientandos provisórios: ${responseProvisorios.status}`);
     const alunosProvisorios = await responseProvisorios.json();
     alunosProvisorios.forEach(aluno => criarCard(aluno, true));

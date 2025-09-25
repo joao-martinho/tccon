@@ -175,6 +175,6 @@ public class ProfessorServico {
 
     // Agora delega a remoção de orientando provisório ao OrientacaoServico
     public ResponseEntity<AlunoModelo> removerProvisorio(String emailProfessor, String emailAluno) {
-        return orientacaoServico.removerProvisorioDoProfessor(emailAluno, emailProfessor);
+        return orientacaoServico.removerRelacaoProvisoria(emailAluno, emailProfessor);
     }
 }
