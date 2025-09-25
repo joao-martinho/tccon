@@ -28,6 +28,7 @@ classDiagram
         -String telefone
         -String senha
         -String curso
+        -String orientadorProvisorio
         -String orientador
         -String coorientador
         -String codigoVer
@@ -40,6 +41,7 @@ classDiagram
         -String email
         -String nome
         -String telefone
+        -List~String~ orientandosProvisorios
         -List~String~ orientandos
         -List~String~ coorientandos
         -String senha
@@ -123,6 +125,7 @@ classDiagram
     }
 
     %% Relacionamentos (via e-mails)
+    AlunoModelo --> ProfessorModelo : orientadorProvisorio
     AlunoModelo --> ProfessorModelo : orientador
     AlunoModelo --> ProfessorModelo : coorientador
     ProfessorModelo "1" --> "*" PapelProfessor : papeis
