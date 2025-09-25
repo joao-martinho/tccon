@@ -108,6 +108,7 @@ classDiagram
     class NotificacaoModelo {
         -Long id
         -String titulo
+        -String emailRemetente
         -String emailDestinatario
         -String conteudo
         -boolean lida
@@ -126,7 +127,8 @@ classDiagram
     EntregaModelo --> ProfessorModelo : orientador/coorientador
     RevisaoModelo --> ProfessorModelo : emailAutor
     RevisaoModelo --> AlunoModelo : emailAluno
-    NotificacaoModelo --> AlunoModelo : destinatário?
-    NotificacaoModelo --> ProfessorModelo : destinatário?
+    NotificacaoModelo --> AlunoModelo : destinatário
+    NotificacaoModelo --> AlunoModelo : remetente
+    NotificacaoModelo --> ProfessorModelo : destinatário
 
 ```

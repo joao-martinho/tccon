@@ -1,7 +1,8 @@
 package br.furb.tccon.professor;
 
 public enum PapelProfessor {
-    COORD_TCC1,
+    PROF_TCC1,
+    PROF_TCC2,
     COORD_BCC,
     COORD_SIS
 }
