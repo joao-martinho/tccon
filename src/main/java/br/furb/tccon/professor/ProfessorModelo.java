@@ -41,6 +41,7 @@ public class ProfessorModelo {
 
     private String telefone;
 
+    private List<String> orientandosProvisorios;
     private List<String> orientandos;
     private List<String> coorientandos;
 

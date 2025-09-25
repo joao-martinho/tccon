@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import br.furb.tccon.aluno.AlunoModelo;
 import br.furb.tccon.aluno.AlunoRepositorio;
+import br.furb.tccon.orientacao.OrientacaoServico;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -21,6 +21,7 @@ public class ProfessorServico {
 
     private final ProfessorRepositorio professorRepositorio;
     private final AlunoRepositorio alunoRepositorio;
+    private final OrientacaoServico orientacaoServico;
 
     public ResponseEntity<Iterable<ProfessorModelo>> listarProfessores() {
         return new ResponseEntity<>(professorRepositorio.findAll(), HttpStatus.OK);
@@ -28,15 +29,13 @@ public class ProfessorServico {
 
     public ResponseEntity<ProfessorModelo> cadastrarProfessor(ProfessorModelo professorModelo) {
         if (professorModelo.getPapeis() == null || professorModelo.getPapeis().isEmpty()) {
-            Set<PapelProfessor> papeis = new HashSet<>();
-            professorModelo.setPapeis(papeis);
+            professorModelo.setPapeis(new HashSet<>());
         }
         return new ResponseEntity<>(professorRepositorio.save(professorModelo), HttpStatus.CREATED);
     }
 
     public ResponseEntity<ProfessorModelo> alterarProfessorTotal(String email, ProfessorModelo professorModelo) {
         Optional<ProfessorModelo> optional = professorRepositorio.findById(email);
-
         if (optional.isPresent()) {
             ProfessorModelo existente = optional.get();
             professorModelo.setEmail(email);
@@ -51,47 +50,41 @@ public class ProfessorServico {
 
             return new ResponseEntity<>(professorRepositorio.save(professorModelo), HttpStatus.OK);
         }
-
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     public ResponseEntity<ProfessorModelo> alterarProfessorParcial(String email, ProfessorModelo professorModelo) {
         Optional<ProfessorModelo> optional = professorRepositorio.findById(email);
-
         if (optional.isPresent()) {
             ProfessorModelo existente = optional.get();
 
             if (professorModelo.getNome() != null) {
                 existente.setNome(professorModelo.getNome());
             }
-
             if (professorModelo.getTelefone() != null) {
                 existente.setTelefone(professorModelo.getTelefone());
             }
-
             if (professorModelo.getOrientandos() != null) {
                 existente.setOrientandos(professorModelo.getOrientandos());
             }
-
+            if (professorModelo.getOrientandosProvisorios() != null) {
+                existente.setOrientandosProvisorios(professorModelo.getOrientandosProvisorios());
+            }
             if (professorModelo.getCoorientandos() != null) {
                 existente.setCoorientandos(professorModelo.getCoorientandos());
             }
-
             if (professorModelo.getSenha() != null) {
                 existente.setSenhaEmTexto(professorModelo.getSenha());
             }
-
             if (professorModelo.getCodigoVer() != null) {
                 existente.setCodigoVer(professorModelo.getCodigoVer());
             }
-
             if (professorModelo.getPapeis() != null && !professorModelo.getPapeis().isEmpty()) {
                 existente.setPapeis(professorModelo.getPapeis());
             }
 
             return new ResponseEntity<>(professorRepositorio.save(existente), HttpStatus.OK);
         }
-
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
@@ -154,16 +147,34 @@ public class ProfessorServico {
 
     public ResponseEntity<Iterable<AlunoModelo>> listarOrientandos(String email) {
         ProfessorModelo professorModelo = professorRepositorio.findByEmail(email);
-
         List<String> emailOrientandos = professorModelo.getOrientandos();
         List<AlunoModelo> orientandos = new ArrayList<>();
-        AlunoModelo alunoModelo;
 
         for (String e : emailOrientandos) {
-            alunoModelo = alunoRepositorio.findByEmail(e);
-            orientandos.add(alunoModelo);
+            AlunoModelo alunoModelo = alunoRepositorio.findByEmail(e);
+            if (alunoModelo != null) {
+                orientandos.add(alunoModelo);
+            }
         }
-
         return new ResponseEntity<>(orientandos, HttpStatus.OK);
+    }
+
+    public ResponseEntity<Iterable<AlunoModelo>> listarOrientandosProvisorios(String email) {
+        ProfessorModelo professorModelo = professorRepositorio.findByEmail(email);
+        List<String> emailOrientandosProvisorios = professorModelo.getOrientandosProvisorios();
+        List<AlunoModelo> orientandosProvisorios = new ArrayList<>();
+
+        for (String e : emailOrientandosProvisorios) {
+            AlunoModelo alunoModelo = alunoRepositorio.findByEmail(e);
+            if (alunoModelo != null) {
+                orientandosProvisorios.add(alunoModelo);
+            }
+        }
+        return new ResponseEntity<>(orientandosProvisorios, HttpStatus.OK);
+    }
+
+    // Agora delega a remoção de orientando provisório ao OrientacaoServico
+    public ResponseEntity<AlunoModelo> removerProvisorio(String emailProfessor, String emailAluno) {
+        return orientacaoServico.removerProvisorioDoProfessor(emailAluno, emailProfessor);
     }
 }

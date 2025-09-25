@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import br.furb.tccon.orientacao.OrientacaoServico;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 public class AlunoServico {
 
     private final AlunoRepositorio alunoRepositorio;
+    private final OrientacaoServico orientacaoServico;
 
     public ResponseEntity<Iterable<AlunoModelo>> listarAlunos() {
         return new ResponseEntity<>(alunoRepositorio.findAll(), HttpStatus.OK);
@@ -25,7 +27,6 @@ public class AlunoServico {
 
     public ResponseEntity<AlunoModelo> alterarAlunoTotal(String email, AlunoModelo alunoModelo) {
         Optional<AlunoModelo> optional = alunoRepositorio.findById(email);
-
         if (optional.isPresent()) {
             AlunoModelo existente = optional.get();
             alunoModelo.setEmail(email);
@@ -37,51 +38,43 @@ public class AlunoServico {
 
             return new ResponseEntity<>(alunoRepositorio.save(alunoModelo), HttpStatus.OK);
         }
-
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     public ResponseEntity<AlunoModelo> alterarAlunoParcial(String email, AlunoModelo alunoModelo) {
         Optional<AlunoModelo> optional = alunoRepositorio.findById(email);
-
         if (optional.isPresent()) {
             AlunoModelo existente = optional.get();
 
             if (alunoModelo.getNome() != null) {
                 existente.setNome(alunoModelo.getNome());
             }
-
             if (alunoModelo.getTelefone() != null) {
                 existente.setTelefone(alunoModelo.getTelefone());
             }
-
-            if (alunoModelo.getOrientadorProvisorio() != null) {
-                existente.setOrientadorProvisorio(alunoModelo.getOrientadorProvisorio());
-            }
-
             if (alunoModelo.getOrientador() != null) {
                 existente.setOrientador(alunoModelo.getOrientador());
             }
-
             if (alunoModelo.getCoorientador() != null) {
                 existente.setCoorientador(alunoModelo.getCoorientador());
             }
-
             if (alunoModelo.getCurso() != null) {
                 existente.setCurso(alunoModelo.getCurso());
             }
-
             if (alunoModelo.getCodigoVer() != null) {
                 existente.setCodigoVer(alunoModelo.getCodigoVer());
             }
-
             if (alunoModelo.getSenha() != null) {
                 existente.setSenhaEmTexto(alunoModelo.getSenha());
             }
 
+            // Delegar atribuição de orientador provisório para o serviço específico
+            if (alunoModelo.getOrientadorProvisorio() != null) {
+                return orientacaoServico.atribuirOrientadorProvisorio(email, alunoModelo.getOrientadorProvisorio());
+            }
+
             return new ResponseEntity<>(alunoRepositorio.save(existente), HttpStatus.OK);
         }
-
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
@@ -90,7 +83,6 @@ public class AlunoServico {
             alunoRepositorio.deleteById(email);
             return new ResponseEntity<>(HttpStatus.OK);
         }
-
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
@@ -107,5 +99,10 @@ public class AlunoServico {
 
     public void limparCodigoVer() {
         alunoRepositorio.limparCodigoVer(LocalDateTime.now().minusMinutes(10));
+    }
+
+    // Delegar remoção de orientador provisório para o OrientacaoServico
+    public ResponseEntity<AlunoModelo> removerProvisorio(String emailAluno, String emailProfessor) {
+        return orientacaoServico.removerProvisorioDoProfessor(emailAluno, emailProfessor);
     }
 }

@@ -1,7 +1,7 @@
 document.getElementById('formLogin').addEventListener('submit', async function(e) {
     e.preventDefault();
 
-    let email = document.getElementById('email').value;
+    let email = document.getElementById('email').value.trim();
     const senha = document.getElementById('senha').value;
 
     async function tentarLogin(emailTentativa) {
@@ -22,17 +22,13 @@ document.getElementById('formLogin').addEventListener('submit', async function(e
         let data;
 
         try {
-            // Primeira tentativa com o email original
+            // Primeira tentativa com email original
             data = await tentarLogin(email);
         } catch (err) {
-            // Se não tiver '@', tenta com @furb.br
+            // Se email não tem '@', tenta acrescentar '@furb.br'
             if (!email.includes('@')) {
-                try {
-                    email = `${email}@furb.br`;
-                    data = await tentarLogin(email);
-                } catch {
-                    throw err; // Se ainda assim falhar, lança o erro original para cair no catch externo
-                }
+                email = `${email}@furb.br`;
+                data = await tentarLogin(email);
             } else {
                 throw err;
             }
@@ -50,17 +46,8 @@ document.getElementById('formLogin').addEventListener('submit', async function(e
 
             if (Array.isArray(data.papeis)) {
                 data.papeis.forEach(papel => {
-                    switch (papel) {
-                        case "COORD_TCC1":
-                            localStorage.setItem("coordTcc1", "true");
-                            break;
-                        case "COORD_BCC":
-                            localStorage.setItem("coordBcc", "true");
-                            break;
-                        case "COORD_SIS":
-                            localStorage.setItem("coordSis", "true");
-                            break;
-                    }
+                    // Grava papel no localStorage em lowercase com valor "true"
+                    localStorage.setItem(papel.toLowerCase(), "true");
                 });
             }
 

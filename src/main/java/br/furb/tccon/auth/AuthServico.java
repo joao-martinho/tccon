@@ -42,11 +42,9 @@ public class AuthServico {
             Map<String, Object> response = new HashMap<>();
             response.put("tipo", "Professor");
             response.put("email", professorModelo.getEmail());
-            response.put("papeis", professorModelo.getPapeis());
 
             Set<PapelProfessor> papeis = professorModelo.getPapeis();
-            boolean coordenador = papeis != null && !papeis.isEmpty();
-            response.put("coordenador", coordenador);
+            response.put("papeis", papeis);
 
             return ResponseEntity.ok(response);
         }
@@ -55,12 +53,12 @@ public class AuthServico {
         if (adminModelo != null && adminModelo.conferirSenha(credenciais.getSenha())) {
             Map<String, Object> response = new HashMap<>();
             response.put("tipo", "Admin");
+            response.put("email", adminModelo.getEmail());
             return ResponseEntity.ok(response);
         }
 
         Map<String, Object> erro = new HashMap<>();
         erro.put("tipo", "Erro");
-        erro.put("coordenador", false);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(erro);
     }
 }

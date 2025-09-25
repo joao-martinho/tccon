@@ -35,6 +35,12 @@ public class ProfessorControle {
         return this.professorServico.listarOrientandos(email);
     }
 
+    @GetMapping("/orientandos-provisorios/{email}")
+    public ResponseEntity<Iterable<AlunoModelo>> listarOrientandosProvisorios(@PathVariable String email) {
+        return this.professorServico.listarOrientandosProvisorios(email);
+    }
+    
+
     @PostMapping
     public ResponseEntity<ProfessorModelo> cadastrarProfessor(@Valid @RequestBody ProfessorModelo professorModelo) {
         return this.professorServico.cadastrarProfessor(professorModelo);
@@ -48,6 +54,11 @@ public class ProfessorControle {
     @PutMapping("/{email}")
     public ResponseEntity<ProfessorModelo> alterarProfessorTotal(@Valid @PathVariable String email, @RequestBody ProfessorModelo professorModelo) {
         return this.professorServico.alterarProfessorTotal(email, professorModelo);
+    }
+
+    @PatchMapping("/remover-provisorio/{email}/{emailAluno}")
+    public ResponseEntity<AlunoModelo> removerProvisorio(@PathVariable String email, @PathVariable String emailAluno) {
+        return this.professorServico.removerProvisorio(email, emailAluno);
     }
 
     @PatchMapping("/{email}")

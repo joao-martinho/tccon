@@ -44,28 +44,21 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     await atualizarBadgeMensagens();
 
-    // --- NOVO: verificar se aluno.orientador é null e cinzar cards ---
-
     try {
         const resAluno = await fetch(`/alunos/${encodeURIComponent(email)}`);
         if (!resAluno.ok) throw new Error('Falha ao carregar dados do aluno.');
 
         const aluno = await resAluno.json();
 
-        if (!aluno.orientador) {
-            // pega todos os cards exceto os 2 primeiros
-            // Os cards estão dentro de div.row > div.col > div.card
-            // A ordem dos cards: 0 - notificações, 1 - escolher orientador, os demais cinzar
+        const cardTermo = document.getElementById('card-termo');
 
-            const cards = document.querySelectorAll('.row .col .card');
-            cards.forEach((card, index) => {
-                if (index > 1) {
-                    card.classList.add('grayed-out');
-                }
-            });
+        // ⚠️ Use orientadorProvisorio, não orientador
+        if (aluno.orientadorProvisorio) {
+            cardTermo?.classList.remove('grayed-out');
         }
+
+        // Não adiciona .grayed-out via JS — isso já está no HTML
     } catch (error) {
-        console.error('Erro ao verificar orientador:', error);
-        // Pode opcionalmente mostrar um aviso ao usuário
+        console.error('Erro ao verificar orientadorProvisorio:', error);
     }
 });
