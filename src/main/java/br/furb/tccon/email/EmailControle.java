@@ -1,34 +1,34 @@
-// package br.furb.tccon.email;
+package br.furb.tccon.email;
 
-// import java.util.Map;
+import java.util.Map;
 
-// import org.springframework.http.ResponseEntity;
-// import org.springframework.web.bind.annotation.PostMapping;
-// import org.springframework.web.bind.annotation.RequestBody;
-// import org.springframework.web.bind.annotation.RequestMapping;
-// import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-// import lombok.RequiredArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
-// @RestController
-// @RequiredArgsConstructor
-// @RequestMapping("/emails")
-// public class EmailControle {
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/emails")
+public class EmailControle {
     
-//     private final EmailServico emailServico;
+    private final EmailServico emailServico;
 
-//     @PostMapping("/codigo-ver")
-//     public ResponseEntity<?> enviarCodigoVer(@RequestBody Map<String, String> payload) {
-//         return emailServico.enviarCodigoVer(payload);
-//     }
+    @PostMapping("/codigo-ver")
+    public ResponseEntity<?> enviarCodigoVer(@RequestBody Map<String, String> payload) {
+        return emailServico.enviarCodigoVer(payload);
+    }
 
-//     @PostMapping("/verificar-codigo")
-//     public ResponseEntity<String> verificarCodigo(@RequestBody Map<String, String> payload) {
-//         return emailServico.verificarCodigo(payload);
-//     }
+    @PostMapping("/verificar-codigo")
+    public ResponseEntity<String> verificarCodigo(@RequestBody Map<String, String> payload) {
+        return emailServico.verificarCodigo(payload);
+    }
 
-//     @PostMapping("/confirmar-termo")
-//     public ResponseEntity<String> verificarTermo(@RequestBody Map<String, String> payload) {
-//         return emailServico.verificarTermo(payload);
-//     } 
-// }
+    @PostMapping("/confirmar-termo")
+    public ResponseEntity<String> verificarTermo(@RequestBody Map<String, String> payload) {
+        return emailServico.verificarTermo(payload);
+    } 
+}

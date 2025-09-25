@@ -91,7 +91,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         textCoorientador.textContent = t.emailCoorientador || '—';
         textPerfilCoorientador.textContent = t.perfilCoorientador || '—';
         textData.textContent = t.criadoEm ? formatarData(t.criadoEm) : '—';
-        textStatus.textContent = calcularStatus(t);
+        
+        const status = calcularStatus(t);
+        let badgeClass = '';
+
+        switch (status.toLowerCase()) {
+            case 'aprovado':
+                badgeClass = 'bg-success';
+                break;
+            case 'rejeitado':
+                badgeClass = 'bg-danger';
+                break;
+            default:
+                badgeClass = 'bg-warning text-dark';
+        }
+
+        const statusCapitalizado = status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
+        textStatus.innerHTML = `<span class="badge ${badgeClass}">${statusCapitalizado}</span>`;
 
         const statusLower = textStatus.textContent.toLowerCase();
         if (['aprovado', 'rejeitado'].includes(statusLower)) {
@@ -100,8 +116,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else {
             btnAprovar.disabled = false;
             btnRejeitar.disabled = false;
-            btnAprovar.onclick = () => atualizarStatus('aprovado');
-            btnRejeitar.onclick = () => atualizarStatus('rejeitado');
+            btnAprovar.onclick = () => atualizarStatus('Aprovado');
+            btnRejeitar.onclick = () => atualizarStatus('Rejeitado');
         }
     }
 

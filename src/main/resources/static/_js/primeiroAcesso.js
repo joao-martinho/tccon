@@ -20,7 +20,6 @@ function mostrarMensagem(texto, tipo = 'danger') {
 function validarCampos() {
     const camposPreenchidos = emailInput.value.trim() !== '' && codigoVerInput.value.trim() !== '';
     const senhasCoincidem = senhaInput.value === confirmaInput.value && senhaInput.value !== '';
-    btnFinalizar.disabled = !(camposPreenchidos && senhasCoincidem);
 }
 
 btnEnviarCodigoVer.addEventListener('click', async () => {

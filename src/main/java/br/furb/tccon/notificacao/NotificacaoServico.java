@@ -44,6 +44,10 @@ public class NotificacaoServico {
                 notificacaoModelo2.setTitulo(notificacaoModelo.getTitulo());
             }
 
+            if (notificacaoModelo.getEmailRemetente() != null) {
+                notificacaoModelo2.setEmailRemetente(notificacaoModelo.getEmailRemetente());
+            }   
+
             if (notificacaoModelo.getEmailDestinatario() != null) {
                 notificacaoModelo2.setEmailDestinatario(notificacaoModelo.getEmailDestinatario());
             }

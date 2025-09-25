@@ -1,21 +1,42 @@
 document.getElementById('formLogin').addEventListener('submit', async function(e) {
     e.preventDefault();
 
-    const email = document.getElementById('email').value;
+    let email = document.getElementById('email').value;
     const senha = document.getElementById('senha').value;
 
-    try {
+    async function tentarLogin(emailTentativa) {
         const response = await fetch('/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, senha })
+            body: JSON.stringify({ email: emailTentativa, senha })
         });
 
         if (!response.ok) {
-            throw new Error(); // qualquer falha cai no catch
+            throw new Error('Falha no login');
         }
 
-        const data = await response.json();
+        return response.json();
+    }
+
+    try {
+        let data;
+
+        try {
+            // Primeira tentativa com o email original
+            data = await tentarLogin(email);
+        } catch (err) {
+            // Se não tiver '@', tenta com @furb.br
+            if (!email.includes('@')) {
+                try {
+                    email = `${email}@furb.br`;
+                    data = await tentarLogin(email);
+                } catch {
+                    throw err; // Se ainda assim falhar, lança o erro original para cair no catch externo
+                }
+            } else {
+                throw err;
+            }
+        }
 
         localStorage.clear();
         localStorage.setItem('email', email);
@@ -50,7 +71,7 @@ document.getElementById('formLogin').addEventListener('submit', async function(e
             window.location.href = '../admin/painel.html';
         } 
         else {
-            throw new Error();
+            throw new Error('Tipo de usuário não reconhecido');
         }
     } catch (err) {
         mostrarMensagem("Houve um erro. Verifique as suas credenciais e tente novamente.", "danger");

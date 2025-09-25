@@ -52,6 +52,7 @@ public class TermoServico {
         }      
 
         NotificacaoModelo notificacaoOrientador = new NotificacaoModelo();
+        notificacaoOrientador.setEmailRemetente(termoModelo.getEmailAluno());
         notificacaoOrientador.setEmailDestinatario(termoModelo.getEmailOrientador());
         notificacaoOrientador.setTitulo("Termo de compromisso recebido");
         notificacaoOrientador.setConteudo(
@@ -61,6 +62,7 @@ public class TermoServico {
 
         if (termoModelo.getEmailCoorientador() != null) {
             NotificacaoModelo notificacaoCoorientador = new NotificacaoModelo();
+            notificacaoCoorientador.setEmailRemetente(termoModelo.getEmailAluno());
             notificacaoCoorientador.setEmailDestinatario(termoModelo.getEmailCoorientador());
             notificacaoCoorientador.setTitulo("Termo de compromisso recebido");
             notificacaoCoorientador.setConteudo(

@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const btnVoltar = document.querySelector('#btnVoltarPainel');
     if (btnVoltar) {
         if (tipo === 'professor') {
-            btnVoltar.href = '/professor/painel.html';
+            btnVoltar.href = '/professor/orientando/painel.html';
         } else if (tipo === 'aluno') {
             btnVoltar.href = '/aluno/painel.html';
         }
@@ -49,7 +49,31 @@ document.addEventListener('DOMContentLoaded', async () => {
             const res = await fetch(`/notificacoes/${encodeURIComponent(email)}`);
             if (!res.ok) throw new Error(`Falha ao carregar notificações. Status: ${res.status}`);
             const dados = await res.json();
-            const notificacoes = Array.isArray(dados) ? dados : [dados];
+            let notificacoes = Array.isArray(dados) ? dados : [dados];
+
+            // Se for professor, filtra pelas notificações do orientando
+            if (tipo === 'professor') {
+                const orientandoStr = localStorage.getItem('orientando');
+                let emailOrientando = null;
+
+                try {
+                    emailOrientando = orientandoStr.includes('{')
+                        ? JSON.parse(orientandoStr).email
+                        : orientandoStr;
+                } catch (e) {
+                    console.warn('Erro ao ler o email do orientando:', e);
+                }
+
+                if (emailOrientando) {
+                    notificacoes = notificacoes.filter(not =>
+                        not.emailRemetente &&
+                        not.emailRemetente === emailOrientando
+                    );
+                } else {
+                    notificacoes = []; // Se não há orientando, mostra zero notificações
+                }
+            }
+
             renderizarNotificacoes(notificacoes);
         } catch (err) {
             console.error('Erro ao buscar notificações:', err);

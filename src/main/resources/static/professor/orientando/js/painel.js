@@ -75,26 +75,34 @@ document.addEventListener('DOMContentLoaded', async () => {
   const email = localStorage.getItem('email')
 
   async function atualizarBadgeMensagens() {
-    if (!email) {
+    const orientando = localStorage.getItem('orientando')
+
+    if (!email || !orientando) {
       badgeMensagens.textContent = '0'
+      badgeMensagens.style.display = 'none'
       return
     }
 
     try {
       const res = await fetch(`/notificacoes/${encodeURIComponent(email)}`)
       if (!res.ok) throw new Error(`Falha ao carregar notificações. Status: ${res.status}`)
+
       const dados = await res.json()
       const mensagens = Array.isArray(dados) ? dados : [dados]
-      const naoLidas = mensagens.filter(msg => !msg.lida).length
 
-      if (naoLidas > 0) {
-        badgeMensagens.textContent = naoLidas
+      const naoLidasDoOrientando = mensagens.filter(
+        msg => !msg.lida && msg.emailRemetente === orientando
+      ).length
+
+      if (naoLidasDoOrientando > 0) {
+        badgeMensagens.textContent = naoLidasDoOrientando
         badgeMensagens.style.display = 'inline-block'
       } else {
         badgeMensagens.style.display = 'none'
       }
     } catch (err) {
       badgeMensagens.textContent = '0'
+      badgeMensagens.style.display = 'none'
     }
   }
 
