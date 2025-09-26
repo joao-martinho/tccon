@@ -69,7 +69,11 @@ public class AlunoServico {
             }
 
             if (alunoModelo.getOrientadorProvisorio() != null) {
-                return orientacaoServico.atribuirOrientadorProvisorio(email, alunoModelo.getOrientadorProvisorio());
+                orientacaoServico.atribuirOrientadorProvisorio(email, alunoModelo.getOrientadorProvisorio());
+            }
+
+            if (alunoModelo.getCoorientadorProvisorio() != null) {
+                orientacaoServico.atribuirCoorientadorProvisorio(email, alunoModelo.getCoorientadorProvisorio());
             }
 
             return new ResponseEntity<>(alunoRepositorio.save(existente), HttpStatus.OK);

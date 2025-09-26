@@ -117,30 +117,39 @@ public class TermoServico {
                 termoModelo2.setCriadoEm(termoModelo.getCriadoEm());
             }
 
-            if (termoModelo.getStatus() != null) {
-                termoModelo2.setStatus(termoModelo.getStatus());
+            if (termoModelo.getStatusOrientador() != null) {
+                termoModelo2.setStatusOrientador(termoModelo.getStatusOrientador());
+            }
 
-                String tituloAluno = termoModelo2.getStatus().equals("aprovado") ?
+            if (termoModelo.getStatusCoorientador() != null) {
+                termoModelo2.setStatusCoorientador(termoModelo.getStatusCoorientador());
+            }
+
+            if (termoModelo.getStatusFinal() != null) {
+                termoModelo2.setStatusFinal(termoModelo.getStatusFinal());
+
+                String tituloAluno = "aprovado".equals(termoModelo2.getStatusFinal()) ?
                     "Termo aprovado" : "Termo rejeitado";
-                String conteudoAluno = termoModelo2.getStatus().equals("aprovado") ?
+
+                String conteudoAluno = "aprovado".equals(termoModelo2.getStatusFinal()) ?
                     "O seu termo de compromisso foi aprovado." :
                     "O seu termo de compromisso foi rejeitado. Procure o seu orientador.";
+
+                if ("aprovado".equals(termoModelo2.getStatusFinal())) {
+                    orientacaoServico.aprovarTermo(termoModelo2);
+                }
 
                 NotificacaoModelo notificacaoAluno = new NotificacaoModelo();
                 notificacaoAluno.setEmailDestinatario(termoModelo2.getEmailAluno());
                 notificacaoAluno.setTitulo(tituloAluno);
                 notificacaoAluno.setConteudo(conteudoAluno);
                 notificacaoServico.cadastrarMensagem(notificacaoAluno);
-
-                if (termoModelo2.getStatus().equals("aprovado")) {
-                   orientacaoServico.aprovarTermo(termoModelo2);
-                } 
                 
             }
 
             TermoModelo salvo = this.termoRepositorio.save(termoModelo2);
 
-            if (termoModelo2.getStatus().equals("aprovado")) {
+            if (termoModelo2.getStatusFinal().equals("aprovado")) {
                 bancaServico.criarAPartirDoTermo(salvo);
             }
 

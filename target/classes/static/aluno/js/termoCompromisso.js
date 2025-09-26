@@ -1,15 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
-	const tipo = localStorage.getItem('tipo');
-	if (tipo !== 'aluno') {
-		alert('Você não tem permissão para acessar esta página :(');
-		window.location.href = '../login.html';
-	}
+  const tipo = localStorage.getItem('tipo');
+  if (tipo !== 'aluno') {
+    alert('Você não tem permissão para acessar esta página :(');
+    window.location.href = '../login.html';
+  }
 
-	const btnSair = document.getElementById('btnSair');
-	btnSair.addEventListener('click', () => {
-		localStorage.clear();
-		window.location.href = '../login.html';
-	});
+  const btnSair = document.getElementById('btnSair');
+  btnSair.addEventListener('click', () => {
+    localStorage.clear();
+    window.location.href = '../login.html';
+  });
 
   const btnFinalizar = document.querySelector('button[type="submit"]');
   const visualizacaoTermo = document.getElementById('visualizacaoTermo');
@@ -19,11 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     titulo: document.getElementById('titulo'),
     ano: document.getElementById('ano'),
     semestre: document.getElementById('semestre'),
-    resumo: document.getElementById('resumo'),
-    coorientadorCheckbox: document.getElementById('coorientadorCheckbox'),
-    coorientadorMenu: document.getElementById('coorientadorMenu'),
-    coorientador: document.getElementById('coorientador'),
-    perfilCoorientador: document.getElementById('perfilCoorientador'),
+    resumo: document.getElementById('resumo')
   };
 
   const termoInfo = {
@@ -33,42 +29,14 @@ document.addEventListener('DOMContentLoaded', () => {
     termoCoorientador: document.getElementById('termoCoorientador'),
     termoAnoSemestre: document.getElementById('termoAnoSemestre'),
     termoResumo: document.getElementById('termoResumo'),
-    termoStatus: document.getElementById('termoStatus'),
+    termoStatus: document.getElementById('termoStatus')
   };
-
-  campos.coorientadorMenu.style.maxHeight = '0';
-  campos.coorientadorMenu.style.overflow = 'hidden';
-  campos.coorientadorMenu.style.transition = 'max-height 0.5s ease, opacity 0.5s ease';
-  campos.coorientadorMenu.style.opacity = '0';
-
-  campos.coorientadorCheckbox.addEventListener('change', () => {
-    if (campos.coorientadorCheckbox.checked) {
-      campos.coorientadorMenu.style.display = 'block';
-      requestAnimationFrame(() => {
-        campos.coorientadorMenu.style.maxHeight = campos.coorientadorMenu.scrollHeight + 'px';
-        campos.coorientadorMenu.style.opacity = '1';
-      });
-    } else {
-      campos.coorientadorMenu.style.maxHeight = '0';
-      campos.coorientadorMenu.style.opacity = '0';
-
-      setTimeout(() => {
-        campos.coorientadorMenu.style.display = 'none';
-      }, 500);
-
-      campos.coorientador.value = '';
-      campos.perfilCoorientador.value = '';
-    }
-  });
 
   function setCamposReadonly(readonly) {
     campos.titulo.readOnly = readonly;
     campos.ano.disabled = readonly;
     campos.semestre.disabled = readonly;
     campos.resumo.readOnly = readonly;
-    campos.coorientadorCheckbox.disabled = readonly;
-    campos.coorientador.disabled = readonly || !campos.coorientadorCheckbox.checked;
-    campos.perfilCoorientador.readOnly = readonly || !campos.coorientadorCheckbox.checked;
   }
 
   function atualizarVisualizacaoTermo(termo) {
@@ -78,21 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (termo.emailCoorientador) {
       termoInfo.termoCoorientadorContainer.style.display = 'block';
       termoInfo.termoCoorientador.textContent = termo.emailCoorientador;
-      campos.coorientadorCheckbox.checked = true;
-      campos.coorientadorMenu.style.display = 'block';
-      campos.coorientadorMenu.style.maxHeight = campos.coorientadorMenu.scrollHeight + 'px';
-      campos.coorientadorMenu.style.opacity = '1';
-
-      campos.coorientador.value = termo.emailCoorientador;
-      campos.perfilCoorientador.value = termo.perfilCoorientador || '';
     } else {
       termoInfo.termoCoorientadorContainer.style.display = 'none';
-      campos.coorientadorCheckbox.checked = false;
-      campos.coorientadorMenu.style.maxHeight = '0';
-      campos.coorientadorMenu.style.opacity = '0';
-      campos.coorientadorMenu.style.display = 'none';
-      campos.coorientador.value = '';
-      campos.perfilCoorientador.value = '';
     }
 
     termoInfo.termoAnoSemestre.textContent = `${termo.ano}/${termo.semestre}`;
@@ -124,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function carregarTermo() {
     const emailAluno = localStorage.getItem('email');
     if (!emailAluno) {
-      mensagem.innerHTML = `<div class="alert alert-danger">Usuário não autenticado (email não encontrado).</div>`;
+      mensagem.innerHTML = `<div class="alert alert-danger">Usuário não autenticado.</div>`;
       return;
     }
 
@@ -146,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
         visualizacaoTermo.classList.add('d-none');
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   }
 
@@ -170,11 +125,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      const hoje = new Date();
-      const dia = String(hoje.getDate()).padStart(2, '0');
-      const mes = String(hoje.getMonth() + 1).padStart(2, '0'); // meses começam do 0
-      const ano = hoje.getFullYear();
-
       const termo = {
         titulo: campos.titulo.value.trim(),
         emailAluno: aluno.email,
@@ -185,9 +135,8 @@ document.addEventListener('DOMContentLoaded', () => {
         semestre: campos.semestre.value,
         resumo: campos.resumo.value.trim(),
         emailOrientador: aluno.orientadorProvisorio || null,
-        emailCoorientador: campos.coorientadorCheckbox.checked ? campos.coorientador.value : null,
-        perfilCoorientador: campos.coorientadorCheckbox.checked ? campos.perfilCoorientador.value.trim() : null,
-        status: "pendente",
+        emailCoorientador: aluno.coorientadorProvisorio || null,
+        statusFinal: "pendente",
         criadoEm: new Date().toISOString()
       };
 
@@ -232,5 +181,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
   carregarTermo();
 });
-
-   

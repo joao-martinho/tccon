@@ -46,6 +46,9 @@ public class AlunoModelo {
     private String orientador;
     
     @Email
+    private String coorientadorProvisorio;
+
+    @Email
     private String coorientador;
 
     private String codigoVer;

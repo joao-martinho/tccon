@@ -1,7 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const email = localStorage.getItem('orientando');
-  if (!email) {
-    localStorage.clear()
+  const emailAluno = localStorage.getItem('orientando');
+  const emailUsuario = localStorage.getItem('email');
+
+  if (!emailAluno) {
+    localStorage.clear();
     window.location.href = '../../login.html';
     return;
   }
@@ -11,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const elCurso = document.getElementById('textCurso');
   const elTitulo = document.getElementById('textTitulo');
   const elResumo = document.getElementById('textResumo');
+  const elOrientador = document.getElementById('textOrientador');
   const elCoorientador = document.getElementById('textCoorientador');
   const elPerfilCoorientador = document.getElementById('textPerfilCoorientador');
   const elData = document.getElementById('textData');
@@ -36,13 +39,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let badgeClass = 'bg-secondary';
     let texto = 'Pendente';
 
-    if (status.toLowerCase() === 'aprovado') {
+    if ("aprovado".equals?.(status?.toLowerCase?.()) || status?.toLowerCase() === 'aprovado') {
       badgeClass = 'bg-success';
       texto = 'Aprovado';
-    } else if (status.toLowerCase() === 'rejeitado') {
+    } else if ("rejeitado".equals?.(status?.toLowerCase?.()) || status?.toLowerCase() === 'rejeitado') {
       badgeClass = 'bg-danger';
       texto = 'Rejeitado';
-    } else if (status.toLowerCase() === 'pendente') {
+    } else if ("pendente".equals?.(status?.toLowerCase?.()) || status?.toLowerCase() === 'pendente') {
       badgeClass = 'bg-warning text-dark';
       texto = 'Pendente';
     }
@@ -50,10 +53,25 @@ document.addEventListener('DOMContentLoaded', () => {
     elStatus.innerHTML = `<span class="badge ${badgeClass}">${texto}</span>`;
   }
 
-  function atualizarBotoes(status) {
-    const finalizado = status.toLowerCase() === 'aprovado' || status.toLowerCase() === 'rejeitado';
-    btnAprovar.disabled = finalizado;
-    btnRejeitar.disabled = finalizado;
+  function atualizarBotoes() {
+    if (!termo) return;
+
+    if (emailUsuario === termo.emailOrientador) {
+      const finalizado = termo.statusOrientador !== null;
+      btnAprovar.disabled = finalizado;
+      btnRejeitar.disabled = finalizado;
+    } else if (emailUsuario === termo.emailCoorientador) {
+      if (termo.statusOrientador === 'aprovado') {
+        btnAprovar.disabled = false;
+        btnRejeitar.disabled = false;
+      } else {
+        btnAprovar.disabled = true;
+        btnRejeitar.disabled = true;
+      }
+    } else {
+      btnAprovar.disabled = true;
+      btnRejeitar.disabled = true;
+    }
   }
 
   function popularCampos(termo) {
@@ -62,39 +80,34 @@ document.addEventListener('DOMContentLoaded', () => {
     elCurso.textContent = termo.cursoAluno || '—';
     elTitulo.textContent = termo.titulo || '—';
     elResumo.textContent = termo.resumo || '—';
+    elOrientador.textContent = termo.emailOrientador || '—';
     elCoorientador.textContent = termo.emailCoorientador || '—';
     elPerfilCoorientador.textContent = termo.perfilCoorientador || '—';
     elData.textContent = termo.criadoEm ? formatarData(termo.criadoEm) : '—';
-    atualizarBadgeStatus(termo.status || 'pendente');
-    atualizarBotoes(termo.status || 'pendente');
+    atualizarBadgeStatus(termo.statusFinal || 'pendente');
+    atualizarBotoes();
   }
 
-  async function buscarTermo(email) {
+  async function buscarTermo(emailAluno) {
     try {
-      const res = await fetch(`/termos/aluno/${encodeURIComponent(email)}`);
+      const res = await fetch(`/termos/aluno/${encodeURIComponent(emailAluno)}`);
       if (!res.ok) throw new Error('Erro ao buscar termo');
-      const data = await res.json();
-      return data;
+      return await res.json();
     } catch (error) {
       console.error(error);
       return null;
     }
   }
 
-  async function atualizarTermo(id, novoStatus) {
+  async function atualizarTermo(id, dados) {
     try {
       const res = await fetch(`/termos/${id}`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status: novoStatus }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dados),
       });
-
       if (!res.ok) throw new Error('Erro ao atualizar termo');
-
-      const data = await res.json();
-      return data;
+      return await res.json();
     } catch (error) {
       console.error(error);
       return null;
@@ -104,28 +117,36 @@ document.addEventListener('DOMContentLoaded', () => {
   btnAprovar.addEventListener('click', async () => {
     if (!termo) return;
 
-    const atualizado = await atualizarTermo(termo.id, 'aprovado');
-    if (atualizado) {
-      termo.status = 'aprovado';
-      popularCampos(termo);
+    if (emailUsuario === termo.emailOrientador && termo.statusOrientador === null) {
+      const atualizado = await atualizarTermo(termo.id, { statusOrientador: 'aprovado' });
+      if (atualizado) {
+        termo.statusOrientador = 'aprovado';
+        popularCampos(termo);
+      }
+    } else if (emailUsuario === termo.emailCoorientador && termo.statusOrientador === 'aprovado') {
+      const atualizado = await atualizarTermo(termo.id, { statusFinal: 'aprovado' });
+      if (atualizado) {
+        termo.statusFinal = 'aprovado';
+        popularCampos(termo);
+      }
     }
   });
 
   btnRejeitar.addEventListener('click', async () => {
     if (!termo) return;
 
-    const atualizado = await atualizarTermo(termo.id, 'rejeitado');
-    if (atualizado) {
-      termo.status = 'rejeitado';
-      popularCampos(termo);
+    if (emailUsuario === termo.emailOrientador && termo.statusOrientador === null) {
+      const atualizado = await atualizarTermo(termo.id, { statusOrientador: 'rejeitado' });
+      if (atualizado) {
+        termo.statusOrientador = 'rejeitado';
+        popularCampos(termo);
+      }
     }
   });
 
   (async () => {
-    termo = await buscarTermo(email);
-    if (termo) {
-      popularCampos(termo);
-    }
+    termo = await buscarTermo(emailAluno);
+    if (termo) popularCampos(termo);
   })();
 
   document.getElementById('btnSair').addEventListener('click', () => {

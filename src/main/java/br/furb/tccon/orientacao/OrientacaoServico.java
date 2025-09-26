@@ -80,6 +80,31 @@ public class OrientacaoServico {
         return new ResponseEntity<>(aluno, HttpStatus.OK);
     }
 
+    public ResponseEntity<AlunoModelo> atribuirCoorientadorProvisorio(String emailAluno, String emailProfessor) {
+        ProfessorModelo professor = professorRepositorio.findByEmail(emailProfessor);
+        AlunoModelo aluno = alunoRepositorio.findByEmail(emailAluno);
+
+        if (professor == null || aluno == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        List<String> coorientandosProvisorios = professor.getCoorientandosProvisorios();
+        if (coorientandosProvisorios == null) {
+            coorientandosProvisorios = new ArrayList<>();
+        }
+
+        if (!coorientandosProvisorios.contains(emailAluno)) {
+            coorientandosProvisorios.add(emailAluno);
+            professor.setCoorientandosProvisorios(coorientandosProvisorios);
+            professorRepositorio.save(professor);
+        }
+
+        aluno.setCoorientadorProvisorio(emailProfessor);
+        alunoRepositorio.save(aluno);
+
+        return new ResponseEntity<>(aluno, HttpStatus.OK);
+    }
+
     public void aprovarTermo(TermoModelo termoModelo2) {
         AlunoModelo alunoModelo = alunoRepositorio.findByEmail(termoModelo2.getEmailAluno());
         alunoModelo.setOrientador(termoModelo2.getEmailOrientador());

@@ -58,6 +58,8 @@ public class TermoModelo {
 
     private LocalDateTime criadoEm;
 
-    private String status;
+    private String statusOrientador;
+
+    private String statusFinal;
     
 }

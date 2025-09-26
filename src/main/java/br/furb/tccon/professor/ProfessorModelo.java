@@ -43,6 +43,7 @@ public class ProfessorModelo {
 
     private List<String> orientandosProvisorios;
     private List<String> orientandos;
+    private List<String> coorientandosProvisorios;
     private List<String> coorientandos;
 
     private String senha;

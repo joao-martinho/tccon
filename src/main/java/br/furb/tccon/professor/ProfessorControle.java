@@ -39,6 +39,16 @@ public class ProfessorControle {
     public ResponseEntity<Iterable<AlunoModelo>> listarOrientandosProvisorios(@PathVariable String email) {
         return this.professorServico.listarOrientandosProvisorios(email);
     }
+
+    @GetMapping("/coorientandos/{email}")
+    public ResponseEntity<Iterable<AlunoModelo>> listarCoorientandos(@PathVariable String email) {
+        return this.professorServico.listarCoorientandos(email);
+    }
+
+    @GetMapping("/coorientandos-provisorios/{email}")
+    public ResponseEntity<Iterable<AlunoModelo>> listarCoorientandosProvisorios(@PathVariable String email) {
+        return this.professorServico.listarCoorientandosProvisorios(email);
+    }
     
     @PostMapping
     public ResponseEntity<ProfessorModelo> cadastrarProfessor(@Valid @RequestBody ProfessorModelo professorModelo) {

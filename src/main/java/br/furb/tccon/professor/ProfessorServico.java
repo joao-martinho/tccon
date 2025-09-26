@@ -184,4 +184,40 @@ public class ProfessorServico {
     public ResponseEntity<AlunoModelo> removerProvisorio(String emailProfessor, String emailAluno) {
         return orientacaoServico.removerRelacaoProvisoria(emailAluno, emailProfessor);
     }
+
+    public ResponseEntity<Iterable<AlunoModelo>> listarCoorientandos(String email) {
+        ProfessorModelo professorModelo = professorRepositorio.findByEmail(email);
+        List<String> emailCoorientandos = professorModelo.getCoorientandos();
+        List<AlunoModelo> coorientandos = new ArrayList<>();
+
+        if (emailCoorientandos == null) {
+            return new ResponseEntity<>(coorientandos, HttpStatus.OK);
+        }
+        
+        for (String e : emailCoorientandos) {
+            AlunoModelo alunoModelo = alunoRepositorio.findByEmail(e);
+            if (alunoModelo != null) {
+                coorientandos.add(alunoModelo);
+            }
+        }
+        return new ResponseEntity<>(coorientandos, HttpStatus.OK);
+    }
+
+    public ResponseEntity<Iterable<AlunoModelo>> listarCoorientandosProvisorios(String email) {
+       ProfessorModelo professorModelo = professorRepositorio.findByEmail(email);
+        List<String> emailCoorientandosProvisorios = professorModelo.getCoorientandosProvisorios();
+        List<AlunoModelo> coorientandosProvisorios = new ArrayList<>();
+
+        if (emailCoorientandosProvisorios == null) {
+            return new ResponseEntity<>(coorientandosProvisorios, HttpStatus.OK);
+        }
+        
+        for (String e : emailCoorientandosProvisorios) {
+            AlunoModelo alunoModelo = alunoRepositorio.findByEmail(e);
+            if (alunoModelo != null) {
+                coorientandosProvisorios.add(alunoModelo);
+            }
+        }
+        return new ResponseEntity<>(coorientandosProvisorios, HttpStatus.OK);
+    }
 }
