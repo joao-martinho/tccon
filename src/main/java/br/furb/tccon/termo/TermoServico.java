@@ -10,16 +10,15 @@ import org.springframework.stereotype.Service;
 import br.furb.tccon.banca.BancaServico;
 import br.furb.tccon.notificacao.NotificacaoModelo;
 import br.furb.tccon.notificacao.NotificacaoServico;
-import br.furb.tccon.professor.ProfessorModelo;
-import br.furb.tccon.professor.ProfessorRepositorio;
+import br.furb.tccon.orientacao.OrientacaoServico;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class TermoServico {
-    
+
+    private final OrientacaoServico orientacaoServico;  
     private final TermoRepositorio termoRepositorio;
-    private final ProfessorRepositorio professorRepositorio;
     private final NotificacaoServico notificacaoServico;
     private final BancaServico bancaServico;
 
@@ -64,7 +63,7 @@ public class TermoServico {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    public ResponseEntity<TermoModelo> alterarTermoParcial(Long id, String email, TermoModelo termoModelo) {
+    public ResponseEntity<TermoModelo> alterarTermoParcial(Long id, TermoModelo termoModelo) {
         Optional<TermoModelo> optional = this.termoRepositorio.findById(id);
 
         if (optional.isPresent()) {
@@ -118,7 +117,7 @@ public class TermoServico {
                 termoModelo2.setCriadoEm(termoModelo.getCriadoEm());
             }
 
-            if (termoModelo.getStatus() != null && email.equals(termoModelo2.getEmailOrientador())) {
+            if (termoModelo.getStatus() != null) {
                 termoModelo2.setStatus(termoModelo.getStatus());
 
                 String tituloAluno = termoModelo2.getStatus().equals("aprovado") ?
@@ -132,6 +131,11 @@ public class TermoServico {
                 notificacaoAluno.setTitulo(tituloAluno);
                 notificacaoAluno.setConteudo(conteudoAluno);
                 notificacaoServico.cadastrarMensagem(notificacaoAluno);
+
+                if (termoModelo2.getStatus().equals("aprovado")) {
+                   orientacaoServico.aprovarTermo(termoModelo2);
+                } 
+                
             }
 
             TermoModelo salvo = this.termoRepositorio.save(termoModelo2);
@@ -189,5 +193,7 @@ public class TermoServico {
 
         return new ResponseEntity<>(termoModelos, HttpStatus.OK);
     }
+
+    
 
 }

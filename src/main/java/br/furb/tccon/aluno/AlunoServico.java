@@ -68,7 +68,6 @@ public class AlunoServico {
                 existente.setSenhaEmTexto(alunoModelo.getSenha());
             }
 
-            // Delegar atribuição de orientador provisório para o serviço específico
             if (alunoModelo.getOrientadorProvisorio() != null) {
                 return orientacaoServico.atribuirOrientadorProvisorio(email, alunoModelo.getOrientadorProvisorio());
             }
