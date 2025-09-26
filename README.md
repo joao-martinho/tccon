@@ -193,7 +193,7 @@ Abaixo estão os objetos que eu usei para povoar o banco de dados do ambiente de
   "telefone": "4799123456",
   "senha": "gustavo123",
   "curso": "BCC",
-  "orientadorProvisorio": null
+  "orientadorProvisorio": null,
   "orientador": null,
   "coorientador": null,
   "codigoVer": null,
