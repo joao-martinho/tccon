@@ -10,7 +10,7 @@ Este repositório contém o código do TCCOn, um sistema de gerenciamento de TCC
 
 ## Diagrama MER
 
-Abaixo está o modelo entidade-relacionamento do TCCOn, renderizado pela ferramenta Mermaid:  
+Abaixo está o modelo entidade-relacionamento do TCCOn, renderizado pela ferramenta Mermaid.
 
 ```mermaid
 classDiagram
