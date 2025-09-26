@@ -214,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const termoSalvo = await resPost.json();
 
-      mensagem.innerHTML = `<div class="alert alert-success">Termo enviado com sucesso!</div>`;
+      mensagem.innerHTML = `<div class="alert alert-success">Termo enviado com sucesso.</div>`;
 
       atualizarVisualizacaoTermo(termoSalvo);
       atualizarVisualizacaoTermo(termoSalvo);

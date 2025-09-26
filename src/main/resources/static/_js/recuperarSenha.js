@@ -17,12 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
     }
 
-    function validarCampos() {
-        const camposPreenchidos = emailInput.value.trim() !== '' && codigoVerInput.value.trim() !== '';
-        const senhasCoincidem = senhaInput.value === confirmaInput.value && senhaInput.value !== '';
-        btnFinalizar.disabled = !(camposPreenchidos && senhasCoincidem);
-    }
-
     btnEnviarCodigoVer.addEventListener('click', async () => {
         const selecionado = document.querySelector('input[name="tipoUsuario"]:checked');
         if (!selecionado) {
@@ -111,7 +105,6 @@ document.addEventListener('DOMContentLoaded', () => {
             senhaInput.value = '';
             confirmaInput.value = '';
             codigoVerInput.value = '';
-            btnFinalizar.disabled = true;
         } catch (err) {
             console.error(err);
             mostrarMensagem(err.message);

@@ -40,7 +40,6 @@ public class ProfessorControle {
         return this.professorServico.listarOrientandosProvisorios(email);
     }
     
-
     @PostMapping
     public ResponseEntity<ProfessorModelo> cadastrarProfessor(@Valid @RequestBody ProfessorModelo professorModelo) {
         return this.professorServico.cadastrarProfessor(professorModelo);

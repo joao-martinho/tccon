@@ -150,6 +150,10 @@ public class ProfessorServico {
         List<String> emailOrientandos = professorModelo.getOrientandos();
         List<AlunoModelo> orientandos = new ArrayList<>();
 
+        if (emailOrientandos == null) {
+            return new ResponseEntity<>(orientandos, HttpStatus.OK);
+        }
+
         for (String e : emailOrientandos) {
             AlunoModelo alunoModelo = alunoRepositorio.findByEmail(e);
             if (alunoModelo != null) {
@@ -164,6 +168,10 @@ public class ProfessorServico {
         List<String> emailOrientandosProvisorios = professorModelo.getOrientandosProvisorios();
         List<AlunoModelo> orientandosProvisorios = new ArrayList<>();
 
+        if (emailOrientandosProvisorios == null) {
+            return new ResponseEntity<>(orientandosProvisorios, HttpStatus.OK);
+        }
+        
         for (String e : emailOrientandosProvisorios) {
             AlunoModelo alunoModelo = alunoRepositorio.findByEmail(e);
             if (alunoModelo != null) {
