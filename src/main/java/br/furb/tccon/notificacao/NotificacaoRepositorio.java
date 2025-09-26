@@ -16,7 +16,7 @@ public interface NotificacaoRepositorio extends JpaRepository<NotificacaoModelo,
 
     @Modifying
     @Transactional
-    @Query(value = "DELETE FROM mensagens", nativeQuery = true)
+    @Query(value = "DELETE FROM notificacoes", nativeQuery = true)
     void truncateTable();
 }
 

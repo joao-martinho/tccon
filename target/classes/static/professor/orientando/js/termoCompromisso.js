@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
   const email = localStorage.getItem('orientando');
   if (!email) {
-    alert('Email do orientando não encontrado no localStorage. Por favor, faça login.');
-    window.location.href = 'login.html';
+    localStorage.clear()
+    window.location.href = '../../login.html';
     return;
   }
 
@@ -50,6 +50,12 @@ document.addEventListener('DOMContentLoaded', () => {
     elStatus.innerHTML = `<span class="badge ${badgeClass}">${texto}</span>`;
   }
 
+  function atualizarBotoes(status) {
+    const finalizado = status.toLowerCase() === 'aprovado' || status.toLowerCase() === 'rejeitado';
+    btnAprovar.disabled = finalizado;
+    btnRejeitar.disabled = finalizado;
+  }
+
   function popularCampos(termo) {
     elEmailAluno.textContent = termo.emailAluno || '—';
     elTelefoneAluno.textContent = termo.telefoneAluno || '—';
@@ -60,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
     elPerfilCoorientador.textContent = termo.perfilCoorientador || '—';
     elData.textContent = termo.criadoEm ? formatarData(termo.criadoEm) : '—';
     atualizarBadgeStatus(termo.status || 'pendente');
+    atualizarBotoes(termo.status || 'pendente');
   }
 
   async function buscarTermo(email) {
@@ -69,7 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await res.json();
       return data;
     } catch (error) {
-      alert('Falha ao carregar o termo: ' + error.message);
       console.error(error);
       return null;
     }
@@ -90,7 +96,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await res.json();
       return data;
     } catch (error) {
-      alert('Falha ao atualizar termo: ' + error.message);
       console.error(error);
       return null;
     }
@@ -103,7 +108,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (atualizado) {
       termo.status = 'aprovado';
       popularCampos(termo);
-      alert('Termo aprovado com sucesso!');
     }
   });
 
@@ -114,7 +118,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (atualizado) {
       termo.status = 'rejeitado';
       popularCampos(termo);
-      alert('Termo rejeitado com sucesso!');
     }
   });
 
@@ -127,6 +130,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('btnSair').addEventListener('click', () => {
     localStorage.removeItem('orientando');
-    window.location.href = 'login.html'; // ou outra página de logout/login
+    window.location.href = '../../login.html';
   });
 });

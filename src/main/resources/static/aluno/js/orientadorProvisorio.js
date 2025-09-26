@@ -24,11 +24,9 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  let orientadorEmail = null;
-
   fetch('/professores')
     .then(response => {
-      if (!response.ok) throw new Error('Erro ao carregar lista de professores');
+      if (!response.ok) throw new Error('Erro ao carregar lista de professores.');
       return response.json();
     })
     .then(professores => {
@@ -42,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return fetch(`/alunos/${encodeURIComponent(alunoEmail)}`);
     })
     .then(responseAluno => {
-      if (!responseAluno.ok) throw new Error('Erro ao carregar dados do aluno');
+      if (!responseAluno.ok) throw new Error('Erro ao carregar dados do aluno.');
       return responseAluno.json();
     })
     .then(aluno => {
@@ -88,12 +86,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (!response.ok) {
         const erroData = await response.json();
-        throw new Error(erroData.message || 'Erro ao salvar orientador');
+        throw new Error(erroData.message || 'Erro ao salvar orientador.');
       }
 
       orientadorEmail = orientadorEmailSelecionado;
 
-      // Exibe orientador escolhido
       const textoOrientador = selectOrientador.options[selectOrientador.selectedIndex].textContent;
       viewOrientador.textContent = textoOrientador;
       visualizacao.style.display = 'block';
@@ -117,6 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
+      
       const response = await fetch(`/alunos/remover-provisorio/${encodeURIComponent(alunoEmail)}/${encodeURIComponent(orientadorEmail)}`, {
         method: 'PATCH'
       });

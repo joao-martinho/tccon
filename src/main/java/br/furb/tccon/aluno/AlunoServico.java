@@ -100,7 +100,6 @@ public class AlunoServico {
         alunoRepositorio.limparCodigoVer(LocalDateTime.now().minusMinutes(10));
     }
 
-    // Delegar remoção de orientador provisório para o OrientacaoServico
     public ResponseEntity<AlunoModelo> removerProvisorio(String emailAluno, String emailProfessor) {
         return orientacaoServico.removerRelacaoProvisoria(emailAluno, emailProfessor);
     }

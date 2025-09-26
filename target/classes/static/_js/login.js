@@ -1,36 +1,21 @@
 document.getElementById('formLogin').addEventListener('submit', async function(e) {
     e.preventDefault();
 
-    let email = document.getElementById('email').value.trim();
+    const email = document.getElementById('email').value.trim();
     const senha = document.getElementById('senha').value;
 
-    async function tentarLogin(emailTentativa) {
+    try {
         const response = await fetch('/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: emailTentativa, senha })
+            body: JSON.stringify({ email, senha })
         });
 
         if (!response.ok) {
             throw new Error('Falha no login');
         }
 
-        return response.json();
-    }
-
-    try {
-        let data;
-
-        try {
-            data = await tentarLogin(email);
-        } catch (err) {
-            if (!email.includes('@')) {
-                email = `${email}@furb.br`;
-                data = await tentarLogin(email);
-            } else {
-                throw err;
-            }
-        }
+        const data = await response.json();
 
         localStorage.clear();
         localStorage.setItem('email', email);

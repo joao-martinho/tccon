@@ -58,7 +58,6 @@ public class AuthServico {
         }
 
         Map<String, Object> erro = new HashMap<>();
-        erro.put("tipo", "Erro");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(erro);
     }
 }

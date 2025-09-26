@@ -170,6 +170,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      const hoje = new Date();
+      const dia = String(hoje.getDate()).padStart(2, '0');
+      const mes = String(hoje.getMonth() + 1).padStart(2, '0'); // meses começam do 0
+      const ano = hoje.getFullYear();
+      const dataFormatada = `${dia}/${mes}/${ano}`;
+
+
       const termo = {
         titulo: campos.titulo.value.trim(),
         emailAluno: aluno.email,
@@ -182,27 +189,38 @@ document.addEventListener('DOMContentLoaded', () => {
         emailOrientador: aluno.orientadorProvisorio || null,
         emailCoorientador: campos.coorientadorCheckbox.checked ? campos.coorientador.value : null,
         perfilCoorientador: campos.coorientadorCheckbox.checked ? campos.perfilCoorientador.value.trim() : null,
-        status: null,
+        status: "pendente",
+        criadoEm: new Date().toISOString()
       };
 
-      const resPost = await fetch('/termos', {
-        method: 'POST',
+      let metodo = 'POST';
+      let url = '/termos';
+
+      const resTermoExistente = await fetch(`/termos/aluno/${encodeURIComponent(emailAluno)}`);
+      if (resTermoExistente.ok) {
+        let termoExistente = null;
+        const text = await resTermoExistente.text();
+        if (text) termoExistente = JSON.parse(text);
+
+        if (termoExistente && termoExistente.id) {
+          metodo = 'PATCH';
+          url = `/termos/${encodeURIComponent(termoExistente.id)}`;
+        }
+      }
+
+      const resPost = await fetch(url, {
+        method: metodo,
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(termo),
       });
 
-      if (!resPost.ok) {
-        const errData = await resPost.json();
-        mensagem.innerHTML = `<div class="alert alert-danger">Erro ao enviar termo: ${errData.message || resPost.statusText}</div>`;
-        return;
-      }
-
-      const termoSalvo = await resPost.json();
+      let termoSalvo = null;
+      const resText = await resPost.text();
+      if (resText) termoSalvo = JSON.parse(resText);
 
       mensagem.innerHTML = `<div class="alert alert-success">Termo enviado com sucesso.</div>`;
 
-      atualizarVisualizacaoTermo(termoSalvo);
-      atualizarVisualizacaoTermo(termoSalvo);
+      if (termoSalvo) atualizarVisualizacaoTermo(termoSalvo);
 
     } catch (error) {
       mensagem.innerHTML = `<div class="alert alert-danger">Erro na conexão: ${error.message}</div>`;
