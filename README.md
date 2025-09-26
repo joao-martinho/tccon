@@ -30,6 +30,7 @@ classDiagram
         -String curso
         -String orientadorProvisorio
         -String orientador
+        -String coorientadorProvisorio
         -String coorientador
         -String codigoVer
         -LocalDateTime criadoEm
@@ -43,6 +44,7 @@ classDiagram
         -String telefone
         -List~String~ orientandosProvisorios
         -List~String~ orientandos
+        -List~String~ coorientandosProvisorios
         -List~String~ coorientandos
         -String senha
         -String codigoVer
@@ -125,6 +127,7 @@ classDiagram
     %% Relacionamentos (via e-mails)
     AlunoModelo --> ProfessorModelo : orientadorProvisorio
     AlunoModelo --> ProfessorModelo : orientador
+    AlunoModelo --> ProfessorModelo : coorientadorProvisorio
     AlunoModelo --> ProfessorModelo : coorientador
     ProfessorModelo "1" --> "*" PapelProfessor : papeis
     TermoModelo --> AlunoModelo : emailAluno
