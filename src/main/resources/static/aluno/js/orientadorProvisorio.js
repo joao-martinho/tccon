@@ -24,10 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  // Variável global para armazenar o email do orientador provisório atual
   let orientadorEmail = null;
 
-  // 1. Buscar e popular combobox de professores
   fetch('/professores')
     .then(response => {
       if (!response.ok) throw new Error('Erro ao carregar lista de professores');
@@ -41,7 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
         selectOrientador.appendChild(option);
       });
 
-      // Após popular o combobox, buscar dados do aluno para verificar orientadorProvisorio
       return fetch(`/alunos/${encodeURIComponent(alunoEmail)}`);
     })
     .then(responseAluno => {
@@ -52,19 +49,15 @@ document.addEventListener('DOMContentLoaded', () => {
       if (aluno.orientadorProvisorio) {
         orientadorEmail = aluno.orientadorProvisorio;
 
-        // Mostrar card de visualização
         visualizacao.style.display = 'block';
 
-        // Exibir nome do orientador no span
         const option = Array.from(selectOrientador.options).find(opt => opt.value === orientadorEmail);
         const nomeOrientador = option ? option.textContent : orientadorEmail;
 
         viewOrientador.textContent = nomeOrientador;
 
-        // Tornar combobox readonly (disabled)
         selectOrientador.disabled = true;
 
-        // Desabilitar botão de submit para evitar envio
         form.querySelector('button[type="submit"]').disabled = true;
       }
     })
@@ -72,7 +65,6 @@ document.addEventListener('DOMContentLoaded', () => {
       mensagem.innerHTML = `<div class="alert alert-danger">${err.message}</div>`;
     });
 
-  // 2. Submissão do formulário para salvar orientador via PATCH
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
 
@@ -99,7 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
         throw new Error(erroData.message || 'Erro ao salvar orientador');
       }
 
-      // Atualiza a variável global com o orientador escolhido
       orientadorEmail = orientadorEmailSelecionado;
 
       // Exibe orientador escolhido
@@ -109,7 +100,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       mensagem.innerHTML = '<div class="alert alert-success">Orientador provisório salvo com sucesso.</div>';
 
-      // Desabilita o select e o botão de submit
       selectOrientador.disabled = true;
       form.querySelector('button[type="submit"]').disabled = true;
 
@@ -119,7 +109,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // 3. Ação de remover orientador provisório
   const btnRemover = document.getElementById('btnRemoverOrientador');
   btnRemover?.addEventListener('click', async () => {
     if (!orientadorEmail) {
@@ -139,12 +128,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
       mensagem.innerHTML = '<div class="alert alert-success">Orientador provisório removido com sucesso.</div>';
 
-      // Oculta a visualização e habilita novamente o formulário
       visualizacao.style.display = 'none';
       selectOrientador.disabled = false;
       form.querySelector('button[type="submit"]').disabled = false;
       selectOrientador.value = ""; // limpa a seleção
-      orientadorEmail = null; // reseta variável global
+      orientadorEmail = null;
 
     } catch (err) {
       mensagem.innerHTML = `<div class="alert alert-danger">${err.message}</div>`;

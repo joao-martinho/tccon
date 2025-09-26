@@ -52,12 +52,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const cardTermo = document.getElementById('card-termo');
 
-        // ⚠️ Use orientadorProvisorio, não orientador
         if (aluno.orientadorProvisorio) {
             cardTermo?.classList.remove('grayed-out');
         }
 
-        // Não adiciona .grayed-out via JS — isso já está no HTML
     } catch (error) {
         console.error('Erro ao verificar orientadorProvisorio:', error);
     }

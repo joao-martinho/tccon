@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const email = localStorage.getItem('orientando');
   if (!email) {
     alert('Email do orientando não encontrado no localStorage. Por favor, faça login.');
-    window.location.href = 'login.html'; // ou outra página de login
+    window.location.href = 'login.html';
     return;
   }
 

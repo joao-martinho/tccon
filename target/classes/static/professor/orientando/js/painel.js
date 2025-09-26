@@ -64,13 +64,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   })
 
-  // ========= botão sair =========
   document.getElementById('btnSair').addEventListener('click', () => {
     localStorage.clear()
     window.location.href = '../login.html'
   })
 
-  // ========= badge de mensagens =========
   const badgeMensagens = document.getElementById('badge-mensagens')
   const email = localStorage.getItem('email')
 

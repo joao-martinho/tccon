@@ -108,7 +108,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
     
-
     try {
       await atualizarPapel("prof-tcc1", atuais.tcc1, tcc1);
       await atualizarPapel("prof-tcc2", atuais.tcc2, tcc2);

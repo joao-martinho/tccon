@@ -181,7 +181,6 @@ public class ProfessorServico {
         return new ResponseEntity<>(orientandosProvisorios, HttpStatus.OK);
     }
 
-    // Agora delega a remoção de orientando provisório ao OrientacaoServico
     public ResponseEntity<AlunoModelo> removerProvisorio(String emailProfessor, String emailAluno) {
         return orientacaoServico.removerRelacaoProvisoria(emailAluno, emailProfessor);
     }

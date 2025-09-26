@@ -36,9 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
     termoStatus: document.getElementById('termoStatus'),
   };
 
-  // Inicialmente esconder o menu coorientador (com CSS visível: none)
-  // Aqui vamos fazer a animação ao mostrar/esconder
-
   campos.coorientadorMenu.style.maxHeight = '0';
   campos.coorientadorMenu.style.overflow = 'hidden';
   campos.coorientadorMenu.style.transition = 'max-height 0.5s ease, opacity 0.5s ease';
@@ -46,19 +43,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   campos.coorientadorCheckbox.addEventListener('change', () => {
     if (campos.coorientadorCheckbox.checked) {
-      // Mostrar com animação suave
-      campos.coorientadorMenu.style.display = 'block'; // garante visibilidade para animar
-      // Depois de um frame para aplicar a transição
+      campos.coorientadorMenu.style.display = 'block';
       requestAnimationFrame(() => {
         campos.coorientadorMenu.style.maxHeight = campos.coorientadorMenu.scrollHeight + 'px';
         campos.coorientadorMenu.style.opacity = '1';
       });
     } else {
-      // Esconder suavemente
       campos.coorientadorMenu.style.maxHeight = '0';
       campos.coorientadorMenu.style.opacity = '0';
 
-      // Depois do tempo da transição, esconder display para remover do fluxo
       setTimeout(() => {
         campos.coorientadorMenu.style.display = 'none';
       }, 500);
@@ -85,9 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (termo.emailCoorientador) {
       termoInfo.termoCoorientadorContainer.style.display = 'block';
       termoInfo.termoCoorientador.textContent = termo.emailCoorientador;
-      // Mostrar checkbox e campos coorientador marcados, ajustando menu animado
       campos.coorientadorCheckbox.checked = true;
-      // Forçar mostrar menu com animação (sem piscar)
       campos.coorientadorMenu.style.display = 'block';
       campos.coorientadorMenu.style.maxHeight = campos.coorientadorMenu.scrollHeight + 'px';
       campos.coorientadorMenu.style.opacity = '1';
@@ -142,7 +133,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (resTermo.ok) {
         const termo = await resTermo.json();
         if (termo && termo.titulo) {
-          // Popular os campos do formulário com dados do termo, se quiser:
           campos.titulo.value = termo.titulo;
           campos.ano.value = termo.ano;
           campos.semestre.value = termo.semestre;
@@ -150,11 +140,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
           atualizarVisualizacaoTermo(termo);
         } else {
-          // Nenhum termo salvo ainda
           visualizacaoTermo.classList.add('d-none');
         }
       } else if (resTermo.status === 404) {
-        // Termo não encontrado, não mostra nada
         visualizacaoTermo.classList.add('d-none');
       }
     } catch (error) {
@@ -170,7 +158,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-      // Buscar dados do aluno para pegar orientadorProvisorio, nome, telefone, curso
       const resAluno = await fetch(`/alunos/${encodeURIComponent(emailAluno)}`);
       if (!resAluno.ok) {
         mensagem.innerHTML = `<div class="alert alert-danger">Erro ao buscar dados do aluno: ${resAluno.statusText}</div>`;
@@ -178,13 +165,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       const aluno = await resAluno.json();
 
-      // Validar campos do formulário
       if (!campos.titulo.value.trim() || !campos.ano.value || !campos.semestre.value || !campos.resumo.value.trim()) {
         mensagem.innerHTML = `<div class="alert alert-danger">Preencha todos os campos obrigatórios do formulário.</div>`;
         return;
       }
 
-      // Montar termo para envio
       const termo = {
         titulo: campos.titulo.value.trim(),
         emailAluno: aluno.email,
@@ -229,7 +214,6 @@ document.addEventListener('DOMContentLoaded', () => {
     enviarTermo();
   });
 
-  // Carregar termo ao carregar a página, evitando "piscada"
   carregarTermo();
 });
 

@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const row = document.querySelector('.row');
 
-  // Função para criar um card
   function criarCard(aluno, isProvisorio = false) {
     const col = document.createElement('div');
     col.className = 'col';
@@ -44,7 +43,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     link.className = 'btn btn-primary mt-3';
     link.textContent = 'Acessar';
 
-    // Badge "Provisório", se aplicável
     if (isProvisorio) {
       const badge = document.createElement('span');
       badge.className = 'badge bg-warning text-dark position-absolute top-0 end-0 m-2';
@@ -60,20 +58,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     col.appendChild(card);
     row.appendChild(col);
 
-    // Salva o email do aluno no localStorage ao clicar
     card.addEventListener('click', () => {
       localStorage.setItem('orientando', aluno.email);
     });
   }
 
   try {
-    // 🔵 Alunos fixos
     const responseFixos = await fetch(`/professores/orientandos/${email}`);
     if (!responseFixos.ok) throw new Error(`Erro ao buscar orientandos: ${responseFixos.status}`);
     const alunosFixos = await responseFixos.json();
     alunosFixos.forEach(aluno => criarCard(aluno, false));
 
-    // 🟡 Alunos provisórios
     const responseProvisorios = await fetch(`/professores/orientandos-provisorios/${email}`);
     if (!responseProvisorios.ok) throw new Error(`Erro ao buscar orientandos provisórios: ${responseProvisorios.status}`);
     const alunosProvisorios = await responseProvisorios.json();

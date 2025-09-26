@@ -17,11 +17,6 @@ function mostrarMensagem(texto, tipo = 'danger') {
     `;
 }
 
-function validarCampos() {
-    const camposPreenchidos = emailInput.value.trim() !== '' && codigoVerInput.value.trim() !== '';
-    const senhasCoincidem = senhaInput.value === confirmaInput.value && senhaInput.value !== '';
-}
-
 btnEnviarCodigoVer.addEventListener('click', async () => {
     const selecionado = document.querySelector('input[name="tipoUsuario"]:checked');
     if (!selecionado) {
@@ -38,7 +33,6 @@ btnEnviarCodigoVer.addEventListener('click', async () => {
     }
 
     try {
-        // Consulta o usuário para verificar se já possui senha
         const endpoint = tipo === 'Professor' ? `/professores/${email}` : `/alunos/${email}`;
         const resUsuario = await fetch(endpoint);
         if (!resUsuario.ok) throw new Error('Erro ao consultar usuário.');
@@ -49,7 +43,6 @@ btnEnviarCodigoVer.addEventListener('click', async () => {
             return;
         }
 
-        // Envia código
         const res = await fetch('/emails/codigo-ver', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -95,7 +88,6 @@ formPrimeiroAcesso.addEventListener('submit', async (e) => {
     }
 
     try {
-        // Verifica código
         const resVerificacao = await fetch('/emails/verificar-codigo', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

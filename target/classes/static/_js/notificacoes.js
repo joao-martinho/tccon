@@ -51,7 +51,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             const dados = await res.json();
             let notificacoes = Array.isArray(dados) ? dados : [dados];
 
-            // Se for professor, filtra pelas notificações do orientando
             if (tipo === 'professor') {
                 const orientandoStr = localStorage.getItem('orientando');
                 let emailOrientando = null;
@@ -70,7 +69,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         not.emailRemetente === emailOrientando
                     );
                 } else {
-                    notificacoes = []; // Se não há orientando, mostra zero notificações
+                    notificacoes = [];
                 }
             }
 

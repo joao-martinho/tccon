@@ -22,10 +22,8 @@ document.getElementById('formLogin').addEventListener('submit', async function(e
         let data;
 
         try {
-            // Primeira tentativa com email original
             data = await tentarLogin(email);
         } catch (err) {
-            // Se email não tem '@', tenta acrescentar '@furb.br'
             if (!email.includes('@')) {
                 email = `${email}@furb.br`;
                 data = await tentarLogin(email);
@@ -46,7 +44,6 @@ document.getElementById('formLogin').addEventListener('submit', async function(e
 
             if (Array.isArray(data.papeis)) {
                 data.papeis.forEach(papel => {
-                    // Grava papel no localStorage em lowercase com valor "true"
                     localStorage.setItem(papel.toLowerCase(), "true");
                 });
             }
