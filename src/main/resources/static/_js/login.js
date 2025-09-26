@@ -1,8 +1,12 @@
 document.getElementById('formLogin').addEventListener('submit', async function(e) {
     e.preventDefault();
 
-    const email = document.getElementById('email').value.trim();
+    let email = document.getElementById('email').value.trim();
     const senha = document.getElementById('senha').value;
+
+    if (!email.includes('@')) {
+        email = email + '@furb.br';
+    }
 
     try {
         const response = await fetch('/auth/login', {
@@ -47,6 +51,7 @@ document.getElementById('formLogin').addEventListener('submit', async function(e
         console.error(err);
     }
 });
+
 
 function mostrarMensagem(texto, tipo = 'danger') {
     const mensagemDiv = document.getElementById('mensagem');

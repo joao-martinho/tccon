@@ -54,7 +54,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function atualizarBotoes() {
-    if (!termo) return;
+    if (!termo) {
+      btnAprovar.disabled = true;
+      btnRejeitar.disabled = true;
+    }
 
     if (emailUsuario === termo.emailOrientador) {
       const finalizado = termo.statusOrientador !== 'pendente';
@@ -158,6 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   (async () => {
     termo = await buscarTermo(emailAluno);
+    atualizarBotoes()
     if (termo) popularCampos(termo);
   })();
 

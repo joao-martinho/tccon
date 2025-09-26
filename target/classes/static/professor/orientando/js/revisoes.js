@@ -65,8 +65,8 @@ document.addEventListener('DOMContentLoaded', () => {
     mensagem.textContent = '';
 
     try {
+      const emailAluno = localStorage.getItem('orientando')
       const titulo = document.getElementById('titulo').value;
-      const emailAluno = selectAluno.value;
       const arquivo = document.getElementById('arquivo').files[0];
 
       if (!emailAluno) throw new Error('Selecione um aluno.');

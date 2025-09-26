@@ -19,10 +19,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const row = document.querySelector('.row');
 
-  const emailsProcessados = new Set(); // armazena emails já criados
+  const emailsProcessados = new Set();
 
   function criarCard(aluno, tipoOrientacao = 'Orientando', isProvisorio = false) {
-    // Pula se o email já foi processado
     if (emailsProcessados.has(aluno.email)) return;
     emailsProcessados.add(aluno.email);
 
@@ -32,6 +31,27 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const card = document.createElement('div');
     card.className = 'card h-100 shadow-sm position-relative';
+
+    const badgeContainer = document.createElement('div');
+    badgeContainer.className = 'position-absolute top-0 end-0 m-2 d-flex gap-1';
+
+    if (isProvisorio || tipoOrientacao.includes('provisório')) {
+        const badgeProvisorio = document.createElement('span');
+        badgeProvisorio.className = 'badge bg-warning text-dark';
+        badgeProvisorio.textContent = 'Provisório';
+        badgeContainer.appendChild(badgeProvisorio);
+    }
+
+    if (tipoOrientacao.includes('Coorientando')) {
+        const badgeCoorientando = document.createElement('span');
+        badgeCoorientando.className = 'badge bg-info text-dark';
+        badgeCoorientando.textContent = 'Coorientando';
+        badgeContainer.appendChild(badgeCoorientando);
+    }
+
+    if (badgeContainer.childElementCount > 0) {
+        card.appendChild(badgeContainer);
+    }
 
     const body = document.createElement('div');
     body.className = 'card-body d-flex flex-column justify-content-between';
@@ -49,18 +69,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     link.className = 'btn btn-primary mt-3';
     link.textContent = 'Acessar';
 
-    if (isProvisorio || tipoOrientacao.includes('provisório')) {
-      const badge = document.createElement('span');
-      badge.className = 'badge bg-warning text-dark position-absolute top-0 end-0 m-2';
-      badge.textContent = tipoOrientacao + (isProvisorio ? ' provisório' : '');
-      card.appendChild(badge);
-    } else if (tipoOrientacao.includes('Coorientando')) {
-      const badge = document.createElement('span');
-      badge.className = 'badge bg-info text-dark position-absolute top-0 end-0 m-2';
-      badge.textContent = tipoOrientacao;
-      card.appendChild(badge);
-    }
-
     body.appendChild(title);
     body.appendChild(text);
     body.appendChild(link);
@@ -70,9 +78,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     row.appendChild(col);
 
     card.addEventListener('click', () => {
-      localStorage.setItem('orientando', aluno.email);
+        localStorage.setItem('orientando', aluno.email);
     });
   }
+
 
   try {
     const tipos = [
