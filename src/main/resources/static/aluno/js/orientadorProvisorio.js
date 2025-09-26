@@ -206,12 +206,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('confirmRemove').addEventListener('click', async () => {
     modalConfirm.hide();
+
     try {
-      const response = await fetch(`/alunos/remover-provisorio/${encodeURIComponent(alunoEmail)}/${encodeURIComponent(orientadorEmail)}`, { method: 'PATCH' });
-      if (!response.ok) {
-        const erroData = await response.json();
-        throw new Error(erroData.message || 'Erro ao remover orientador');
+      const urlOri = `/alunos/remover-provisorio/${encodeURIComponent(alunoEmail)}/${encodeURIComponent(orientadorEmail)}`;
+      const resOri = await fetch(urlOri, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      if (!resOri.ok) {
+        const text = await resOri.text();
+        const erroData = text ? JSON.parse(text) : {};
+        throw new Error(erroData.message || 'Erro ao remover orientador.');
       }
+
+      if (coorientadorEmail) {
+        const urlCoor = `/alunos/remover-provisorio/${encodeURIComponent(alunoEmail)}/${encodeURIComponent(coorientadorEmail)}`;
+        const resCoor = await fetch(urlCoor, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        if (!resCoor.ok) {
+          const text = await resCoor.text();
+          const erroData = text ? JSON.parse(text) : {};
+          throw new Error(erroData.message || 'Erro ao remover coorientador.');
+        }
+      }
+
       mensagem.innerHTML = '<div class="alert alert-success">Orientador removido com sucesso.</div>';
       visualizacao.style.display = 'none';
       selectOrientador.disabled = false;
@@ -233,6 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 500);
 
       viewCoorientadorWrapper.style.display = 'none';
+
     } catch (err) {
       mensagem.innerHTML = `<div class="alert alert-danger">${err.message}</div>`;
     }

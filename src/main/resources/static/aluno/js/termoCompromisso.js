@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     termoInfo.termoAnoSemestre.textContent = `${termo.ano}/${termo.semestre}`;
     termoInfo.termoResumo.textContent = termo.resumo;
 
-    let status = termo.status;
+    let status = termo.statusFinal;
     if (!status) status = 'pendente';
 
     termoInfo.termoStatus.textContent = `Status: ${status.charAt(0).toUpperCase() + status.slice(1)}`;
@@ -136,6 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
         resumo: campos.resumo.value.trim(),
         emailOrientador: aluno.orientadorProvisorio || null,
         emailCoorientador: aluno.coorientadorProvisorio || null,
+        statusOrientador: "pendente",
         statusFinal: "pendente",
         criadoEm: new Date().toISOString()
       };

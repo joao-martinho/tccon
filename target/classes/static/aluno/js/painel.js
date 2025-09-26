@@ -50,13 +50,29 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const aluno = await resAluno.json();
 
+        const cardEscolherOrientador = document.getElementById('card-escolher-orientador');
         const cardTermo = document.getElementById('card-termo');
+        const cardEntregas = document.getElementById('card-entregas');
+        const cardRevisao = document.getElementById('card-revisao');
 
-        if (aluno.orientadorProvisorio) {
-            cardTermo?.classList.remove('grayed-out');
+        if (!aluno.orientador && !aluno.orientadorProvisorio) {
+            cardEscolherOrientador.classList.remove('grayed-out');
+            cardTermo.classList.add('grayed-out');
+            cardEntregas.classList.add('grayed-out');
+            cardRevisao.classList.add('grayed-out');
+        } else if (!aluno.orientador && aluno.orientadorProvisorio) {
+            cardEscolherOrientador.classList.remove('grayed-out');
+            cardTermo.classList.remove('grayed-out');
+            cardEntregas.classList.add('grayed-out');
+            cardRevisao.classList.add('grayed-out');
+        } else if (aluno.orientador) {
+            cardEscolherOrientador.classList.add('grayed-out');
+            cardTermo.classList.remove('grayed-out');
+            cardEntregas.classList.remove('grayed-out');
+            cardRevisao.classList.remove('grayed-out');
         }
 
     } catch (error) {
-        console.error('Erro ao verificar orientadorProvisorio:', error);
+        console.error('Erro ao verificar orientador:', error);
     }
 });

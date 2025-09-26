@@ -64,100 +64,55 @@ public class TermoServico {
     }
 
     public ResponseEntity<TermoModelo> alterarTermoParcial(Long id, TermoModelo termoModelo) {
-        Optional<TermoModelo> optional = this.termoRepositorio.findById(id);
+        Optional<TermoModelo> optional = termoRepositorio.findById(id);
 
-        if (optional.isPresent()) {
-            TermoModelo termoModelo2 = optional.get();
-
-            if (termoModelo.getId() != null) {
-                termoModelo2.setId(termoModelo.getId());
-            }
-
-            if (termoModelo.getTitulo() != null) {
-                termoModelo2.setTitulo(termoModelo.getTitulo());
-            }
-
-            if (termoModelo.getEmailAluno() != null) {
-                termoModelo2.setEmailAluno(termoModelo.getEmailAluno());
-            }
-
-            if (termoModelo.getNomeAluno() != null) {
-                termoModelo2.setNomeAluno(termoModelo.getNomeAluno());
-            }
-
-            if (termoModelo.getTelefoneAluno() != null) {
-                termoModelo2.setTelefoneAluno(termoModelo.getTelefoneAluno());
-            }
-
-            if (termoModelo.getCursoAluno() != null) {
-                termoModelo2.setCursoAluno(termoModelo.getCursoAluno());
-            }
-
-            if (termoModelo.getEmailOrientador() != null) {
-                termoModelo2.setEmailOrientador(termoModelo.getEmailOrientador());
-            }
-
-            if (termoModelo.getPerfilCoorientador() != null) {
-                termoModelo2.setPerfilCoorientador(termoModelo.getPerfilCoorientador());
-            }
-
-            if (termoModelo.getAno() != null) {
-                termoModelo2.setAno(termoModelo.getAno());
-            }
-
-            if (termoModelo.getSemestre() != null) {
-                termoModelo2.setSemestre(termoModelo.getSemestre());
-            }
-
-            if (termoModelo.getResumo() != null) {
-                termoModelo2.setResumo(termoModelo.getResumo());
-            }
-
-            if (termoModelo.getCriadoEm() != null) {
-                termoModelo2.setCriadoEm(termoModelo.getCriadoEm());
-            }
-
-            if (termoModelo.getStatusOrientador() != null) {
-                termoModelo2.setStatusOrientador(termoModelo.getStatusOrientador());
-            }
-
-            if (termoModelo.getStatusCoorientador() != null) {
-                termoModelo2.setStatusCoorientador(termoModelo.getStatusCoorientador());
-            }
-
-            if (termoModelo.getStatusFinal() != null) {
-                termoModelo2.setStatusFinal(termoModelo.getStatusFinal());
-
-                String tituloAluno = "aprovado".equals(termoModelo2.getStatusFinal()) ?
-                    "Termo aprovado" : "Termo rejeitado";
-
-                String conteudoAluno = "aprovado".equals(termoModelo2.getStatusFinal()) ?
-                    "O seu termo de compromisso foi aprovado." :
-                    "O seu termo de compromisso foi rejeitado. Procure o seu orientador.";
-
-                if ("aprovado".equals(termoModelo2.getStatusFinal())) {
-                    orientacaoServico.aprovarTermo(termoModelo2);
-                }
-
-                NotificacaoModelo notificacaoAluno = new NotificacaoModelo();
-                notificacaoAluno.setEmailDestinatario(termoModelo2.getEmailAluno());
-                notificacaoAluno.setTitulo(tituloAluno);
-                notificacaoAluno.setConteudo(conteudoAluno);
-                notificacaoServico.cadastrarMensagem(notificacaoAluno);
-                
-            }
-
-            TermoModelo salvo = this.termoRepositorio.save(termoModelo2);
-
-            if (termoModelo2.getStatusFinal().equals("aprovado")) {
-                bancaServico.criarAPartirDoTermo(salvo);
-            }
-
-            return new ResponseEntity<>(salvo, HttpStatus.OK);
-
+        if (!optional.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        TermoModelo termoExistente = optional.get();
+
+        if (termoModelo.getId() != null) termoExistente.setId(termoModelo.getId());
+        if (termoModelo.getTitulo() != null) termoExistente.setTitulo(termoModelo.getTitulo());
+        if (termoModelo.getEmailAluno() != null) termoExistente.setEmailAluno(termoModelo.getEmailAluno());
+        if (termoModelo.getNomeAluno() != null) termoExistente.setNomeAluno(termoModelo.getNomeAluno());
+        if (termoModelo.getTelefoneAluno() != null) termoExistente.setTelefoneAluno(termoModelo.getTelefoneAluno());
+        if (termoModelo.getCursoAluno() != null) termoExistente.setCursoAluno(termoModelo.getCursoAluno());
+        if (termoModelo.getEmailOrientador() != null) termoExistente.setEmailOrientador(termoModelo.getEmailOrientador());
+        if (termoModelo.getPerfilCoorientador() != null) termoExistente.setPerfilCoorientador(termoModelo.getPerfilCoorientador());
+        if (termoModelo.getAno() != null) termoExistente.setAno(termoModelo.getAno());
+        if (termoModelo.getSemestre() != null) termoExistente.setSemestre(termoModelo.getSemestre());
+        if (termoModelo.getResumo() != null) termoExistente.setResumo(termoModelo.getResumo());
+        if (termoModelo.getCriadoEm() != null) termoExistente.setCriadoEm(termoModelo.getCriadoEm());
+        if (termoModelo.getStatusOrientador() != null) termoExistente.setStatusOrientador(termoModelo.getStatusOrientador());
+
+        if (termoExistente.getEmailCoorientador() == null) {
+            termoExistente.setStatusFinal(termoExistente.getStatusOrientador());
+        } else if (termoModelo.getStatusFinal() != null) {
+            termoExistente.setStatusFinal(termoModelo.getStatusFinal());
+        }
+
+        TermoModelo salvo = termoRepositorio.save(termoExistente);
+
+        if ("aprovado".equals(termoExistente.getStatusFinal())) {
+            orientacaoServico.aprovarTermo(termoExistente);
+            bancaServico.criarAPartirDoTermo(salvo);
+        }
+
+        if (termoExistente.getStatusFinal() != null) {
+            String tituloAluno = "aprovado".equals(termoExistente.getStatusFinal()) ? "Termo aprovado" : "Termo rejeitado";
+            String conteudoAluno = "aprovado".equals(termoExistente.getStatusFinal()) ?
+                "O seu termo de compromisso foi aprovado." :
+                "O seu termo de compromisso foi rejeitado. Procure o seu orientador.";
+
+            NotificacaoModelo notificacaoAluno = new NotificacaoModelo();
+            notificacaoAluno.setEmailDestinatario(termoExistente.getEmailAluno());
+            notificacaoAluno.setTitulo(tituloAluno);
+            notificacaoAluno.setConteudo(conteudoAluno);
+            notificacaoServico.cadastrarMensagem(notificacaoAluno);
+        }
+
+        return new ResponseEntity<>(salvo, HttpStatus.OK);
     }
 
     public ResponseEntity<Void> removerTermo(Long id) {

@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!termo) return;
 
     if (emailUsuario === termo.emailOrientador) {
-      const finalizado = termo.statusOrientador !== null;
+      const finalizado = termo.statusOrientador !== 'pendente';
       btnAprovar.disabled = finalizado;
       btnRejeitar.disabled = finalizado;
     } else if (emailUsuario === termo.emailCoorientador) {
@@ -117,16 +117,18 @@ document.addEventListener('DOMContentLoaded', () => {
   btnAprovar.addEventListener('click', async () => {
     if (!termo) return;
 
-    if (emailUsuario === termo.emailOrientador && termo.statusOrientador === null) {
+    if (emailUsuario === termo.emailOrientador && termo.statusOrientador === 'pendente') {
       const atualizado = await atualizarTermo(termo.id, { statusOrientador: 'aprovado' });
       if (atualizado) {
         termo.statusOrientador = 'aprovado';
+        atualizarBadgeStatus('aprovado');
         popularCampos(termo);
       }
     } else if (emailUsuario === termo.emailCoorientador && termo.statusOrientador === 'aprovado') {
       const atualizado = await atualizarTermo(termo.id, { statusFinal: 'aprovado' });
       if (atualizado) {
         termo.statusFinal = 'aprovado';
+        atualizarBadgeStatus('aprovado');
         popularCampos(termo);
       }
     }
@@ -135,10 +137,11 @@ document.addEventListener('DOMContentLoaded', () => {
   btnRejeitar.addEventListener('click', async () => {
     if (!termo) return;
 
-    if (emailUsuario === termo.emailOrientador && termo.statusOrientador === null) {
+    if (emailUsuario === termo.emailOrientador && termo.statusOrientador === 'pendente') {
       const atualizado = await atualizarTermo(termo.id, { statusOrientador: 'rejeitado' });
       if (atualizado) {
         termo.statusOrientador = 'rejeitado';
+        atualizarBadgeStatus('rejeitado');
         popularCampos(termo);
       }
     }

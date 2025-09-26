@@ -25,35 +25,57 @@ public class OrientacaoServico {
     private final TermoRepositorio termoRepositorio;
 
     public ResponseEntity<AlunoModelo> removerRelacaoProvisoria(String emailAluno, String emailProfessor) {
-        ProfessorModelo professor = professorRepositorio.findByEmail(emailProfessor);
-        AlunoModelo aluno = alunoRepositorio.findByEmail(emailAluno);
+        if (emailAluno == null || emailProfessor == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        String emailAlunoNorm = emailAluno.trim().toLowerCase();
+        String emailProfessorNorm = emailProfessor.trim().toLowerCase();
+
+        ProfessorModelo professor = professorRepositorio.findByEmail(emailProfessorNorm);
+        AlunoModelo aluno = alunoRepositorio.findByEmail(emailAlunoNorm);
 
         if (professor == null || aluno == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
+        boolean removido = false;
+
         List<String> orientandosProvisorios = professor.getOrientandosProvisorios();
-        if (orientandosProvisorios == null || !orientandosProvisorios.contains(emailAluno)) {
+        if (orientandosProvisorios != null && orientandosProvisorios.contains(emailAlunoNorm)) {
+            orientandosProvisorios.remove(emailAlunoNorm);
+            professor.setOrientandosProvisorios(orientandosProvisorios);
+            removido = true;
+        }
+
+        List<String> coorientandosProvisorios = professor.getCoorientandosProvisorios();
+        if (coorientandosProvisorios != null && coorientandosProvisorios.contains(emailAlunoNorm)) {
+            coorientandosProvisorios.remove(emailAlunoNorm);
+            professor.setCoorientandosProvisorios(coorientandosProvisorios);
+            removido = true;
+        }
+
+        if (!removido) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        orientandosProvisorios.remove(emailAluno);
-        professor.setOrientandosProvisorios(orientandosProvisorios);
         professorRepositorio.save(professor);
 
-        if (emailProfessor.equals(aluno.getOrientadorProvisorio())) {
+        if (emailProfessorNorm.equals(aluno.getOrientadorProvisorio() != null ? aluno.getOrientadorProvisorio().trim().toLowerCase() : null)) {
             aluno.setOrientadorProvisorio(null);
-            alunoRepositorio.save(aluno);
+        } else if (emailProfessorNorm.equals(aluno.getCoorientadorProvisorio() != null ? aluno.getCoorientadorProvisorio().trim().toLowerCase() : null)) {
+            aluno.setCoorientadorProvisorio(null);
         }
+        alunoRepositorio.save(aluno);
 
-        TermoModelo termoModelo = termoRepositorio.findByEmailAluno(emailAluno);
-
+        TermoModelo termoModelo = termoRepositorio.findByEmailAluno(emailAlunoNorm);
         if (termoModelo != null) {
             this.removerTermo(termoModelo.getId());
         }
 
         return new ResponseEntity<>(aluno, HttpStatus.OK);
     }
+
 
     public ResponseEntity<AlunoModelo> atribuirOrientadorProvisorio(String emailAluno, String emailProfessor) {
         ProfessorModelo professor = professorRepositorio.findByEmail(emailProfessor);
@@ -154,9 +176,6 @@ public class OrientacaoServico {
             if (professorModelo.getCoorientandos() != null) {
                 existente.setCoorientandos(professorModelo.getCoorientandos());
             }
-            if (professorModelo.getSenha() != null) {
-                existente.setSenhaEmTexto(professorModelo.getSenha());
-            }
             if (professorModelo.getCodigoVer() != null) {
                 existente.setCodigoVer(professorModelo.getCodigoVer());
             }
@@ -192,10 +211,6 @@ public class OrientacaoServico {
             if (alunoModelo.getCodigoVer() != null) {
                 existente.setCodigoVer(alunoModelo.getCodigoVer());
             }
-            if (alunoModelo.getSenha() != null) {
-                existente.setSenhaEmTexto(alunoModelo.getSenha());
-            }
-
             if (alunoModelo.getOrientadorProvisorio() != null) {
                 this.atribuirOrientadorProvisorio(email, alunoModelo.getOrientadorProvisorio());
             }

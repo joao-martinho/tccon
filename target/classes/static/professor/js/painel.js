@@ -19,7 +19,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const row = document.querySelector('.row');
 
+  const emailsProcessados = new Set(); // armazena emails já criados
+
   function criarCard(aluno, tipoOrientacao = 'Orientando', isProvisorio = false) {
+    // Pula se o email já foi processado
+    if (emailsProcessados.has(aluno.email)) return;
+    emailsProcessados.add(aluno.email);
+
     const col = document.createElement('div');
     col.className = 'col';
     col.style.display = 'block';
