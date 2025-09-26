@@ -39,13 +39,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let badgeClass = 'bg-secondary';
     let texto = 'Pendente';
 
-    if ("aprovado".equals?.(status?.toLowerCase?.()) || status?.toLowerCase() === 'aprovado') {
+    if (status?.toLowerCase() === 'aprovado') {
       badgeClass = 'bg-success';
       texto = 'Aprovado';
-    } else if ("rejeitado".equals?.(status?.toLowerCase?.()) || status?.toLowerCase() === 'rejeitado') {
+    } else if (status?.toLowerCase() === 'rejeitado') {
       badgeClass = 'bg-danger';
       texto = 'Rejeitado';
-    } else if ("pendente".equals?.(status?.toLowerCase?.()) || status?.toLowerCase() === 'pendente') {
+    } else if (status?.toLowerCase() === 'pendente') {
       badgeClass = 'bg-warning text-dark';
       texto = 'Pendente';
     }
@@ -61,13 +61,10 @@ document.addEventListener('DOMContentLoaded', () => {
       btnAprovar.disabled = finalizado;
       btnRejeitar.disabled = finalizado;
     } else if (emailUsuario === termo.emailCoorientador) {
-      if (termo.statusOrientador === 'aprovado') {
-        btnAprovar.disabled = false;
-        btnRejeitar.disabled = false;
-      } else {
-        btnAprovar.disabled = true;
-        btnRejeitar.disabled = true;
-      }
+      const finalizadoCoor = termo.statusFinal !== 'pendente'
+      const permitido = termo.statusOrientador === 'aprovado';
+      btnAprovar.disabled = !permitido || finalizadoCoor;
+      btnRejeitar.disabled = !permitido || finalizadoCoor;
     } else {
       btnAprovar.disabled = true;
       btnRejeitar.disabled = true;
@@ -114,38 +111,50 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  btnAprovar.addEventListener('click', async () => {
+  async function aprovar() {
     if (!termo) return;
 
     if (emailUsuario === termo.emailOrientador && termo.statusOrientador === 'pendente') {
       const atualizado = await atualizarTermo(termo.id, { statusOrientador: 'aprovado' });
       if (atualizado) {
         termo.statusOrientador = 'aprovado';
-        atualizarBadgeStatus('aprovado');
-        popularCampos(termo);
+        termo.statusFinal = termo.statusFinal || 'pendente';
+        atualizarBadgeStatus(termo.statusFinal);
+        atualizarBotoes();
       }
     } else if (emailUsuario === termo.emailCoorientador && termo.statusOrientador === 'aprovado') {
       const atualizado = await atualizarTermo(termo.id, { statusFinal: 'aprovado' });
       if (atualizado) {
         termo.statusFinal = 'aprovado';
         atualizarBadgeStatus('aprovado');
-        popularCampos(termo);
+        atualizarBotoes();
       }
     }
-  });
+  }
 
-  btnRejeitar.addEventListener('click', async () => {
+  async function rejeitar() {
     if (!termo) return;
 
     if (emailUsuario === termo.emailOrientador && termo.statusOrientador === 'pendente') {
       const atualizado = await atualizarTermo(termo.id, { statusOrientador: 'rejeitado' });
       if (atualizado) {
         termo.statusOrientador = 'rejeitado';
+        termo.statusFinal = 'rejeitado';
         atualizarBadgeStatus('rejeitado');
-        popularCampos(termo);
+        atualizarBotoes();
+      }
+    } else if (emailUsuario === termo.emailCoorientador && termo.statusOrientador === 'aprovado') {
+      const atualizado = await atualizarTermo(termo.id, { statusFinal: 'rejeitado' });
+      if (atualizado) {
+        termo.statusFinal = 'rejeitado';
+        atualizarBadgeStatus('rejeitado');
+        atualizarBotoes();
       }
     }
-  });
+  }
+
+  btnAprovar.addEventListener('click', aprovar);
+  btnRejeitar.addEventListener('click', rejeitar);
 
   (async () => {
     termo = await buscarTermo(emailAluno);
