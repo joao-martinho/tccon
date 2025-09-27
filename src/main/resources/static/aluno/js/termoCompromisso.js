@@ -125,6 +125,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      const data = new Date();
+      const offset = 3 * 60; // 3 horas em minutos
+      const dataUTC3 = new Date(data.getTime() - offset * 60 * 1000).toISOString();
+
       const termo = {
         titulo: campos.titulo.value.trim(),
         emailAluno: aluno.email,
@@ -138,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
         emailCoorientador: aluno.coorientadorProvisorio || null,
         statusOrientador: "pendente",
         statusFinal: "pendente",
-        criadoEm: new Date().toISOString()
+        criadoEm: dataUTC3,
       };
 
       let metodo = 'POST';

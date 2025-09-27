@@ -173,7 +173,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // modal de remoção
   const modalHTML = `
     <div class="modal fade" id="modalConfirmRemover" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">

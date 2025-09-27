@@ -64,14 +64,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     text.className = 'card-text text-muted';
     text.textContent = `Clique para acompanhar o progresso do ${tipoOrientacao.toLowerCase()}.`;
 
+    const buttonContainer = document.createElement('div');
+    buttonContainer.className = 'd-flex gap-2 mt-3';
+
     const link = document.createElement('a');
     link.href = 'orientando/painel.html';
-    link.className = 'btn btn-primary mt-3';
+    link.className = 'btn btn-primary flex-fill';
     link.textContent = 'Acessar';
+
+    buttonContainer.appendChild(link);
+
+    if (isProvisorio || tipoOrientacao.includes('provisório')) {
+        const btnRemover = document.createElement('button');
+        btnRemover.className = 'btn btn-danger flex-fill';
+        btnRemover.textContent = 'Remover';
+        btnRemover.addEventListener('click', (e) => {
+            e.stopPropagation();
+            col.remove();
+        });
+        buttonContainer.appendChild(btnRemover);
+    }
 
     body.appendChild(title);
     body.appendChild(text);
-    body.appendChild(link);
+    body.appendChild(buttonContainer);
 
     card.appendChild(body);
     col.appendChild(card);
@@ -80,8 +96,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     card.addEventListener('click', () => {
         localStorage.setItem('orientando', aluno.email);
     });
-  }
-
+}
 
   try {
     const tipos = [
