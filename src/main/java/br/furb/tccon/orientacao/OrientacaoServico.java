@@ -42,24 +42,16 @@ public class OrientacaoServico {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        boolean removido = false;
-
         List<String> orientandosProvisorios = professor.getOrientandosProvisorios();
         if (orientandosProvisorios != null && orientandosProvisorios.contains(emailAlunoNorm)) {
             orientandosProvisorios.remove(emailAlunoNorm);
             professor.setOrientandosProvisorios(orientandosProvisorios);
-            removido = true;
         }
 
         List<String> coorientandosProvisorios = professor.getCoorientandosProvisorios();
         if (coorientandosProvisorios != null && coorientandosProvisorios.contains(emailAlunoNorm)) {
             coorientandosProvisorios.remove(emailAlunoNorm);
             professor.setCoorientandosProvisorios(coorientandosProvisorios);
-            removido = true;
-        }
-
-        if (!removido) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         professorRepositorio.save(professor);
