@@ -27,40 +27,59 @@ public class OrientacaoServico {
     private final TermoRepositorio termoRepositorio;
     private final NotificacaoServico notificacaoServico;
 
-    public ResponseEntity<AlunoModelo> removerRelacaoProvisoria(String emailAluno, String emailProfessor) {
-        if (emailAluno == null || emailProfessor == null) {
+    public ResponseEntity<AlunoModelo> removerRelacaoProvisoria(String emailAluno, String emailSolicitante) {
+        if (emailAluno == null || emailSolicitante == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         String emailAlunoNorm = emailAluno.trim().toLowerCase();
-        String emailProfessorNorm = emailProfessor.trim().toLowerCase();
+        String emailSolicitanteNorm = emailSolicitante.trim().toLowerCase();
 
-        ProfessorModelo professor = professorRepositorio.findByEmail(emailProfessorNorm);
         AlunoModelo aluno = alunoRepositorio.findByEmail(emailAlunoNorm);
-
-        if (professor == null || aluno == null) {
+        if (aluno == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        List<String> orientandosProvisorios = professor.getOrientandosProvisorios();
-        if (orientandosProvisorios != null && orientandosProvisorios.contains(emailAlunoNorm)) {
-            orientandosProvisorios.remove(emailAlunoNorm);
-            professor.setOrientandosProvisorios(orientandosProvisorios);
-        }
+        ProfessorModelo orientador = aluno.getOrientadorProvisorio() != null ?
+                professorRepositorio.findByEmail(aluno.getOrientadorProvisorio().trim().toLowerCase()) : null;
 
-        List<String> coorientandosProvisorios = professor.getCoorientandosProvisorios();
-        if (coorientandosProvisorios != null && coorientandosProvisorios.contains(emailAlunoNorm)) {
-            coorientandosProvisorios.remove(emailAlunoNorm);
-            professor.setCoorientandosProvisorios(coorientandosProvisorios);
-        }
+        ProfessorModelo coorientador = aluno.getCoorientadorProvisorio() != null ?
+                professorRepositorio.findByEmail(aluno.getCoorientadorProvisorio().trim().toLowerCase()) : null;
 
-        professorRepositorio.save(professor);
+        boolean solicitanteEhAluno = emailSolicitanteNorm.equals(emailAlunoNorm);
+        boolean solicitanteEhOrientador = orientador != null && emailSolicitanteNorm.equals(orientador.getEmail());
+        boolean solicitanteEhCoorientador = coorientador != null && emailSolicitanteNorm.equals(coorientador.getEmail());
 
-        if (emailProfessorNorm.equals(aluno.getOrientadorProvisorio() != null ? aluno.getOrientadorProvisorio().trim().toLowerCase() : "")) {
+        if (solicitanteEhAluno || solicitanteEhOrientador) {
+            if (orientador != null) {
+                List<String> orientandosProvisorios = orientador.getOrientandosProvisorios();
+                if (orientandosProvisorios != null) orientandosProvisorios.remove(emailAlunoNorm);
+                orientador.setOrientandosProvisorios(orientandosProvisorios);
+                professorRepositorio.save(orientador);
+            }
+
+            if (coorientador != null) {
+                List<String> coorientandosProvisorios = coorientador.getCoorientandosProvisorios();
+                if (coorientandosProvisorios != null) coorientandosProvisorios.remove(emailAlunoNorm);
+                coorientador.setCoorientandosProvisorios(coorientandosProvisorios);
+                professorRepositorio.save(coorientador);
+            }
+
             aluno.setOrientadorProvisorio(null);
-        } else if (emailProfessorNorm.equals(aluno.getCoorientadorProvisorio() != null ? aluno.getCoorientadorProvisorio().trim().toLowerCase() : "")) {
             aluno.setCoorientadorProvisorio(null);
         }
+        else if (solicitanteEhCoorientador && coorientador != null) {
+            List<String> coorientandosProvisorios = coorientador.getCoorientandosProvisorios();
+            if (coorientandosProvisorios != null) coorientandosProvisorios.remove(emailAlunoNorm);
+            coorientador.setCoorientandosProvisorios(coorientandosProvisorios);
+            professorRepositorio.save(coorientador);
+
+            aluno.setCoorientadorProvisorio(null);
+        }
+        else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
         alunoRepositorio.save(aluno);
 
         TermoModelo termoModelo = termoRepositorio.findByEmailAluno(emailAlunoNorm);
@@ -68,47 +87,50 @@ public class OrientacaoServico {
             this.removerTermo(termoModelo.getId());
         }
 
-        AlunoModelo alunoModelo = aluno;
-        ProfessorModelo professorModelo = professor;
-
-        NotificacaoModelo notificacaoProfessor = new NotificacaoModelo();
-        notificacaoProfessor.setEmailDestinatario(emailProfessorNorm);
-
-        NotificacaoModelo notificacaoAluno = new NotificacaoModelo();
-        notificacaoAluno.setEmailDestinatario(emailAlunoNorm);
-
-        if (emailProfessorNorm.equals(alunoModelo.getOrientadorProvisorio() != null ? alunoModelo.getOrientadorProvisorio().trim().toLowerCase() : "")) {
-            notificacaoProfessor.setTitulo("Orientando removido");
-            notificacaoProfessor.setConteudo(
-                alunoModelo.getNome() + " não é mais seu orientando provisório. Deseje-lhe boa sorte. 😉"
-            );
-
-            notificacaoAluno.setTitulo("Orientador removido");
-            notificacaoAluno.setConteudo(
-                professorModelo.getNome() + " não é mais seu orientador provisório, mas lhe deseja boa sorte. 😉\n" +
-                "Você pode escolher um novo orientador."
-            );
-
-            notificacaoServico.cadastrarMensagem(notificacaoProfessor);     
-            notificacaoServico.cadastrarMensagem(notificacaoAluno);
-
-        } else if (emailProfessorNorm.equals(alunoModelo.getCoorientadorProvisorio() != null ? alunoModelo.getCoorientadorProvisorio().trim().toLowerCase() : "")) {
-            notificacaoProfessor.setTitulo("Coorientando removido");
-            notificacaoProfessor.setConteudo(
-                alunoModelo.getNome() + " não é mais seu coorientando provisório. Deseje-lhe boa sorte. 😉\n"
-            );
-
-            notificacaoAluno.setTitulo("Coorientador removido");
-            notificacaoAluno.setConteudo(
-                professorModelo.getNome() + " não é mais seu coorientador provisório, mas lhe deseja boa sorte. 😉\n" +
-                "O seu orientador permanece o mesmo, mas, se você já enviou o termo de compromisso, precisará reenviá-lo."
-            );
-
-            notificacaoServico.cadastrarMensagem(notificacaoProfessor);     
-            notificacaoServico.cadastrarMensagem(notificacaoAluno);
+        if (solicitanteEhAluno || solicitanteEhOrientador) {
+            if (orientador != null) {
+                notificacaoServico.cadastrarMensagem(criarNotificacaoProfessor(aluno, orientador, "orientando"));
+            }
+            if (coorientador != null) {
+                notificacaoServico.cadastrarMensagem(criarNotificacaoProfessor(aluno, coorientador, "coorientando"));
+            }
+            notificacaoServico.cadastrarMensagem(criarNotificacaoAluno(aluno, orientador, coorientador));
+        } else if (solicitanteEhCoorientador) {
+            notificacaoServico.cadastrarMensagem(criarNotificacaoAluno(aluno, null, coorientador));
+            notificacaoServico.cadastrarMensagem(criarNotificacaoProfessor(aluno, coorientador, "coorientando"));
         }
 
         return new ResponseEntity<>(aluno, HttpStatus.OK);
+    }
+
+    private NotificacaoModelo criarNotificacaoProfessor(AlunoModelo aluno, ProfessorModelo professor, String tipo) {
+        NotificacaoModelo n = new NotificacaoModelo();
+        n.setEmailDestinatario(professor.getEmail());
+        if ("orientando".equals(tipo)) {
+            n.setTitulo("Orientando removido");
+            n.setConteudo(aluno.getNome() + " não é mais seu orientando provisório. Deseje-lhe boa sorte. 😉");
+        } else if ("coorientando".equals(tipo)) {
+            n.setTitulo("Coorientando removido");
+            n.setConteudo(aluno.getNome() + " não é mais seu coorientando provisório. Deseje-lhe boa sorte. 😉");
+        }
+        return n;
+    }
+
+    private NotificacaoModelo criarNotificacaoAluno(AlunoModelo aluno, ProfessorModelo orientador, ProfessorModelo coorientador) {
+        NotificacaoModelo n = new NotificacaoModelo();
+        n.setEmailDestinatario(aluno.getEmail());
+        String conteudo = "";
+        if (orientador != null) {
+            n.setTitulo("Orientador removido");
+            conteudo += orientador.getNome() + " não é mais seu orientador provisório, mas lhe deseja boa sorte. 😉\n";
+        }
+        if (coorientador != null) {
+            n.setTitulo("Coorientador removido");
+            conteudo += coorientador.getNome() + " não é mais seu coorientador provisório, mas lhe deseja boa sorte. 😉";
+        }
+            
+        n.setConteudo(conteudo);
+        return n;
     }
 
     public ResponseEntity<AlunoModelo> atribuirOrientadorProvisorio(String emailAluno, String emailProfessor) {

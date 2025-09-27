@@ -7,12 +7,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import br.furb.tccon.aluno.AlunoModelo;
+import br.furb.tccon.aluno.AlunoRepositorio;
 import br.furb.tccon.banca.BancaServico;
 import br.furb.tccon.notificacao.NotificacaoModelo;
 import br.furb.tccon.notificacao.NotificacaoServico;
 import br.furb.tccon.orientacao.OrientacaoServico;
 import br.furb.tccon.professor.ProfessorModelo;
+import br.furb.tccon.professor.ProfessorRepositorio;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -21,6 +22,7 @@ public class TermoServico {
 
     private final OrientacaoServico orientacaoServico;  
     private final TermoRepositorio termoRepositorio;
+    private final ProfessorRepositorio professorRepositorio;
     private final NotificacaoServico notificacaoServico;
     private final BancaServico bancaServico;
 
@@ -100,10 +102,12 @@ public class TermoServico {
             bancaServico.criarAPartirDoTermo(salvo);
         }
 
+        ProfessorModelo professorModelo = professorRepositorio.findByEmail(termoExistente.getEmailOrientador());
+
         if (termoExistente.getStatusFinal() != null) {
-            String tituloAluno = "aprovado".equals(termoExistente.getStatusFinal()) ? "Termo aprovado" : "Termo rejeitado";
+            String tituloAluno = "aprovado".equals(termoExistente.getStatusFinal()) ? "Termo aprovado 🎉" : "Termo rejeitado 🙁";
             String conteudoAluno = "aprovado".equals(termoExistente.getStatusFinal()) ?
-                "O seu termo de compromisso foi aprovado." :
+                "O seu termo de compromisso foi aprovado. " + professorModelo.getNome() + " agora é seu orientador definitivo." :
                 "O seu termo de compromisso foi rejeitado. Procure o seu orientador.";
 
             NotificacaoModelo notificacaoAluno = new NotificacaoModelo();
@@ -111,6 +115,26 @@ public class TermoServico {
             notificacaoAluno.setTitulo(tituloAluno);
             notificacaoAluno.setConteudo(conteudoAluno);
             notificacaoServico.cadastrarMensagem(notificacaoAluno);
+
+            String tituloProfessor = "aprovado".equals(termoExistente.getStatusFinal()) 
+                ? "Termo aprovado" 
+                : "Termo rejeitado";
+
+            String conteudoProfessor = "aprovado".equals(termoExistente.getStatusFinal()) 
+                ? "Você aprovou o termo de compromisso do aluno " + termoExistente.getNomeAluno() + ", que agora é seu orientando definitivo." 
+                : "Você rejeitou o termo de compromisso do aluno " + termoExistente.getNomeAluno() + ". Aguarde o reenvio do termo.";
+
+            NotificacaoModelo notificacaoProfessor = new NotificacaoModelo();
+            notificacaoProfessor.setEmailDestinatario(termoExistente.getEmailOrientador());
+            notificacaoProfessor.setTitulo(tituloProfessor);
+            notificacaoProfessor.setConteudo(conteudoProfessor);
+            notificacaoServico.cadastrarMensagem(notificacaoProfessor);
+
+            notificacaoProfessor.setEmailDestinatario(termoExistente.getEmailCoorientador());
+            conteudoProfessor = "aprovado".equals(termoExistente.getStatusFinal()) 
+                ? "Você aprovou o termo de compromisso do aluno " + termoExistente.getNomeAluno() + ", que agora é seu coorientando definitivo." 
+                : "Você rejeitou o termo de compromisso do aluno " + termoExistente.getNomeAluno() + ". Aguarde o reenvio do termo.";
+            notificacaoServico.cadastrarMensagem(notificacaoProfessor);
         }
 
         return new ResponseEntity<>(salvo, HttpStatus.OK);

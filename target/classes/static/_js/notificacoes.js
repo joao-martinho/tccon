@@ -32,7 +32,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // Alinhar botão "Marcar todas como lidas" à direita
     if (btnMarcarTodas) {
         btnMarcarTodas.style.display = 'none';
         const wrapper = document.createElement('div');
