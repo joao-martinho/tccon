@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import br.furb.tccon.aluno.AlunoModelo;
 import br.furb.tccon.aluno.AlunoRepositorio;
+import br.furb.tccon.notificacao.NotificacaoModelo;
+import br.furb.tccon.notificacao.NotificacaoServico;
 import br.furb.tccon.professor.ProfessorModelo;
 import br.furb.tccon.professor.ProfessorRepositorio;
 import br.furb.tccon.termo.TermoModelo;
@@ -23,6 +25,7 @@ public class OrientacaoServico {
     private final ProfessorRepositorio professorRepositorio;
     private final AlunoRepositorio alunoRepositorio;
     private final TermoRepositorio termoRepositorio;
+    private final NotificacaoServico notificacaoServico;
 
     public ResponseEntity<AlunoModelo> removerRelacaoProvisoria(String emailAluno, String emailProfessor) {
         if (emailAluno == null || emailProfessor == null) {
@@ -61,9 +64,9 @@ public class OrientacaoServico {
 
         professorRepositorio.save(professor);
 
-        if (emailProfessorNorm.equals(aluno.getOrientadorProvisorio() != null ? aluno.getOrientadorProvisorio().trim().toLowerCase() : null)) {
+        if (emailProfessorNorm.equals(aluno.getOrientadorProvisorio() != null ? aluno.getOrientadorProvisorio().trim().toLowerCase() : "")) {
             aluno.setOrientadorProvisorio(null);
-        } else if (emailProfessorNorm.equals(aluno.getCoorientadorProvisorio() != null ? aluno.getCoorientadorProvisorio().trim().toLowerCase() : null)) {
+        } else if (emailProfessorNorm.equals(aluno.getCoorientadorProvisorio() != null ? aluno.getCoorientadorProvisorio().trim().toLowerCase() : "")) {
             aluno.setCoorientadorProvisorio(null);
         }
         alunoRepositorio.save(aluno);
@@ -73,9 +76,48 @@ public class OrientacaoServico {
             this.removerTermo(termoModelo.getId());
         }
 
+        AlunoModelo alunoModelo = aluno;
+        ProfessorModelo professorModelo = professor;
+
+        NotificacaoModelo notificacaoProfessor = new NotificacaoModelo();
+        notificacaoProfessor.setEmailDestinatario(emailProfessorNorm);
+
+        NotificacaoModelo notificacaoAluno = new NotificacaoModelo();
+        notificacaoAluno.setEmailDestinatario(emailAlunoNorm);
+
+        if (emailProfessorNorm.equals(alunoModelo.getOrientadorProvisorio() != null ? alunoModelo.getOrientadorProvisorio().trim().toLowerCase() : "")) {
+            notificacaoProfessor.setTitulo("Orientando removido");
+            notificacaoProfessor.setConteudo(
+                alunoModelo.getNome() + " não é mais seu orientando provisório. Deseje-lhe boa sorte. :)"
+            );
+
+            notificacaoAluno.setTitulo("Orientador removido");
+            notificacaoAluno.setConteudo(
+                professorModelo.getNome() + " não é mais seu orientador provisório, mas lhe deseja boa sorte. :)\n" +
+                "Você pode escolher um novo orientador."
+            );
+
+            notificacaoServico.cadastrarMensagem(notificacaoProfessor);     
+            notificacaoServico.cadastrarMensagem(notificacaoAluno);
+
+        } else if (emailProfessorNorm.equals(alunoModelo.getCoorientadorProvisorio() != null ? alunoModelo.getCoorientadorProvisorio().trim().toLowerCase() : "")) {
+            notificacaoProfessor.setTitulo("Coorientando removido");
+            notificacaoProfessor.setConteudo(
+                alunoModelo.getNome() + " não é mais seu coorientando provisório. Deseje-lhe boa sorte. 😉"
+            );
+
+            notificacaoAluno.setTitulo("Coorientador removido");
+            notificacaoAluno.setConteudo(
+                professorModelo.getNome() + " não é mais seu coorientador provisório, mas lhe deseja boa sorte. 😉\n" +
+                "O seu orientador permanece o mesmo, mas, se você já enviou o termo de compromisso, precisará reenviá-lo."
+            );
+
+            notificacaoServico.cadastrarMensagem(notificacaoProfessor);     
+            notificacaoServico.cadastrarMensagem(notificacaoAluno);
+        }
+
         return new ResponseEntity<>(aluno, HttpStatus.OK);
     }
-
 
     public ResponseEntity<AlunoModelo> atribuirOrientadorProvisorio(String emailAluno, String emailProfessor) {
         ProfessorModelo professor = professorRepositorio.findByEmail(emailProfessor);

@@ -39,13 +39,27 @@ document.addEventListener('DOMContentLoaded', () => {
     campos.resumo.readOnly = readonly;
   }
 
-  function atualizarVisualizacaoTermo(termo) {
+  async function buscarNomeProfessor(email) {
+  if (!email) return '—';
+  try {
+    const res = await fetch(`/professores/${encodeURIComponent(email)}`);
+    if (!res.ok) throw new Error('Erro ao buscar professor');
+    const dados = await res.json();
+    return dados.nome || '—';
+  } catch (err) {
+    console.error(err);
+    return '—';
+  }
+}
+
+  async function atualizarVisualizacaoTermo(termo) {
     termoInfo.termoTitulo.textContent = termo.titulo;
-    termoInfo.termoOrientador.textContent = termo.emailOrientador || 'Não informado';
+
+    termoInfo.termoOrientador.textContent = await buscarNomeProfessor(termo.emailOrientador);
 
     if (termo.emailCoorientador) {
       termoInfo.termoCoorientadorContainer.style.display = 'block';
-      termoInfo.termoCoorientador.textContent = termo.emailCoorientador;
+      termoInfo.termoCoorientador.textContent = await buscarNomeProfessor(termo.emailCoorientador);
     } else {
       termoInfo.termoCoorientadorContainer.style.display = 'none';
     }
@@ -53,9 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
     termoInfo.termoAnoSemestre.textContent = `${termo.ano}/${termo.semestre}`;
     termoInfo.termoResumo.textContent = termo.resumo;
 
-    let status = termo.statusFinal;
-    if (!status) status = 'pendente';
-
+    let status = termo.statusFinal || 'pendente';
     termoInfo.termoStatus.textContent = `Status: ${status.charAt(0).toUpperCase() + status.slice(1)}`;
     termoInfo.termoStatus.className = 'alert text-center';
 
@@ -75,6 +87,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
     visualizacaoTermo.classList.remove('d-none');
   }
+
+  async function carregarTermo() {
+    const emailAluno = localStorage.getItem('email');
+    if (!emailAluno) {
+      mensagem.innerHTML = `<div class="alert alert-danger">Usuário não autenticado.</div>`;
+      return;
+    }
+
+    try {
+      const resTermo = await fetch(`/termos/aluno/${encodeURIComponent(emailAluno)}`);
+      if (resTermo.ok) {
+        const termo = await resTermo.json();
+        if (termo && termo.titulo) {
+          campos.titulo.value = termo.titulo;
+          campos.ano.value = termo.ano;
+          campos.semestre.value = termo.semestre;
+          campos.resumo.value = termo.resumo;
+
+          await atualizarVisualizacaoTermo(termo); // await para pegar os nomes
+        } else {
+          visualizacaoTermo.classList.add('d-none');
+        }
+      } else if (resTermo.status === 404) {
+        visualizacaoTermo.classList.add('d-none');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  carregarTermo();
 
   async function carregarTermo() {
     const emailAluno = localStorage.getItem('email');

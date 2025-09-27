@@ -260,7 +260,7 @@ Abaixo estão os objetos que eu usei para povoar o banco de dados do ambiente de
   "codigoVer": null,
   "criadoEm": null,
   "papeis": [
-    "COORD_BCC"
+    "COORD_SIS"
   ]
 }
 ```

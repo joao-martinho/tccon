@@ -74,19 +74,38 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function popularCampos(termo) {
+  async function buscarNomeProfessor(email) {
+    if (!email) return '—';
+    try {
+      const res = await fetch(`/professores/${encodeURIComponent(email)}`);
+      if (!res.ok) throw new Error('Erro ao buscar professor');
+      const dados = await res.json();
+      return dados.nome || '—';
+    } catch (err) {
+      console.error(err);
+      return '—';
+    }
+  }
+
+  async function povoarCampos(termo) {
     elEmailAluno.textContent = termo.emailAluno || '—';
     elTelefoneAluno.textContent = termo.telefoneAluno || '—';
     elCurso.textContent = termo.cursoAluno || '—';
     elTitulo.textContent = termo.titulo || '—';
     elResumo.textContent = termo.resumo || '—';
-    elOrientador.textContent = termo.emailOrientador || '—';
-    elCoorientador.textContent = termo.emailCoorientador || '—';
+    elOrientador.textContent = await buscarNomeProfessor(termo.emailOrientador);
+    elCoorientador.textContent = await buscarNomeProfessor(termo.emailCoorientador);
     elPerfilCoorientador.textContent = termo.perfilCoorientador || '—';
     elData.textContent = termo.criadoEm ? formatarData(termo.criadoEm) : '—';
     atualizarBadgeStatus(termo.statusFinal || 'pendente');
     atualizarBotoes();
   }
+
+  (async () => {
+    termo = await buscarTermo(emailAluno);
+    atualizarBotoes();
+    if (termo) await povoarCampos(termo); // atenção: await aqui para pegar os nomes
+  })();
 
   async function buscarTermo(emailAluno) {
     try {
@@ -120,16 +139,35 @@ document.addEventListener('DOMContentLoaded', () => {
     if (emailUsuario === termo.emailOrientador && termo.statusOrientador === 'pendente') {
       const atualizado = await atualizarTermo(termo.id, { statusOrientador: 'aprovado' });
       if (atualizado) {
-        termo.statusOrientador = 'aprovado';
-        termo.statusFinal = termo.statusFinal || 'pendente';
-        atualizarBadgeStatus(termo.statusFinal);
+        termo = atualizado;
+        atualizarBadgeStatus(termo.statusFinal || 'pendente');
         atualizarBotoes();
       }
     } else if (emailUsuario === termo.emailCoorientador && termo.statusOrientador === 'aprovado') {
       const atualizado = await atualizarTermo(termo.id, { statusFinal: 'aprovado' });
       if (atualizado) {
-        termo.statusFinal = 'aprovado';
-        atualizarBadgeStatus('aprovado');
+        termo = atualizado;
+        atualizarBadgeStatus(termo.statusFinal);
+        atualizarBotoes();
+      }
+    }
+  }
+
+  async function rejeitar() {
+    if (!termo) return;
+
+    if (emailUsuario === termo.emailOrientador && termo.statusOrientador === 'pendente') {
+      const atualizado = await atualizarTermo(termo.id, { statusOrientador: 'rejeitado' });
+      if (atualizado) {
+        termo = atualizado;
+        atualizarBadgeStatus(termo.statusFinal);
+        atualizarBotoes();
+      }
+    } else if (emailUsuario === termo.emailCoorientador && termo.statusOrientador === 'aprovado') {
+      const atualizado = await atualizarTermo(termo.id, { statusFinal: 'rejeitado' });
+      if (atualizado) {
+        termo = atualizado;
+        atualizarBadgeStatus(termo.statusFinal);
         atualizarBotoes();
       }
     }
