@@ -80,12 +80,12 @@ public class OrientacaoServico {
         if (emailProfessorNorm.equals(alunoModelo.getOrientadorProvisorio() != null ? alunoModelo.getOrientadorProvisorio().trim().toLowerCase() : "")) {
             notificacaoProfessor.setTitulo("Orientando removido");
             notificacaoProfessor.setConteudo(
-                alunoModelo.getNome() + " não é mais seu orientando provisório. Deseje-lhe boa sorte. :)"
+                alunoModelo.getNome() + " não é mais seu orientando provisório. Deseje-lhe boa sorte. 😉"
             );
 
             notificacaoAluno.setTitulo("Orientador removido");
             notificacaoAluno.setConteudo(
-                professorModelo.getNome() + " não é mais seu orientador provisório, mas lhe deseja boa sorte. :)\n" +
+                professorModelo.getNome() + " não é mais seu orientador provisório, mas lhe deseja boa sorte. 😉\n" +
                 "Você pode escolher um novo orientador."
             );
 
@@ -95,7 +95,7 @@ public class OrientacaoServico {
         } else if (emailProfessorNorm.equals(alunoModelo.getCoorientadorProvisorio() != null ? alunoModelo.getCoorientadorProvisorio().trim().toLowerCase() : "")) {
             notificacaoProfessor.setTitulo("Coorientando removido");
             notificacaoProfessor.setConteudo(
-                alunoModelo.getNome() + " não é mais seu coorientando provisório. Deseje-lhe boa sorte. 😉"
+                alunoModelo.getNome() + " não é mais seu coorientando provisório. Deseje-lhe boa sorte. 😉\n"
             );
 
             notificacaoAluno.setTitulo("Coorientador removido");
@@ -133,6 +133,21 @@ public class OrientacaoServico {
         aluno.setOrientadorProvisorio(emailProfessor);
         alunoRepositorio.save(aluno);
 
+        AlunoModelo alunoModelo = alunoRepositorio.findByEmail(emailAluno);
+        ProfessorModelo professorModelo = professorRepositorio.findByEmail(emailProfessor);
+
+        NotificacaoModelo notificacaoAluno = new NotificacaoModelo();
+        notificacaoAluno.setEmailDestinatario(emailAluno);
+        notificacaoAluno.setTitulo("Orientador provisório escolhido");
+        notificacaoAluno.setConteudo("Você escolheu " + professorModelo.getNome() + " como seu orientador provisório. Agora é o momento de preencher o termo de compromisso.");
+        notificacaoServico.cadastrarMensagem(notificacaoAluno);
+
+        NotificacaoModelo notificacaoProfessor = new NotificacaoModelo();
+        notificacaoProfessor.setEmailDestinatario(emailProfessor);
+        notificacaoProfessor.setTitulo("Você é um orientador provisório!");
+        notificacaoProfessor.setConteudo(alunoModelo.getNome() + " escolheu você como orientador provisório. Aguarde o recebimento do termo de compromisso.");
+        notificacaoServico.cadastrarMensagem(notificacaoProfessor);
+
         return new ResponseEntity<>(aluno, HttpStatus.OK);
     }
 
@@ -157,6 +172,14 @@ public class OrientacaoServico {
 
         aluno.setCoorientadorProvisorio(emailProfessor);
         alunoRepositorio.save(aluno);
+
+        AlunoModelo alunoModelo = alunoRepositorio.findByEmail(emailAluno);
+
+        NotificacaoModelo notificacaoProfessor = new NotificacaoModelo();
+        notificacaoProfessor.setEmailDestinatario(emailProfessor);
+        notificacaoProfessor.setTitulo("Você é um coorientador provisório!");
+        notificacaoProfessor.setConteudo(alunoModelo.getNome() + " escolheu você como coorientador provisório. Aguarde o recebimento do termo de compromisso.");
+        notificacaoServico.cadastrarMensagem(notificacaoProfessor);
 
         return new ResponseEntity<>(aluno, HttpStatus.OK);
     }

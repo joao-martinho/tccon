@@ -8,11 +8,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const btnVoltar = document.querySelector('#btnVoltarPainel');
     if (btnVoltar) {
-        if (tipo === 'professor') {
-            btnVoltar.href = '/professor/orientando/painel.html';
-        } else if (tipo === 'aluno') {
-            btnVoltar.href = '/aluno/painel.html';
-        }
+        btnVoltar.href = tipo === 'professor' ? '/professor/painel.html' : '/aluno/painel.html';
     }
 
     const btnSair = document.getElementById('btnSair');
@@ -36,6 +32,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
+    // Alinhar botão "Marcar todas como lidas" à direita
+    if (btnMarcarTodas) {
+        btnMarcarTodas.style.display = 'none';
+        const wrapper = document.createElement('div');
+        wrapper.className = 'd-flex justify-content-end mb-3';
+        container.parentNode.insertBefore(wrapper, container);
+        wrapper.appendChild(btnMarcarTodas);
+    }
+
     function mostrarAlerta(mensagem, tipo = 'info') {
         const alerta = document.createElement('div');
         alerta.className = `alert alert-${tipo} col`;
@@ -49,30 +54,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const res = await fetch(`/notificacoes/${encodeURIComponent(email)}`);
             if (!res.ok) throw new Error(`Falha ao carregar notificações. Status: ${res.status}`);
             const dados = await res.json();
-            let notificacoes = Array.isArray(dados) ? dados : [dados];
-
-            if (tipo === 'professor') {
-                const orientandoStr = localStorage.getItem('orientando');
-                let emailOrientando = null;
-
-                try {
-                    emailOrientando = orientandoStr.includes('{')
-                        ? JSON.parse(orientandoStr).email
-                        : orientandoStr;
-                } catch (e) {
-                    console.warn('Erro ao ler o email do orientando:', e);
-                }
-
-                if (emailOrientando) {
-                    notificacoes = notificacoes.filter(not =>
-                        not.emailRemetente &&
-                        not.emailRemetente === emailOrientando
-                    );
-                } else {
-                    notificacoes = [];
-                }
-            }
-
+            const notificacoes = Array.isArray(dados) ? dados : [dados];
             renderizarNotificacoes(notificacoes);
         } catch (err) {
             console.error('Erro ao buscar notificações:', err);
@@ -86,22 +68,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!notificacoes || notificacoes.length === 0) {
             const col = document.createElement('div');
             col.className = 'col';
-
             const card = document.createElement('div');
             card.className = 'card shadow-sm border-secondary';
-
             const cardBody = document.createElement('div');
             cardBody.className = 'card-body text-center';
-
             const mensagem = document.createElement('p');
             mensagem.className = 'mb-0 text-muted';
             mensagem.textContent = 'Nenhuma notificação encontrada.';
-
             cardBody.appendChild(mensagem);
             card.appendChild(cardBody);
             col.appendChild(card);
             container.appendChild(col);
-
             btnMarcarTodas.style.display = 'none';
             return;
         }
@@ -144,14 +121,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             let footer;
             if (!not.lida) {
                 footer = document.createElement('div');
-                footer.className = 'mt-auto d-flex justify-content-end';
-
+                footer.className = 'mt-auto d-flex justify-content-end gap-2';
                 const btnLida = document.createElement('button');
                 btnLida.className = 'btn btn-sm btn-success marcar-lida';
                 btnLida.textContent = 'Marcar como lida';
                 btnLida.dataset.id = not.id;
                 btnLida.addEventListener('click', () => marcarComoLida(not.id, card));
-
                 footer.appendChild(btnLida);
             }
 
@@ -161,7 +136,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             card.appendChild(cardBody);
             col.appendChild(card);
-
             container.prepend(col);
         });
 
@@ -172,22 +146,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             const res = await fetch(`/notificacoes/${encodeURIComponent(id)}/marcar-lida`, { method: 'PATCH' });
             if (!res.ok) throw new Error(`Falha ao marcar notificação como lida. Status: ${res.status}`);
-
             card.classList.remove('border-warning');
             card.classList.add('border-secondary');
             card.dataset.lida = 'true';
-
             const badge = card.querySelector('.badge');
             if (badge) badge.remove();
-
             const btn = card.querySelector('.marcar-lida');
             if (btn) btn.remove();
-
             const aindaNaoLidas = container.querySelectorAll('.card[data-lida="false"]');
-            if (aindaNaoLidas.length === 0) {
-                btnMarcarTodas.style.display = 'none';
-            }
-
+            if (aindaNaoLidas.length === 0) btnMarcarTodas.style.display = 'none';
         } catch (err) {
             console.error(err);
         }

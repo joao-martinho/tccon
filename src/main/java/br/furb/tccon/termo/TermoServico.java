@@ -7,10 +7,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import br.furb.tccon.aluno.AlunoModelo;
 import br.furb.tccon.banca.BancaServico;
 import br.furb.tccon.notificacao.NotificacaoModelo;
 import br.furb.tccon.notificacao.NotificacaoServico;
 import br.furb.tccon.orientacao.OrientacaoServico;
+import br.furb.tccon.professor.ProfessorModelo;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -29,24 +31,23 @@ public class TermoServico {
     public ResponseEntity<TermoModelo> cadastrarTermo(TermoModelo termoModelo) {
         TermoModelo salvo = this.termoRepositorio.save(termoModelo);
 
+        NotificacaoModelo notificacaoAluno = new NotificacaoModelo();
+        notificacaoAluno.setEmailDestinatario(termoModelo.getEmailAluno());
+        notificacaoAluno.setTitulo("Termo de compromisso enviado");
+        notificacaoAluno.setConteudo("Você enviou o termo de compromisso. Aguarde a resposta do seu orientador.");
+        notificacaoServico.cadastrarMensagem(notificacaoAluno);
+
         NotificacaoModelo notificacaoOrientador = new NotificacaoModelo();
-        notificacaoOrientador.setEmailRemetente(termoModelo.getEmailAluno());
         notificacaoOrientador.setEmailDestinatario(termoModelo.getEmailOrientador());
         notificacaoOrientador.setTitulo("Termo de compromisso recebido");
         notificacaoOrientador.setConteudo(
-            "Você recebeu um termo de compromisso de " + termoModelo.getNomeAluno() + ". Ele ou ela aguarda a sua resposta."
+                termoModelo.getNomeAluno() + " enviou o termo de compromisso e aguarda a sua resposta."
         );
         notificacaoServico.cadastrarMensagem(notificacaoOrientador);
 
         if (termoModelo.getEmailCoorientador() != null) {
-            NotificacaoModelo notificacaoCoorientador = new NotificacaoModelo();
-            notificacaoCoorientador.setEmailRemetente(termoModelo.getEmailAluno());
-            notificacaoCoorientador.setEmailDestinatario(termoModelo.getEmailCoorientador());
-            notificacaoCoorientador.setTitulo("Termo de compromisso recebido");
-            notificacaoCoorientador.setConteudo(
-                "Você recebeu um termo de compromisso de " + termoModelo.getNomeAluno() + ". Ele ou ela aguarda a sua resposta."
-            );
-            notificacaoServico.cadastrarMensagem(notificacaoCoorientador);
+            notificacaoOrientador.setEmailDestinatario(termoModelo.getEmailCoorientador());
+            notificacaoServico.cadastrarMensagem(notificacaoOrientador);
         }
 
         return new ResponseEntity<>(salvo, HttpStatus.CREATED);

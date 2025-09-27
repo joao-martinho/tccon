@@ -182,40 +182,26 @@ document.addEventListener('DOMContentLoaded', async () => {
   const badgeMensagens = document.getElementById('badge-mensagens')
 
   async function atualizarBadgeMensagens() {
-    const orientando = localStorage.getItem('orientando')
-
-    if (!email || !orientando) {
-      badgeMensagens.textContent = '0'
-      badgeMensagens.style.display = 'none'
-      return
-    }
-
     try {
       const res = await fetch(`/notificacoes/${encodeURIComponent(email)}`);
       if (!res.ok) throw new Error(`Falha ao carregar notificações. Status: ${res.status}`);
+
       const dados = await res.json();
-      let notificacoes = Array.isArray(dados) ? dados : [dados];
+      const mensagens = Array.isArray(dados) ? dados : [dados];
+      const naoLidas = mensagens.filter(msg => !msg.lida).length;
 
-      notificacoes = notificacoes.filter(not => !not.emailRemetente);
-
-      const mensagens = Array.isArray(dados) ? dados : [dados]
-
-      const naoLidasDoOrientando = mensagens.filter(
-        msg => !msg.lida && msg.emailRemetente === orientando
-      ).length
-
-      if (naoLidasDoOrientando > 0) {
-        badgeMensagens.textContent = naoLidasDoOrientando
-        badgeMensagens.style.display = 'inline-block'
+      if (naoLidas > 0) {
+        badgeMensagens.textContent = naoLidas;
+        badgeMensagens.style.display = 'inline-block';
       } else {
-        badgeMensagens.style.display = 'none'
+        badgeMensagens.style.display = 'none';
       }
     } catch (err) {
-      badgeMensagens.textContent = '0'
-      badgeMensagens.style.display = 'none'
+      console.error('Erro ao buscar mensagens:', err);
+      badgeMensagens.style.display = 'none';
     }
   }
 
-  await atualizarBadgeMensagens()
+  await atualizarBadgeMensagens();
 
 });

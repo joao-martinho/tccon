@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  function renderizarTabela() {
+  async function renderizarTabela() {
     listaTermos.innerHTML = '';
 
     let termosFiltrados = termos;
@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     termosFiltrados
       .sort((a, b) => new Date(b.criadoEm) - new Date(a.criadoEm))
-      .forEach(termo => {
+      .forEach(async termo => {
         const tr = document.createElement('tr');
 
         tr.innerHTML = `
@@ -128,6 +128,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('modalResumo').textContent = termo.resumo;
 
     const professores = await carregarTodosProfessores();
+
+    const nomeOrientador = termo.nomeOrientador || await getNomeProfessor(termo.emailOrientador);
+    const nomeCoorientador = termo.nomeCoorientador || (termo.emailCoorientador ? await getNomeProfessor(termo.emailCoorientador) : '—');
+
+    document.getElementById('modalNomeOrientador').textContent = nomeOrientador;
+    document.getElementById('modalNomeCoorientador').textContent = nomeCoorientador;
 
     ['professor1', 'professor2', 'professor3'].forEach((id, i) => {
       const select = document.getElementById(id);

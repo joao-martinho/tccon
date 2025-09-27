@@ -24,9 +24,6 @@ public class NotificacaoModelo {
     @NotBlank
     private String titulo;
 
-    @Email
-    private String emailRemetente;
-
     @NotBlank
     @Email
     private String emailDestinatario;
