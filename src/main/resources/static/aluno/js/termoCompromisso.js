@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
     termoInfo.termoResumo.textContent = termo.resumo;
 
     let status = termo.statusFinal || 'pendente';
-    termoInfo.termoStatus.textContent = `Status: ${status.charAt(0).toUpperCase() + status.slice(1)}`;
+    termoInfo.termoStatus.textContent = `Status: ${status}`;
     termoInfo.termoStatus.className = 'alert text-center';
 
     if (status === 'aprovado') {
