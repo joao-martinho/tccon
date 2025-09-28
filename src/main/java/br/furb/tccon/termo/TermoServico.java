@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import br.furb.tccon.aluno.AlunoRepositorio;
 import br.furb.tccon.banca.BancaServico;
 import br.furb.tccon.notificacao.NotificacaoModelo;
 import br.furb.tccon.notificacao.NotificacaoServico;

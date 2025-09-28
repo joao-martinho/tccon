@@ -46,7 +46,7 @@ public class EmailServico {
             mensagem.setTo(destinatario);
             mensagem.setSubject("Seu código de verificação do TCCOn");
             mensagem.setText("Use o código " + codigoVer + " para autenticar-se no TCCOn.");
-            //javaMailSender.send(mensagem);
+            javaMailSender.send(mensagem);
 
             alunoModelo.setCodigoVer(codigoVer.toString());
             alunoModelo.setCriadoEm(localDateTime);
@@ -64,7 +64,7 @@ public class EmailServico {
             mensagem.setTo(destinatario);
             mensagem.setSubject("Seu código de verificação do TCCOn");
             mensagem.setText("Use o código " + codigoVer + " para autenticar-se no TCCOn.");
-            //javaMailSender.send(mensagem);
+            javaMailSender.send(mensagem);
 
             professorModelo.setCodigoVer(codigoVer.toString());
             professorModelo.setCriadoEm(localDateTime);
@@ -127,7 +127,7 @@ public class EmailServico {
             mensagemParaAluno.setTo(emailDoAluno);
             mensagemParaAluno.setSubject("Você enviou o seu termo de compromisso no TCCOn");
             mensagemParaAluno.setText("O seu termo de compromisso foi enviado com sucesso. Agora, aguarde a aprovação do(s) seu(s) orientador(es).");
-            //javaMailSender.send(mensagemParaAluno);
+            javaMailSender.send(mensagemParaAluno);
         }
 
         if (emailDoOrientador != null && !emailDoOrientador.isBlank()) {
@@ -135,7 +135,7 @@ public class EmailServico {
             mensagemParaOrientador.setTo(emailDoOrientador);
             mensagemParaOrientador.setSubject("O seu orientando enviou o termo de compromisso no TCCOn");
             mensagemParaOrientador.setText("O seu orientando já enviou o termo de compromisso e aguarda a sua aprovação.");
-            //javaMailSender.send(mensagemParaOrientador);
+            javaMailSender.send(mensagemParaOrientador);
         }
 
         if (emailDoCoorientador != null && !emailDoCoorientador.isBlank()) {
@@ -143,7 +143,7 @@ public class EmailServico {
             mensagemParaCoorientador.setTo(emailDoCoorientador);
             mensagemParaCoorientador.setSubject("O seu orientando enviou o termo de compromisso no TCCOn");
             mensagemParaCoorientador.setText("O seu orientando já enviou o termo de compromisso e aguarda a sua aprovação.");
-            //javaMailSender.send(mensagemParaCoorientador);
+            javaMailSender.send(mensagemParaCoorientador);
         }
 
         return ResponseEntity.ok("Código de verificação enviado.");
