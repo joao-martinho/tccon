@@ -75,9 +75,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (nomes.length >= 2) {
         const segundo = nomes[1].toLowerCase();
-        const primeirosArtigos = ['de', 'do', 'da', 'dos', 'das'];
+        const primeirasPreposicoes = ['de', 'do', 'da', 'dos', 'das'];
 
-        if (primeirosArtigos.includes(segundo)) {
+        if (primeirasPreposicoes.includes(segundo)) {
             const terceiro = nomes[2] ? nomes[2][0] + '.' : '';
             exibicao = `${nomes[0]} ${nomes[1]} ${terceiro}`;
         } else {
