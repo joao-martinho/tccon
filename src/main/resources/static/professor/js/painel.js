@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (nomes.length >= 2) {
         const segundo = nomes[1].toLowerCase();
-        const primeirosArtigos = ['da', 'de', 'dos', 'das'];
+        const primeirosArtigos = ['de', 'do', 'da', 'dos', 'das'];
 
         if (primeirosArtigos.includes(segundo)) {
             const terceiro = nomes[2] ? nomes[2][0] + '.' : '';
