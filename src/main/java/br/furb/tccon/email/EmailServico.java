@@ -112,40 +112,7 @@ public class EmailServico {
             }
         }
 
-        
-
         return ResponseEntity.ok("Código verificado com sucesso.");
     }
 
-    public ResponseEntity<String> verificarTermo(Map<String, String> payload) {
-        String emailDoAluno = payload.get("emailDoAluno");
-        String emailDoOrientador = payload.get("emailDoOrientador");
-        String emailDoCoorientador = payload.get("emailDoCoorientador");
-
-        if (emailDoAluno != null && !emailDoAluno.isBlank()) {
-            SimpleMailMessage mensagemParaAluno = new SimpleMailMessage();
-            mensagemParaAluno.setTo(emailDoAluno);
-            mensagemParaAluno.setSubject("Você enviou o seu termo de compromisso no TCCOn");
-            mensagemParaAluno.setText("O seu termo de compromisso foi enviado com sucesso. Agora, aguarde a aprovação do(s) seu(s) orientador(es).");
-            javaMailSender.send(mensagemParaAluno);
-        }
-
-        if (emailDoOrientador != null && !emailDoOrientador.isBlank()) {
-            SimpleMailMessage mensagemParaOrientador = new SimpleMailMessage();
-            mensagemParaOrientador.setTo(emailDoOrientador);
-            mensagemParaOrientador.setSubject("O seu orientando enviou o termo de compromisso no TCCOn");
-            mensagemParaOrientador.setText("O seu orientando já enviou o termo de compromisso e aguarda a sua aprovação.");
-            javaMailSender.send(mensagemParaOrientador);
-        }
-
-        if (emailDoCoorientador != null && !emailDoCoorientador.isBlank()) {
-            SimpleMailMessage mensagemParaCoorientador = new SimpleMailMessage();
-            mensagemParaCoorientador.setTo(emailDoCoorientador);
-            mensagemParaCoorientador.setSubject("O seu orientando enviou o termo de compromisso no TCCOn");
-            mensagemParaCoorientador.setText("O seu orientando já enviou o termo de compromisso e aguarda a sua aprovação.");
-            javaMailSender.send(mensagemParaCoorientador);
-        }
-
-        return ResponseEntity.ok("Código de verificação enviado.");
-    }
 }

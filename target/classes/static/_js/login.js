@@ -29,6 +29,7 @@ document.getElementById('formLogin').addEventListener('submit', async function(e
             window.location.href = '../aluno/painel.html';
         } 
         else if (data.tipo === "Professor") {
+            localStorage.setItem("tipo", "aluno");
             localStorage.setItem("tipo", "professor");
 
             if (Array.isArray(data.papeis)) {

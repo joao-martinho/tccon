@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', async () => {
+    
     const tipo = localStorage.getItem('tipo');
     if (!tipo) {
         alert('Você não tem permissão para acessar esta página :(');

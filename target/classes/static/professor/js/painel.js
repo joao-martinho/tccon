@@ -70,9 +70,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     const body = document.createElement('div');
     body.className = 'card-body d-flex flex-column justify-content-between';
 
+    const nomes = aluno.nome.split(' ');
+    let exibicao;
+
+    if (nomes.length >= 2) {
+        const segundo = nomes[1].toLowerCase();
+        const primeirosArtigos = ['da', 'de', 'dos', 'das'];
+
+        if (primeirosArtigos.includes(segundo)) {
+            const terceiro = nomes[2] ? nomes[2][0] + '.' : '';
+            exibicao = `${nomes[0]} ${nomes[1]} ${terceiro}`;
+        } else {
+            exibicao = `${nomes[0]} ${nomes[1][0]}.`;
+        }
+    } else {
+        exibicao = nomes[0];
+    }
+
     const title = document.createElement('h5');
     title.className = 'card-title';
-    title.textContent = aluno.nome;
+    title.textContent = exibicao;
 
     const text = document.createElement('p');
     text.className = 'card-text text-muted';
