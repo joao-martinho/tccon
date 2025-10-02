@@ -79,24 +79,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     termosFiltrados
-      .sort((a, b) => new Date(b.criadoEm) - new Date(a.criadoEm))
-      .forEach(async termo => {
-        const tr = document.createElement('tr');
+    .sort((a, b) => new Date(b.criadoEm) - new Date(a.criadoEm))
+    .forEach(async termo => {
+      const tr = document.createElement('tr');
 
-        tr.innerHTML = `
-            <td>${termo.nomeAluno}</td>
-            <td>${termo.titulo}</td>
-            <td>${termo.nomeOrientador}</td>
-            <td>${termo.nomeCoorientador}</td>
-            <td>${criarBadgeStatus(termo.marcada)}</td>
-            <td>
-                <button class="btn btn-sm btn-primary btn-configurar">Ver</button>
-            </td>
-        `;
+      tr.innerHTML = `
+          <td>${termo.nomeAluno}</td>
+          <td>${termo.titulo}</td>
+          <td>${termo.nomeOrientador}</td>
+          <td>${termo.nomeCoorientador}</td>
+          <td>${criarBadgeStatus(termo.marcada)}</td>
+          <td>
+              <button class="btn btn-sm btn-primary btn-configurar">Ver</button>
+          </td>
+      `;
 
-        tr.querySelector('.btn-configurar').addEventListener('click', () => abrirModal(termo));
-        listaTermos.appendChild(tr);
-    });
+      tr.querySelector('.btn-configurar').addEventListener('click', () => abrirModal(termo));
+      listaTermos.prepend(tr); // insere no topo
+  });
   }
 
   function criarBadgeStatus(status) {

@@ -134,46 +134,58 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   async function aprovar() {
     if (!termo) return;
+
     if (emailUsuario === termo.emailOrientador && termo.statusOrientador === 'pendente') {
-      const atualizado = await atualizarTermo(termo.id, { statusOrientador: 'aprovado' });
+      const payload = termo.emailCoorientador
+        ? { statusOrientador: 'aprovado' }
+        : { statusOrientador: 'aprovado', statusFinal: 'aprovado' };
+
+      const atualizado = await atualizarTermo(termo.id, payload);
       if (atualizado) {
         termo = atualizado;
-        atualizarBadgeStatus(termo.statusFinal || 'pendente');
+        atualizarBadgeStatus(termo.statusFinal || termo.statusOrientador);
         atualizarBotoes();
-        await povoarCampos(termo);
+        await povoarCampos({ ...termo, statusFinal: termo.statusFinal });
       }
       return;
     }
+
     if (emailUsuario === termo.emailCoorientador && termo.statusOrientador === 'aprovado') {
       const atualizado = await atualizarTermo(termo.id, { statusFinal: 'aprovado' });
       if (atualizado) {
         termo = atualizado;
         atualizarBadgeStatus(termo.statusFinal);
         atualizarBotoes();
-        await povoarCampos(termo);
+        await povoarCampos({ ...termo, statusFinal: termo.statusFinal });
       }
     }
   }
 
   async function rejeitar() {
     if (!termo) return;
+
     if (emailUsuario === termo.emailOrientador && termo.statusOrientador === 'pendente') {
-      const atualizado = await atualizarTermo(termo.id, { statusOrientador: 'rejeitado', statusFinal: 'rejeitado' });
+      const payload = termo.emailCoorientador
+        ? { statusOrientador: 'rejeitado', statusFinal: 'rejeitado' }
+        : { statusOrientador: 'rejeitado', statusFinal: 'rejeitado' };
+
+      const atualizado = await atualizarTermo(termo.id, payload);
       if (atualizado) {
         termo = atualizado;
         atualizarBadgeStatus('rejeitado');
         atualizarBotoes();
-        await povoarCampos(termo);
+        await povoarCampos({ ...termo, statusFinal: 'rejeitado' });
       }
       return;
     }
+
     if (emailUsuario === termo.emailCoorientador && termo.statusOrientador === 'aprovado') {
       const atualizado = await atualizarTermo(termo.id, { statusFinal: 'rejeitado' });
       if (atualizado) {
         termo = atualizado;
         atualizarBadgeStatus('rejeitado');
         atualizarBotoes();
-        await povoarCampos(termo);
+        await povoarCampos({ ...termo, statusFinal: 'rejeitado' });
       }
     }
   }
