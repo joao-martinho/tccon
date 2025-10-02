@@ -81,6 +81,13 @@ document.addEventListener('DOMContentLoaded', () => {
       return responseAluno.json();
     })
     .then(aluno => {
+      if (aluno.orientador) {
+        alert('Você não tem permissão para acessar esta página :(');
+        localStorage.clear();
+        window.location.href = '../login.html';
+        return;
+      }
+
       if (aluno.orientadorProvisorio) {
         orientadorEmail = aluno.orientadorProvisorio;
         visualizacao.style.display = 'block';
