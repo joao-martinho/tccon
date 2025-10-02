@@ -102,13 +102,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (elCoorientador) elCoorientador.textContent = await buscarNomeProfessor(t.emailCoorientador);
     if (elPerfilCoorientador) elPerfilCoorientador.textContent = t.perfilCoorientador || '—';
     if (elData) elData.textContent = t.criadoEm ? formatarData(t.criadoEm) : '—';
-    atualizarBadgeStatus(t.statusFinal || 'pendente');
+
+    let statusParaBadge;
+    if (t.emailCoorientador) {
+      statusParaBadge = t.statusFinal || 'pendente';
+    } else {
+      statusParaBadge = t.statusOrientador || 'pendente';
+    }
+    atualizarBadgeStatus(statusParaBadge);
+
     atualizarBotoes();
   }
 
   async function buscarTermo(email) {
     try {
-      const res = await fetch(`/termos/aluno/${encodeURIComponent(email)}`);
+      const res = await fetch(`/termos/aluno/${encodeURIComponent(email)}?t=${Date.now()}`); // evita cache
       if (!res.ok) throw new Error('Erro ao buscar termo');
       return await res.json();
     } catch (error) {
@@ -121,7 +129,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       const res = await fetch(`/termos/${id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' },
         body: JSON.stringify(dados),
       });
       if (!res.ok) throw new Error('Erro ao atualizar termo');
@@ -129,6 +137,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (error) {
       console.error(error);
       return null;
+    }
+  }
+
+  async function refreshTermo() {
+    const atualizado = await buscarTermo(emailAluno);
+    if (atualizado) {
+      termo = atualizado;
+      await povoarCampos(termo);
     }
   }
 
@@ -140,24 +156,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         ? { statusOrientador: 'aprovado' }
         : { statusOrientador: 'aprovado', statusFinal: 'aprovado' };
 
-      const atualizado = await atualizarTermo(termo.id, payload);
-      if (atualizado) {
-        termo = atualizado;
-        atualizarBadgeStatus(termo.statusFinal || termo.statusOrientador);
-        atualizarBotoes();
-        await povoarCampos({ ...termo, statusFinal: termo.statusFinal });
-      }
+      await atualizarTermo(termo.id, payload);
+      await refreshTermo();
       return;
     }
 
     if (emailUsuario === termo.emailCoorientador && termo.statusOrientador === 'aprovado') {
-      const atualizado = await atualizarTermo(termo.id, { statusFinal: 'aprovado' });
-      if (atualizado) {
-        termo = atualizado;
-        atualizarBadgeStatus(termo.statusFinal);
-        atualizarBotoes();
-        await povoarCampos({ ...termo, statusFinal: termo.statusFinal });
-      }
+      await atualizarTermo(termo.id, { statusFinal: 'aprovado' });
+      await refreshTermo();
     }
   }
 
@@ -165,28 +171,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!termo) return;
 
     if (emailUsuario === termo.emailOrientador && termo.statusOrientador === 'pendente') {
-      const payload = termo.emailCoorientador
-        ? { statusOrientador: 'rejeitado', statusFinal: 'rejeitado' }
-        : { statusOrientador: 'rejeitado', statusFinal: 'rejeitado' };
-
-      const atualizado = await atualizarTermo(termo.id, payload);
-      if (atualizado) {
-        termo = atualizado;
-        atualizarBadgeStatus('rejeitado');
-        atualizarBotoes();
-        await povoarCampos({ ...termo, statusFinal: 'rejeitado' });
-      }
+      const payload = { statusOrientador: 'rejeitado', statusFinal: 'rejeitado' };
+      await atualizarTermo(termo.id, payload);
+      await refreshTermo();
       return;
     }
 
     if (emailUsuario === termo.emailCoorientador && termo.statusOrientador === 'aprovado') {
-      const atualizado = await atualizarTermo(termo.id, { statusFinal: 'rejeitado' });
-      if (atualizado) {
-        termo = atualizado;
-        atualizarBadgeStatus('rejeitado');
-        atualizarBotoes();
-        await povoarCampos({ ...termo, statusFinal: 'rejeitado' });
-      }
+      await atualizarTermo(termo.id, { statusFinal: 'rejeitado' });
+      await refreshTermo();
     }
   }
 
