@@ -19,14 +19,19 @@ document.addEventListener('DOMContentLoaded', () => {
     titulo: document.getElementById('titulo'),
     ano: document.getElementById('ano'),
     semestre: document.getElementById('semestre'),
-    resumo: document.getElementById('resumo')
+    resumo: document.getElementById('resumo'),
+    perfil: document.getElementById('perfil')
   };
+
+  const perfilContainer = document.getElementById('perfilContainer');
 
   const termoInfo = {
     termoTitulo: document.getElementById('termoTitulo'),
     termoOrientador: document.getElementById('termoOrientador'),
     termoCoorientadorContainer: document.getElementById('termoCoorientadorContainer'),
     termoCoorientador: document.getElementById('termoCoorientador'),
+    termoPerfilCoorientadorContainer: document.getElementById('termoPerfilCoorientadorContainer'),
+    termoPerfilCoorientador: document.getElementById('termoPerfilCoorientador'),
     termoAnoSemestre: document.getElementById('termoAnoSemestre'),
     termoResumo: document.getElementById('termoResumo'),
     termoStatus: document.getElementById('termoStatus')
@@ -37,6 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
     campos.ano.disabled = readonly;
     campos.semestre.disabled = readonly;
     campos.resumo.readOnly = readonly;
+    campos.perfil.readOnly = readonly;
+    btnFinalizar.disabled = true;
   }
 
   async function buscarNomeProfessor(email) {
@@ -95,6 +102,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
+      const resAluno = await fetch(`/alunos/${encodeURIComponent(emailAluno)}`);
+      if (!resAluno.ok) {
+        mensagem.innerHTML = `<div class="alert alert-danger">Erro ao buscar dados do aluno: ${resAluno.statusText}</div>`;
+        return;
+      }
+      const aluno = await resAluno.json();
+
       const resTermo = await fetch(`/termos/aluno/${encodeURIComponent(emailAluno)}`);
       if (resTermo.ok) {
         const termo = await resTermo.json();
@@ -103,6 +117,14 @@ document.addEventListener('DOMContentLoaded', () => {
           campos.ano.value = termo.ano;
           campos.semestre.value = termo.semestre;
           campos.resumo.value = termo.resumo;
+
+          if (aluno.coorientadorProvisorio) {
+            perfilContainer.style.display = 'block';
+            campos.perfil.value = termo.perfilCoorientador || '';
+          } else {
+            perfilContainer.style.display = 'none';
+          }
+
           await atualizarVisualizacaoTermo(termo);
         } else {
           visualizacaoTermo.classList.add('d-none');
@@ -114,8 +136,6 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log(error);
     }
   }
-
-  carregarTermo();
 
   async function enviarTermo() {
     const emailAluno = localStorage.getItem('email');
@@ -137,6 +157,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      // Validar perfil apenas se houver coorientador provisório
+      if (aluno.coorientadorProvisorio && !campos.perfil.value.trim()) {
+        mensagem.innerHTML = `<div class="alert alert-danger">Preencha o perfil do coorientador.</div>`;
+        return;
+      }
+
       const data = new Date();
       const offset = 3 * 60;
       const dataUTC3 = new Date(data.getTime() - offset * 60 * 1000).toISOString();
@@ -152,7 +178,10 @@ document.addEventListener('DOMContentLoaded', () => {
         resumo: campos.resumo.value.trim(),
         emailOrientador: aluno.orientadorProvisorio || null,
         emailCoorientador: aluno.coorientadorProvisorio || null,
+        perfilCoorientador: aluno.coorientadorProvisorio ? campos.perfil.value.trim() : null,
         statusOrientador: "pendente",
+        statusCoorientador: "pendente",
+        statusProfessorTcc1: "pendente",
         statusFinal: "pendente",
         criadoEm: dataUTC3,
       };

@@ -60,6 +60,10 @@ public class TermoModelo {
 
     private String statusOrientador;
 
+    private String statusCoorientador;
+
+    private String statusProfessorTcc1;
+
     private String statusFinal;
     
 }
