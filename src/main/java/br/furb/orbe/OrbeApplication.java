@@ -6,10 +6,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
-public class TcconApplication {
+public class OrbeApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(TcconApplication.class, args);
+		SpringApplication.run(OrbeApplication.class, args);
 	}
 
 }
