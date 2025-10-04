@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!email) return '—';
     try {
       const res = await fetch(`/professores/${encodeURIComponent(email)}`);
-      if (!res.ok) throw new Error('Erro ao buscar professor');
+      if (!res.ok) throw new Error('Erro ao buscar professor.');
       const dados = await res.json();
       return dados.nome || '—';
     } catch (err) {
