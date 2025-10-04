@@ -22,7 +22,7 @@ public class EntregaServico {
     private final NotificacaoServico notificacaoServico;
     private final Path diretorio = Paths.get("uploads/entregas");
 
-    public ResponseEntity<EntregaModelo> cadastrar(String email, EntregaUploadDTO dto) throws IOException {
+    public ResponseEntity<EntregaModelo> cadastrarAluno(String email, EntregaUploadDTO dto) throws IOException {
         AlunoModelo aluno = alunoRepositorio.findByEmail(email);
 
         if (!Files.exists(diretorio)) Files.createDirectories(diretorio);
@@ -58,6 +58,27 @@ public class EntregaServico {
             );
             notificacaoServico.cadastrarMensagem(notificacaoCoorientador);
         }
+
+        return ResponseEntity.status(201).body(salvo);
+    }
+
+    public ResponseEntity<EntregaModelo> cadastrarProfessor(String email, EntregaUploadDTO dto) throws IOException {
+
+        if (!Files.exists(diretorio)) Files.createDirectories(diretorio);
+
+        byte[] bytes = Base64.getDecoder().decode(dto.getArquivoBase64());
+        Path destino = diretorio.resolve(dto.getNomeArquivo());
+        Files.write(destino, bytes);
+
+        EntregaModelo entrega = new EntregaModelo();
+        entrega.setTitulo(dto.getTitulo());
+        entrega.setEmailAutor(email);
+        entrega.setEmailOrientador(null);
+        entrega.setEmailCoorientador(null);
+        entrega.setNomeArquivo(dto.getNomeArquivo());
+        entrega.setArquivoBase64(dto.getArquivoBase64());
+
+        EntregaModelo salvo = entregaRepositorio.save(entrega);
 
         return ResponseEntity.status(201).body(salvo);
     }

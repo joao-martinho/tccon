@@ -30,8 +30,13 @@ public class EntregaControle {
     }
 
     @PostMapping("/aluno/{email}")
-    public ResponseEntity<EntregaModelo> cadastrar(@PathVariable String email, @RequestBody EntregaUploadDTO dto) throws IOException {
-        return entregaServico.cadastrar(email, dto);
+    public ResponseEntity<EntregaModelo> cadastrarAluno(@PathVariable String email, @RequestBody EntregaUploadDTO dto) throws IOException {
+        return entregaServico.cadastrarAluno(email, dto);
+    }
+
+    @PostMapping("/professor/{email}")
+    public ResponseEntity<EntregaModelo> cadastrarProfessor(@PathVariable String email, @RequestBody EntregaUploadDTO dto) throws IOException {
+        return entregaServico.cadastrarProfessor(email, dto);
     }
 
     @GetMapping("/{id}/download")
